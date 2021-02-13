@@ -5,7 +5,6 @@ import frc.robot.Ports;
 import frc.robot.RobotState;
 import frc.robot.paths.TrajectoryGenerator;
 import frc.robot.planners.DriveMotionPlanner;
-import frc.robot.subsystems.requests.Request;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -894,29 +893,6 @@ public class Swerve extends Subsystem {
 				counterClockwiseCenter = cw;
 			}
 		}
-	}
-
-	public Request openLoopRequest(Translation2d input, double rotation){
-		return new Request(){
-		
-			@Override
-			public void act() {
-				setState(ControlState.MANUAL);
-				sendInput(input.x(), input.y(), rotation, false, false);
-			}
-
-		};
-	}
-
-	public Request velocityRequest(Rotation2d direction, double magnitude){
-		return new Request(){
-
-			@Override
-			public void act() {
-				setVelocity(direction, magnitude);
-			}
-
-		};
 	}
 	
 	public void setNominalDriveOutput(double voltage){
