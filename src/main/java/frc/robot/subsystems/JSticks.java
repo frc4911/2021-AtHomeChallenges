@@ -39,7 +39,6 @@ public class JSticks extends Subsystem {
     private String mPrevGameState = "";
 	private Superstructure mSuperstructure = null;
     private Swerve mSwerve = null;
-    private ColorReader mColorReader = null;
     private final int mDefaultSchedDelta = 100; // axis updated every 100 msec
     @SuppressWarnings("unused")
     private int mListIndex;
@@ -70,9 +69,6 @@ public class JSticks extends Subsystem {
         mSuperstructure = Superstructure.getInstance(sClassName);
         mSwerve = Swerve.getInstance(sClassName);
         // mTester = new LogitechPS4();
-        if (mTester != null){
-            mColorReader = ColorReader.getInstance(sClassName);
-        }
     }
 
     private Loop mLoop = new Loop() {
@@ -200,27 +196,7 @@ public class JSticks extends Subsystem {
     
     private void testRoutines(){
         if (mTester != null){
-            if(mPeriodicIO.tsPOV0_READRED){
-                mColorReader.setWantedState(ColorReader.WantedState.READ_RED);
-            }
-            else if(mPeriodicIO.tsPOV90_READGREEN){
-                mColorReader.setWantedState(ColorReader.WantedState.READ_GREEN);
-            }
-            else if(mPeriodicIO.tsPOV180_READBLUE){
-                mColorReader.setWantedState(ColorReader.WantedState.READ_BLUE);
-            }
-            else if(mPeriodicIO.tsPOV270_READCLEAR){
-                mColorReader.setWantedState(ColorReader.WantedState.READ_CLEAR);
-            }
-            else if(mPeriodicIO.tsABUTTON_READALL){
-                mColorReader.setWantedState(ColorReader.WantedState.READ_ALL);
-            }
-            else if(mPeriodicIO.tsBBUTTON_STARTSCAN){
-                mColorReader.setWantedState(ColorReader.WantedState.SCAN);
-            }
-            else if(mPeriodicIO.tsXBUTTON_STOPSCAN){
-                mColorReader.setWantedState(ColorReader.WantedState.HOLD);
-            }
+            
         }
 
     }

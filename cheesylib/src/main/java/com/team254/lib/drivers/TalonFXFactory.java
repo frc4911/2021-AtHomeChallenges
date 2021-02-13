@@ -19,8 +19,8 @@ public class TalonFXFactory {
 //        public boolean ENABLE_CURRENT_LIMIT = false;
         public boolean ENABLE_SOFT_LIMIT = true;
         public boolean ENABLE_LIMIT_SWITCH = false;
-        public int FORWARD_SOFT_LIMIT = 0;
-        public int REVERSE_SOFT_LIMIT = 0;
+        public double FORWARD_SOFT_LIMIT = 0;
+        public double REVERSE_SOFT_LIMIT = 0;
 
         public boolean INVERTED = false;
         public boolean SENSOR_PHASE = false;

@@ -12,13 +12,10 @@ import java.util.Arrays;
 import frc.robot.auto.AutoModeExecuter;
 import frc.robot.auto.AutoModeSelector;
 import frc.robot.paths.TrajectoryGenerator;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Collector;
-import frc.robot.subsystems.ColorReader;
 import frc.robot.subsystems.Donger;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.JSticks;
-import frc.robot.subsystems.PanelManipulator;
 import frc.robot.subsystems.RobotStateEstimator;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Superstructure;
@@ -53,17 +50,12 @@ public class Robot extends TimedRobot {
 	private Indexer mIndexer;
 	private Collector mCollector;
 	private Shooter mShooter;
-	private Climber mClimber;
 	private Donger mDonger;
 	private RobotStateEstimator mRobotStateEstimator;
-	@SuppressWarnings("unused")
-	private PanelManipulator mPanelManipulator;
 	@SuppressWarnings("unused")
 	private CollectwardsLimelight mCollectwardsLimelight;
 	private ShootwardsLimelight mShootwardsLimelight;
 	private JSticks mJStick;
-	@SuppressWarnings("unused")
-	private ColorReader mColorReader;
 	private final double mLoopPeriod = .005;
 	private Looper mSubsystemLooper = new Looper(mLoopPeriod,Thread.NORM_PRIORITY+1);
 
@@ -94,11 +86,9 @@ public class Robot extends TimedRobot {
 		mCollector = Collector.getInstance(mClassName);
 		mDonger = Donger.getInstance(mClassName);
 		mShooter = Shooter.getInstance(mClassName);
-		mClimber = Climber.getInstance(mClassName);
 		mShootwardsLimelight = ShootwardsLimelight.getInstance(mClassName);
 		// mCollectwardsLimelight = CollectwardsLimelight.getInstance(mClassName);
 		mRobotStateEstimator = RobotStateEstimator.getInstance(mClassName);
-		// mColorReader = ColorReader.getInstance(mClassName);
 		mJStick = JSticks.getInstance(mClassName);
 		// mPanelManipulator = PanelManipulator.getInstance(mClassName);
 
@@ -112,12 +102,9 @@ public class Robot extends TimedRobot {
 						mCollector,
 						mDonger,
 						mShooter,
-						mClimber,
 						mShootwardsLimelight,
 						mRobotStateEstimator
 						// mCollectwardsLimelight,
-						// mColorReader
-						// mPanelManipulator
 						)
 				);
 

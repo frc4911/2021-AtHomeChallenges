@@ -67,7 +67,6 @@ dependencies {
     implementation project(':cheesylib')
     implementation project(':madtownlib')
     implementation project(':cyberlib')
-    implementation project(':as7262')
 
     implementation wpi.deps.wpilib()
     nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)

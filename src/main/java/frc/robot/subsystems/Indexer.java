@@ -25,8 +25,8 @@ public class Indexer extends Subsystem {
     private final DigitalInput mDIBallTouchingShooter; // true == no ball, false == ball
     private final Solenoid mSolPTO;           // true == climber, false == indexer
 
-    private int mFXLeftPIDPos;
-    private int mFXRightPIDPos;
+    private double mFXLeftPIDPos;
+    private double mFXRightPIDPos;
 
     private final double kIndexSpeed = 0.7;
     private final double kLoadSpeed = 0.25;
@@ -421,8 +421,8 @@ public class Indexer extends Subsystem {
         mPeriodicIO.schedDeltaActual = now - mPeriodicIO.lastSchedStart;
         mPeriodicIO.lastSchedStart = now;
         if (mSystemState == SystemState.CLIMBING_PREP || mSystemState == SystemState.CLIMBING_MOVE) {
-            mPeriodicIO.FXLeftEncPos  = (int)mFXLeft.getSelectedSensorPosition();
-            mPeriodicIO.FXRightEncPos = (int)mFXRight.getSelectedSensorPosition();
+            mPeriodicIO.FXLeftEncPos  = mFXLeft.getSelectedSensorPosition();
+            mPeriodicIO.FXRightEncPos = mFXRight.getSelectedSensorPosition();
         }
      }
 
@@ -489,12 +489,12 @@ public class Indexer extends Subsystem {
         private double lastSchedStart;
 
         // INPUTS
-        public int     FXLeftEncPos;
-        public int     FXRightEncPos;
-        public double  FXLeftCurrent;
-        public double  FXRightCurrent;
-        public String  FXLeftFaults;
-        public String  FXRightFaults;
+        public double FXLeftEncPos;
+        public double FXRightEncPos;
+        public double FXLeftCurrent;
+        public double FXRightCurrent;
+        public String FXLeftFaults;
+        public String FXRightFaults;
         
         //OUTPUTS
         public PTO    PTODemand;

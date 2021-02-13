@@ -19,7 +19,6 @@ public class Superstructure extends Subsystem {
     private Collector mCollector = null;
     private Donger    mDonger    = null;
     private Shooter   mShooter   = null;
-    private Climber   mClimber   = null;
     private ShootwardsLimelight mShootwardsLimelight = null;
     private RobotState mRobotState = null;
     // private CollectwardsLimelight mCollectwardsLimelight = null;
@@ -82,7 +81,6 @@ public class Superstructure extends Subsystem {
         mIndexer             = Indexer.getInstance(sClassName);
         mCollector           = Collector.getInstance(sClassName);
         mShooter             = Shooter.getInstance(sClassName);
-        mClimber             = Climber.getInstance(sClassName);
         mDonger              = Donger.getInstance(sClassName);
         mShootwardsLimelight = ShootwardsLimelight.getInstance(sClassName);
         mRobotState          = RobotState.getInstance(sClassName);
@@ -157,7 +155,6 @@ public class Superstructure extends Subsystem {
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
             mCollector.setWantedState(Collector.WantedState.HOLD);
             mShooter.setWantedState(Shooter.WantedState.HOLD);
-            mClimber.setWantedState(Climber.WantedState.HOLD);
             if (mIndexer.isFullyLoaded()) {
                 mDonger.setWantedState(Donger.WantedState.SECURE);
             } else {
@@ -229,7 +226,6 @@ public class Superstructure extends Subsystem {
 
     private SystemState handleClimbing() {
         if (mStateChanged){
-            mClimber.setWantedState(Climber.WantedState.CLIMB);
             mIndexer.setWantedState(Indexer.WantedState.CLIMB_PREP);
             mClimberReady = Timer.getFPGATimestamp()+mClimberTimeout;
             mPeriodicIO.schedDeltaDesired = mFastCycle;
@@ -308,7 +304,6 @@ public class Superstructure extends Subsystem {
 
     private SystemState climberStateTransfer() {
         if (mWantedState != WantedState.CLIMB){
-            mClimber.setWantedState(Climber.WantedState.HOLD);
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
         }
 

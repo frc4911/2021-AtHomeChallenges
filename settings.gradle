@@ -25,5 +25,4 @@ pluginManagement {
     }
 }
 
-include 'cheesylib', 'madtownlib', 'cheesy-path', 'as7262', 'vl53l0x', 'cyberlib'
-//include 'cheesylib', 'madtownlib', 'cheesy-path', 'as7262', 'vl53l0x', 'cyberlib', 'stub', 'proto'
+include 'cheesylib', 'madtownlib', 'cyberlib'
