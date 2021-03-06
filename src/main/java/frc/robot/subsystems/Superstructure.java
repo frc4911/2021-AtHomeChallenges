@@ -44,7 +44,7 @@ public class Superstructure extends Subsystem {
     private SystemState   mSystemState = SystemState.HOLDING;
     private WantedState   mWantedState = WantedState.HOLD;
     private boolean       mStateChanged;
-    private boolean       mShootSetup;
+    private boolean       mShootSetup = true;
     private double        mDistance;
     private final boolean mLoggingEnabled = true;  // used to disable logging for this subsystem only
     public PeriodicIO     mPeriodicIO;
@@ -192,7 +192,6 @@ public class Superstructure extends Subsystem {
     private SystemState handleShooting() {
         if (mStateChanged) {
             mSwerve.limeLightAim();
-            mShootSetup = true;
             mLastDistanceToGoal = Double.MIN_VALUE;
             mPeriodicIO.schedDeltaDesired = mFastCycle;
         }
@@ -251,7 +250,6 @@ public class Superstructure extends Subsystem {
     private SystemState handleManualShooting() {
         if (mStateChanged) {
             mShooter.setShootDistance(mDistance);
-            mShootSetup = true;
             mPeriodicIO.schedDeltaDesired = mFastCycle;
         }
 
@@ -288,6 +286,7 @@ public class Superstructure extends Subsystem {
 
     private SystemState shootingStateTransfer() {
         if (mWantedState != WantedState.SHOOT && mWantedState != WantedState.MANUAL_SHOOT) {
+            mShootSetup = true;
             mShooter.setWantedState(Shooter.WantedState.HOLD);
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
             if (mIndexer.isFullyLoaded()) {
@@ -444,6 +443,9 @@ public class Superstructure extends Subsystem {
     @Override
     public void outputTelemetry() {
         SmartDashboard.putBoolean("Ready To Shoot and On Target", mPeriodicIO.readyToShootAndOnTarget);
+        SmartDashboard.putBoolean("Ready To Shoot", mShooter.readyToShoot());
+        SmartDashboard.putBoolean("On Target", mSwerve.isOnTarget());
+        SmartDashboard.putBoolean("Shoot Setup", mShootSetup);
     }
 
     public static class PeriodicIO {

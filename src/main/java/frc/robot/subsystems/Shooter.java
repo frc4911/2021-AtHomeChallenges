@@ -159,12 +159,21 @@ public class Shooter extends Subsystem {
     };
 
     private SystemState handleHolding() {
+        if (mStateChanged) {
+            mPeriodicIO.schedDeltaDesired = 0;
+        }
+
         mPeriodicIO.percentDemand = mHoldSpeed;
 
         return defaultStateTransfer();
     }
 
     private SystemState handleShooting() {
+        if (mStateChanged) {
+            mPeriodicIO.schedDeltaDesired = 20;
+            mPeriodicIO.reachedDesiredSpeed = false; // TODO: TEST THIS ON SATURDAY (6th)
+        }
+
         mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(getDistanceToVelocityRPM(mDistance));
 
         return defaultStateTransfer();
