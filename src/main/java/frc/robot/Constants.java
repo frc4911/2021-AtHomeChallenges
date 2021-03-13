@@ -27,7 +27,7 @@ public class Constants {
 	public static final boolean kIsUsingCompBot = true;
 	public static final boolean kIsUsingTractionWheels = true;
 
-	public static final boolean kDebuggingOutput = false;
+	public static final boolean kDebuggingOutput = true;
 	
 	//Physical Robot Dimensions (including bumpers)
 	public static final double kRobotWidth = 36.0;
@@ -226,10 +226,10 @@ public class Constants {
 	public static final int kRearLeftCancoderStartingPosDegreesCetus = -13;
 	public static final int kRearRightCancoderStartingPosDegreesCetus = -130;
 
-	public static final int kFrontRightCancoderStartingPosDegreesR1 = 148;
-	public static final int kFrontLeftCancoderStartingPosDegreesR1 = 45;
-	public static final int kRearLeftCancoderStartingPosDegreesR1 = 5;
-	public static final int kRearRightCancoderStartingPosDegreesR1 = -111;
+	public static final int kFrontRightCancoderStartingPosDegreesR1 = 34;
+	public static final int kFrontLeftCancoderStartingPosDegreesR1 = -76;
+	public static final int kRearLeftCancoderStartingPosDegreesR1 = -78;
+	public static final int kRearRightCancoderStartingPosDegreesR1 = 79;
 	
 	public static final int kFrontRightCancoderStartingPosDegreesR2 = 0;
 	public static final int kFrontLeftCancoderStartingPosDegreesR2 = 0;

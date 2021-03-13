@@ -357,12 +357,17 @@ public class TrajectoryGenerator {
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath2() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(-60.0, 0.0), Rotation2d.fromDegrees(180.0)));
+            // NOTE: to move direct left: -y, angle: 270; to move right: +y, angle: 90;
+            // NOTE: to move forward +x, angle: 0; to move backwards -x, angle: 180;
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(new Pose2d(new Translation2d(100.0, 0.0), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(new Pose2d(new Translation2d(100.0, 36.0), Rotation2d.fromDegrees(90.0)));
+            waypoints.add(new Pose2d(new Translation2d(62.0, 36.0), Rotation2d.fromDegrees(180.0)));
+            waypoints.add(new Pose2d(new Translation2d(60.0, -10.0), Rotation2d.fromDegrees(260.0)));
+            waypoints.add(new Pose2d(new Translation2d(148.0, -10.0), Rotation2d.fromDegrees(0.0)));
 
             return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
         }
-
         private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath3() {
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(135.0)));

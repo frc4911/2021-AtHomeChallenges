@@ -66,7 +66,7 @@ public class JSticks extends Subsystem {
         mDriver = new Turnigy();
         mOperator = new Xbox();
         mPeriodicIO = new PeriodicIO();
-        mSuperstructure = Superstructure.getInstance(sClassName);
+        // mSuperstructure = Superstructure.getInstance(sClassName);
         mSwerve = Swerve.getInstance(sClassName);
         // mTester = new LogitechPS4();
     }
@@ -89,7 +89,6 @@ public class JSticks extends Subsystem {
                 }
             }
         }
-
         @Override
         public void onLoop(double timestamp) {
             synchronized (JSticks.this) {
@@ -125,8 +124,8 @@ public class JSticks extends Subsystem {
     }
 
     public void teleopRoutines() {
-		Superstructure.WantedState currentState = mSuperstructure.getWantedState();
-		Superstructure.WantedState previousState = currentState;
+		// Superstructure.WantedState currentState = mSuperstructure.getWantedState();
+		// Superstructure.WantedState previousState = currentState;
 
 		double swerveYInput = mPeriodicIO.drRightStickX_Translate;
 		double swerveXInput = mPeriodicIO.drRightStickY_Translate;
@@ -142,36 +141,36 @@ public class JSticks extends Subsystem {
 			mSwerve.resetAveragedDirection();
 		}
 
-		if (mPeriodicIO.opXButton_IdleShooter) {
-            mSuperstructure.setShooterHoldSpeed(0.0);
-		}
+		// if (mPeriodicIO.opXButton_IdleShooter) {
+        //     mSuperstructure.setShooterHoldSpeed(0.0);
+		// }
 
-		if (currentState == Superstructure.WantedState.CLIMB) {
-			mSuperstructure.setClimbOpenLoop(mPeriodicIO.opLeftStickY_ClimbSpeed);
-		}
+		// if (currentState == Superstructure.WantedState.CLIMB) {
+		// 	mSuperstructure.setClimbOpenLoop(mPeriodicIO.opLeftStickY_ClimbSpeed);
+		// }
 
-        currentState = activeBtnIsReleased(currentState);
-		if (currentState == Superstructure.WantedState.HOLD) {
-			if (mPeriodicIO.drRightToggleDown_SHOOT) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT);
-			} else if (mPeriodicIO.opRightTrigger_COLLECT) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
-			} else if (mPeriodicIO.opLeftBumper_CLIMB) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.CLIMB);
-			} else if (mPeriodicIO.opPOV0_MANUAL10) {
-				mSuperstructure.setManualShootDistance(10);
-			} else if (mPeriodicIO.opPOV90_MANUAL15) {
-				mSuperstructure.setManualShootDistance(15);
-			} else if (mPeriodicIO.opPOV180_MANUAL20) {
-				mSuperstructure.setManualShootDistance(20);
-			} else if (mPeriodicIO.opPOV270_MANUAL25) {
-				mSuperstructure.setManualShootDistance(25);
-			} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
-			} else if (previousState != currentState) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
-			}
-		}
+        // currentState = activeBtnIsReleased(currentState);
+		// if (currentState == Superstructure.WantedState.HOLD) {
+		// 	if (mPeriodicIO.drRightToggleDown_SHOOT) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT);
+		// 	} else if (mPeriodicIO.opRightTrigger_COLLECT) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
+		// 	} else if (mPeriodicIO.opLeftBumper_CLIMB) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.CLIMB);
+		// 	} else if (mPeriodicIO.opPOV0_MANUAL10) {
+		// 		mSuperstructure.setManualShootDistance(10);
+		// 	} else if (mPeriodicIO.opPOV90_MANUAL15) {
+		// 		mSuperstructure.setManualShootDistance(15);
+		// 	} else if (mPeriodicIO.opPOV180_MANUAL20) {
+		// 		mSuperstructure.setManualShootDistance(20);
+		// 	} else if (mPeriodicIO.opPOV270_MANUAL25) {
+		// 		mSuperstructure.setManualShootDistance(25);
+		// 	} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
+		// 	} else if (previousState != currentState) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
+		// 	}
+		// }
 	}
 
 	private Superstructure.WantedState activeBtnIsReleased(Superstructure.WantedState currentState) {
@@ -292,8 +291,8 @@ public class JSticks extends Subsystem {
                 mPeriodicIO.eventName = mPeriodicIO.ds.getEventName();
                 mPeriodicIO.replayNumber = mPeriodicIO.ds.getReplayNumber();
             }
-            mPeriodicIO.batteryVoltage = mPeriodicIO.pdp.getVoltage();
-            mPeriodicIO.batteryCurrent = mPeriodicIO.pdp.getTotalCurrent();
+            // mPeriodicIO.batteryVoltage = mPeriodicIO.pdp.getVoltage();
+            // mPeriodicIO.batteryCurrent = mPeriodicIO.pdp.getTotalCurrent();
 
             values = ""+mPeriodicIO.date + "," +
                         mPeriodicIO.time + "," + 
@@ -440,7 +439,7 @@ public class JSticks extends Subsystem {
         public String gameState;
         public double matchTime;
 
-        private PowerDistributionPanel pdp = new PowerDistributionPanel();
+        // private PowerDistributionPanel pdp = new PowerDistributionPanel();
         public double batteryVoltage;
         public double batteryCurrent;
 

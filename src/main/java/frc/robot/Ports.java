@@ -24,8 +24,8 @@ public class Ports {
 
     // Collector
     public static final int COLLECTOR = 17;
-    public static final int SERIALIZER = 15;
-    public static final int COLLECTOR_DEPLOY = 0;
+    // public static final int SERIALIZER = 15;
+    // public static final int COLLECTOR_DEPLOY = 0;
 
     // Donger
     public static final int DONGER = 16;
