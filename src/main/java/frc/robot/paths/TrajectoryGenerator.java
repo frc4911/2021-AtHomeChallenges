@@ -345,33 +345,211 @@ public class TrajectoryGenerator {
 
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
         }
+        double rc = 28/2;
+        double radius = 36-rc;
+        double stepLength = 12;
+
+        double startx = 60-rc;
+        double starty = 60+radius; 
+
+        double d0x = 150;
+        double d0y = 60;
+
+        double d1x = 225;
+        double d1y = 120;
+
+        double d2x = 300;
+        double d2y = 60;
+
+        double endx = startx;
+        double endy = starty;
+
+        private class ThreePoints{
+            double x;
+            double y;
+            double a;
+
+            public ThreePoints(double x,double y, double a){
+                this.x = x;
+                this.y = y;
+                this.a = a;
+            }
+        }
+
+        private void addStraightSegment(ArrayList<ThreePoints> tpal, boolean addStart, double x0, double y0, double xf, double yf ){
+            double angleRads = Math.atan2(yf-y0,xf-x0);
+            double angleDegrees = angleRads*360/2/Math.PI;
+            double length = Math.sqrt(Math.pow(d0x-startx,2)+Math.pow(d0y-starty,2));
+            double steps = Math.round(length/stepLength);
+            System.out.println("addStraightSegment steps:"+steps+" angle:"+angleDegrees+" length:"+length);
+            int startI = 1;
+            if (addStart){
+                startI=0;
+            }
+            for (int i=startI; i<steps; i++){
+                tpal.add(new ThreePoints(x0+i*(xf-x0)/steps,y0+i*(yf-y0)/steps,angleDegrees));
+            }
+            tpal.add(new ThreePoints(xf,yf,angleDegrees));
+        }
+
+        // private void addArcSegment(ArrayList<ThreePoints> tpal, double centerx, double centery, double radius, double startAngle, double endAngle ){
+        //     double arcLength = endAngle-startAngle;
+        //     int steps = Math.abs((int)(arcLength/30.0));
+        //     double stepSize = arcLength/(double)steps;
+        //     System.out.println("steps:"+steps+" step:"+stepSize+" arcLength:"+arcLength);
+        //     for (int i=1; i<steps; i++){
+        //         double angle = startAngle+((double)i)*stepSize;
+        //         double angleRads = angle/360*2*Math.PI;
+        //         tpal.add(new ThreePoints(centerx+radius*Math.cos(angleRads), centery+radius*Math.sin(angleRads), angle-90));
+        //     }
+        // }
+
+        private void addArcSegment(ArrayList<ThreePoints> tpal, boolean addStart, double startx, double starty, double centerx, double centery, double endAngleDegrees ){
+            double radius = Math.sqrt(Math.pow(centerx-startx,2)+Math.pow(centery-starty,2));
+            double startAngleRads = Math.atan2(starty-centery,startx-centerx);
+            double  startAngleDegrees = startAngleRads*360/2/Math.PI;
+            double arcLengthDegrees = endAngleDegrees-startAngleDegrees;
+            int steps = Math.round(Math.abs((int)(arcLengthDegrees/30.0)));
+            double stepSize = arcLengthDegrees/(double)steps;
+            System.out.println("addArcSegment steps:"+steps+" stepSize:"+stepSize+" startAngle:"+startAngleDegrees+" arcLength:"+arcLengthDegrees+" radius"+radius);
+            int startI = 1;
+            if (addStart){
+                startI=0;
+            }
+
+            for (int i=startI; i<=steps; i++){
+                double angleDegrees = startAngleDegrees+((double)i)*stepSize;
+                double angleRads = angleDegrees/360*2*Math.PI;
+                tpal.add(new ThreePoints(centerx+radius*Math.cos(angleRads), centery+radius*Math.sin(angleRads), angleDegrees-90));
+            }
+        }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(60.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(60.0, -95.0), Rotation2d.fromDegrees(270.0)));
+            ArrayList<ThreePoints> tpal = new ArrayList<>();
+            double exitAngle;
+            double enterAngle;
 
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+            enterAngle = 90;
+            addStraightSegment(tpal, true, startx,                                        d0y+radius*Math.sin(enterAngle*2*Math.PI/360), 
+                                           d0x+radius*Math.cos(enterAngle*2*Math.PI/360), d0y+radius*Math.sin(enterAngle*2*Math.PI/360));
+            // enter angle = 90
+            exitAngle = -255;
+            addArcSegment(tpal,     false, d0x+radius*Math.cos(enterAngle*2*Math.PI/360), d0y+radius*Math.sin(enterAngle*2*Math.PI/360),
+                                           d0x,                                           d0y,                                            exitAngle);
+            // enterAngle = -75;
+            // addStraightSegment(tpal,false, d0x+radius*Math.cos(exitAngle*2*Math.PI/360),  d0y+radius*Math.sin(exitAngle*2*Math.PI/360),
+            //                                d1x+radius*Math.cos(enterAngle*2*Math.PI/360), d1y+radius*Math.sin(enterAngle*2*Math.PI/360));
+            // exitAngle = 225;
+            // addArcSegment(tpal,      false,d1x+radius*Math.cos(enterAngle*2*Math.PI/360), d1y+radius*Math.sin(enterAngle*2*Math.PI/360),
+            //                                d1x,                                           d1y,                                            exitAngle);
+            // enterAngle = 225;
+            // addStraightSegment(tpal,false, d1x+radius*Math.cos(exitAngle*2*Math.PI/360),  d1y+radius*Math.sin(exitAngle*2*Math.PI/360),
+            //                                d2x+radius*Math.cos(enterAngle*2*Math.PI/360), d2y+radius*Math.sin(enterAngle*2*Math.PI/360));
+            // exitAngle = 90;
+            // addArcSegment(tpal,      false,d2x+radius*Math.cos(enterAngle*2*Math.PI/360), d2y+radius*Math.sin(enterAngle*2*Math.PI/360),
+            //                                d2x,                                           d2y,                                            exitAngle);
+
+            // addStraightSegment(tpal, false,d2x+radius*Math.cos(exitAngle*2*Math.PI/360),  d2y+radius*Math.sin(exitAngle*2*Math.PI/360),
+            //                                startx,                                  starty);
+
+            for (ThreePoints tp : tpal){
+                System.out.println(tp.x+","+tp.y+","+tp.a);
+                waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+            }
+            return generateTrajectory(   false, waypoints, Arrays.asList(),           20,        80,        80,           9, 20.0, 1);
+            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
         }
-
         private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath2() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(-60.0, 0.0), Rotation2d.fromDegrees(180.0)));
+            ArrayList<ThreePoints> tpal = new ArrayList<>();
+            double exitAngle;
+            double enterAngle;
 
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
+            // enterAngle = 90;
+            // addStraightSegment(tpal, true, startx,                                        d0y+radius*Math.sin(enterAngle*2*Math.PI/360), 
+            //                                d0x+radius*Math.cos(enterAngle*2*Math.PI/360), d0y+radius*Math.sin(enterAngle*2*Math.PI/360));
+            // // enter angle = 90
+            // exitAngle = -255;
+            // addArcSegment(tpal,     false, d0x+radius*Math.cos(enterAngle*2*Math.PI/360), d0y+radius*Math.sin(enterAngle*2*Math.PI/360),
+            //                                d0x,                                           d0y,                                            exitAngle);
+            enterAngle = -75;
+            addStraightSegment(tpal,false, d0x+radius*Math.cos(exitAngle*2*Math.PI/360),  d0y+radius*Math.sin(exitAngle*2*Math.PI/360),
+                                           d1x+radius*Math.cos(enterAngle*2*Math.PI/360), d1y+radius*Math.sin(enterAngle*2*Math.PI/360));
+            exitAngle = 225;
+            addArcSegment(tpal,      false,d1x+radius*Math.cos(enterAngle*2*Math.PI/360), d1y+radius*Math.sin(enterAngle*2*Math.PI/360),
+                                           d1x,                                           d1y,                                            exitAngle);
+            // enterAngle = 225;
+            // addStraightSegment(tpal,false, d1x+radius*Math.cos(exitAngle*2*Math.PI/360),  d1y+radius*Math.sin(exitAngle*2*Math.PI/360),
+            //                                d2x+radius*Math.cos(enterAngle*2*Math.PI/360), d2y+radius*Math.sin(enterAngle*2*Math.PI/360));
+            // exitAngle = 90;
+            // addArcSegment(tpal,      false,d2x+radius*Math.cos(enterAngle*2*Math.PI/360), d2y+radius*Math.sin(enterAngle*2*Math.PI/360),
+            //                                d2x,                                           d2y,                                            exitAngle);
+
+            // addStraightSegment(tpal, false,d2x+radius*Math.cos(exitAngle*2*Math.PI/360),  d2y+radius*Math.sin(exitAngle*2*Math.PI/360),
+            //                                startx,                                  starty);
+
+            for (ThreePoints tp : tpal){
+                System.out.println(tp.x+","+tp.y+","+tp.a);
+                waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+            }
+            return generateTrajectory(   false, waypoints, Arrays.asList(),           20,        80,        80,           9, 20.0, 1);
+            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
         }
-
         private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath3() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(135.0)));
-            waypoints.add(new Pose2d(new Translation2d(-40.0, 40.0), Rotation2d.fromDegrees(135.0)));
-            waypoints.add(new Pose2d(new Translation2d(-185.0, 61.0), Rotation2d.fromDegrees(180.0)));
-            
+            ArrayList<ThreePoints> tpal = new ArrayList<>();
+            double exitAngle;
+            double enterAngle;
+
+            // enterAngle = 90;
+            // addStraightSegment(tpal, true, startx,                                        d0y+radius*Math.sin(enterAngle*2*Math.PI/360), 
+            //                                d0x+radius*Math.cos(enterAngle*2*Math.PI/360), d0y+radius*Math.sin(enterAngle*2*Math.PI/360));
+            // // enter angle = 90
+            // exitAngle = -255;
+            // addArcSegment(tpal,     false, d0x+radius*Math.cos(enterAngle*2*Math.PI/360), d0y+radius*Math.sin(enterAngle*2*Math.PI/360),
+            //                                d0x,                                           d0y,                                            exitAngle);
+            // enterAngle = -75;
+            // addStraightSegment(tpal,false, d0x+radius*Math.cos(exitAngle*2*Math.PI/360),  d0y+radius*Math.sin(exitAngle*2*Math.PI/360),
+            //                                d1x+radius*Math.cos(enterAngle*2*Math.PI/360), d1y+radius*Math.sin(enterAngle*2*Math.PI/360));
+            // exitAngle = 225;
+            // addArcSegment(tpal,      false,d1x+radius*Math.cos(enterAngle*2*Math.PI/360), d1y+radius*Math.sin(enterAngle*2*Math.PI/360),
+            //                                d1x,                                           d1y,                                            exitAngle);
+            enterAngle = 225;
+            addStraightSegment(tpal,false, d1x+radius*Math.cos(exitAngle*2*Math.PI/360),  d1y+radius*Math.sin(exitAngle*2*Math.PI/360),
+                                           d2x+radius*Math.cos(enterAngle*2*Math.PI/360), d2y+radius*Math.sin(enterAngle*2*Math.PI/360));
+            exitAngle = 90;
+            addArcSegment(tpal,      false,d2x+radius*Math.cos(enterAngle*2*Math.PI/360), d2y+radius*Math.sin(enterAngle*2*Math.PI/360),
+                                           d2x,                                           d2y,                                            exitAngle);
+
+            addStraightSegment(tpal, false,d2x+radius*Math.cos(exitAngle*2*Math.PI/360),  d2y+radius*Math.sin(exitAngle*2*Math.PI/360),
+                                           startx,                                  starty);
+
+            for (ThreePoints tp : tpal){
+                System.out.println(tp.x+","+tp.y+","+tp.a);
+                waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+            }
+            return generateTrajectory(   false, waypoints, Arrays.asList(),           20,        80,        80,           9, 20.0, 1);
             // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
         }
+
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath2() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
+        //     waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
+
+        //     return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/40.0, 60.0, 60.0, kMaxVoltage, 40.0, 1);
+        // }
+
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath3() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(135.0)));
+        //     waypoints.add(new Pose2d(new Translation2d(-40.0, 40.0), Rotation2d.fromDegrees(135.0)));
+        //     waypoints.add(new Pose2d(new Translation2d(-185.0, 61.0), Rotation2d.fromDegrees(180.0)));
+            
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        //     return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
+        // }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath4() {
             List<Pose2d> waypoints = new ArrayList<>();

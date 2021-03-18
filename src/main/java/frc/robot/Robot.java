@@ -45,16 +45,16 @@ public class Robot extends TimedRobot {
 	@SuppressWarnings("unused")
 	private RobotName robotName = new RobotName(Constants.kRobot1Name);
 	private SubsystemManager mSubsystems;
-	private Superstructure mSuperstructure;
+	// private Superstructure mSuperstructure;
 	private Swerve mSwerve;
-	private Indexer mIndexer;
+	// private Indexer mIndexer;
 	private Collector mCollector;
-	private Shooter mShooter;
-	private Donger mDonger;
+	// private Shooter mShooter;
+	// private Donger mDonger;
 	private RobotStateEstimator mRobotStateEstimator;
 	@SuppressWarnings("unused")
-	private CollectwardsLimelight mCollectwardsLimelight;
-	private ShootwardsLimelight mShootwardsLimelight;
+	// private CollectwardsLimelight mCollectwardsLimelight;
+	// private ShootwardsLimelight mShootwardsLimelight;
 	private JSticks mJStick;
 	private final double mLoopPeriod = .005;
 	private Looper mSubsystemLooper = new Looper(mLoopPeriod,Thread.NORM_PRIORITY+1);
@@ -80,13 +80,13 @@ public class Robot extends TimedRobot {
 
 		robotState = RobotState.getInstance(mClassName);
 		// // note superstructure turns on most subsystems
-		mSuperstructure = Superstructure.getInstance(mClassName);
+		// mSuperstructure = Superstructure.getInstance(mClassName);
 		mSwerve = Swerve.getInstance(mClassName);
-		mIndexer = Indexer.getInstance(mClassName);
+		// mIndexer = Indexer.getInstance(mClassName);
 		mCollector = Collector.getInstance(mClassName);
-		mDonger = Donger.getInstance(mClassName);
-		mShooter = Shooter.getInstance(mClassName);
-		mShootwardsLimelight = ShootwardsLimelight.getInstance(mClassName);
+		// mDonger = Donger.getInstance(mClassName);
+		// mShooter = Shooter.getInstance(mClassName);
+		// mShootwardsLimelight = ShootwardsLimelight.getInstance(mClassName);
 		// mCollectwardsLimelight = CollectwardsLimelight.getInstance(mClassName);
 		mRobotStateEstimator = RobotStateEstimator.getInstance(mClassName);
 		mJStick = JSticks.getInstance(mClassName);
@@ -96,13 +96,13 @@ public class Robot extends TimedRobot {
 		mSubsystems.initializeSubsystemManager( (int)(mLoopPeriod*1000),
 				Arrays.asList(
 						mJStick,
-						mSuperstructure,
+						// mSuperstructure,
 						mSwerve,
-						mIndexer,
-						mCollector,
-						mDonger,
-						mShooter,
-						mShootwardsLimelight,
+						// mIndexer,
+						///mCollector,
+						// mDonger,
+						// mShooter,
+						// mShootwardsLimelight,
 						mRobotStateEstimator
 						// mCollectwardsLimelight,
 						)

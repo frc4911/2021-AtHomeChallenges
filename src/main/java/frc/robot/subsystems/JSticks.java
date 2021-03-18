@@ -38,6 +38,7 @@ public class JSticks extends Subsystem {
     private final double mDeadBand = 0.05; // for the turnigy (driver) swerve controls
     private String mPrevGameState = "";
 	private Superstructure mSuperstructure = null;
+	// private Collector mCollector = null;
     private Swerve mSwerve = null;
     private final int mDefaultSchedDelta = 100; // axis updated every 100 msec
     @SuppressWarnings("unused")
@@ -66,7 +67,8 @@ public class JSticks extends Subsystem {
         mDriver = new Turnigy();
         mOperator = new Xbox();
         mPeriodicIO = new PeriodicIO();
-        mSuperstructure = Superstructure.getInstance(sClassName);
+        // mSuperstructure = Superstructure.getInstance(sClassName);
+        // mCollector = Collector.getInstance(sClassName);
         mSwerve = Swerve.getInstance(sClassName);
         // mTester = new LogitechPS4();
     }
@@ -124,9 +126,10 @@ public class JSticks extends Subsystem {
         return defaultStateTransfer();
     }
 
+    int collectorState = 0;
     public void teleopRoutines() {
-		Superstructure.WantedState currentState = mSuperstructure.getWantedState();
-		Superstructure.WantedState previousState = currentState;
+		// Superstructure.WantedState currentState = mSuperstructure.getWantedState();
+		// Superstructure.WantedState previousState = currentState;
 
 		double swerveYInput = mPeriodicIO.drRightStickX_Translate;
 		double swerveXInput = mPeriodicIO.drRightStickY_Translate;
@@ -134,7 +137,22 @@ public class JSticks extends Subsystem {
 
 		if (!mPeriodicIO.drRightToggleDown_SHOOT) {
 			mSwerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, mPeriodicIO.drLeftToggleDown_RobotOrient, false);
-		}
+        }
+        
+        // if (mPeriodicIO.opRightTrigger_COLLECT && collectorState == 0){
+        //     mCollector.setWantedState(Collector.WantedState.COLLECT);
+        //     collectorState = 1;
+        // }
+
+        // if (mPeriodicIO.opLeftTrigger_CLEARBALLS && collectorState == 0){
+        //     mCollector.setWantedState(Collector.WantedState.BACK);
+        //     collectorState = 1;
+        // }
+
+        // if (!mPeriodicIO.opRightTrigger_COLLECT && !mPeriodicIO.opLeftTrigger_CLEARBALLS && collectorState == 1){
+        //     mCollector.setWantedState(Collector.WantedState.HOLD);
+        //     collectorState = 0;
+        // }
 
 		if (mPeriodicIO.drMidButton_ResetIMU) {
 			mSwerve.temporarilyDisableHeadingController();
@@ -146,32 +164,32 @@ public class JSticks extends Subsystem {
             mSuperstructure.setShooterHoldSpeed(0.0);
 		}
 
-		if (currentState == Superstructure.WantedState.CLIMB) {
-			mSuperstructure.setClimbOpenLoop(mPeriodicIO.opLeftStickY_ClimbSpeed);
-		}
+		// if (currentState == Superstructure.WantedState.CLIMB) {
+		// 	mSuperstructure.setClimbOpenLoop(mPeriodicIO.opLeftStickY_ClimbSpeed);
+		// }
 
-        currentState = activeBtnIsReleased(currentState);
-		if (currentState == Superstructure.WantedState.HOLD) {
-			if (mPeriodicIO.drRightToggleDown_SHOOT) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT);
-			} else if (mPeriodicIO.opRightTrigger_COLLECT) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
-			} else if (mPeriodicIO.opLeftBumper_CLIMB) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.CLIMB);
-			} else if (mPeriodicIO.opPOV0_MANUAL10) {
-				mSuperstructure.setManualShootDistance(10);
-			} else if (mPeriodicIO.opPOV90_MANUAL15) {
-				mSuperstructure.setManualShootDistance(15);
-			} else if (mPeriodicIO.opPOV180_MANUAL20) {
-				mSuperstructure.setManualShootDistance(20);
-			} else if (mPeriodicIO.opPOV270_MANUAL25) {
-				mSuperstructure.setManualShootDistance(25);
-			} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
-			} else if (previousState != currentState) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
-			}
-		}
+        // currentState = activeBtnIsReleased(currentState);
+		// if (currentState == Superstructure.WantedState.HOLD) {
+		// 	if (mPeriodicIO.drRightToggleDown_SHOOT) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT);
+		// 	} else if (mPeriodicIO.opRightTrigger_COLLECT) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
+		// 	} else if (mPeriodicIO.opLeftBumper_CLIMB) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.CLIMB);
+		// 	} else if (mPeriodicIO.opPOV0_MANUAL10) {
+		// 		mSuperstructure.setManualShootDistance(10);
+		// 	} else if (mPeriodicIO.opPOV90_MANUAL15) {
+		// 		mSuperstructure.setManualShootDistance(15);
+		// 	} else if (mPeriodicIO.opPOV180_MANUAL20) {
+		// 		mSuperstructure.setManualShootDistance(20);
+		// 	} else if (mPeriodicIO.opPOV270_MANUAL25) {
+		// 		mSuperstructure.setManualShootDistance(25);
+		// 	} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
+		// 	} else if (previousState != currentState) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
+		// 	}
+		// }
 	}
 
 	private Superstructure.WantedState activeBtnIsReleased(Superstructure.WantedState currentState) {
