@@ -359,14 +359,88 @@ public class TrajectoryGenerator {
             List<Pose2d> waypoints = new ArrayList<>();
             // NOTE: to move direct left: -y, angle: 270; to move right: +y, angle: 90;
             // NOTE: to move forward +x, angle: 0; to move backwards -x, angle: 180;
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(100.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(100.0, 36.0), Rotation2d.fromDegrees(90.0)));
-            waypoints.add(new Pose2d(new Translation2d(62.0, 36.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(60.0, -10.0), Rotation2d.fromDegrees(260.0)));
-            waypoints.add(new Pose2d(new Translation2d(148.0, -10.0), Rotation2d.fromDegrees(0.0)));
+            double gap = 6; 
+            double rc = 28/2; 
+            double startX = 60-rc;
+            double startY = -60-rc-gap;
+            double d0x = 150;
+            double d0y = -60;
+            double d1x = 240;
+            double d1y = -120;
+            double d2x = 300;
+            double d2y = -60;
+
+            double p0x = startX; 
+            double p0y = startY;
+            double p0a = 0;
+
+            double p1x = d0x+gap+rc-28; 
+            double p1y = p0y; 
+            double p1a = 0;
+
+            double p2x = p1x;
+            double p2y = d0y+gap+rc; 
+            double p2a = 90; 
+
+            double p3x = d0x-gap-rc;
+            double p3y = p2y; 
+            double p3a = 180;
+            
+            double p4x = p3x;
+            double p4y = d0y-gap-rc;
+            double p4a = 260; 
+
+            double p5x = d1x-gap-rc; 
+            double p5y = p4y; 
+            double p5a = 0; 
+
+            double p6x = d1x+gap+rc;
+            double p6y = p4y; 
+            double p6a = 0;
+            
+            double p7x = p6x;
+            double p7y = d1y+gap+rc;
+            double p7a = 270;
+
+            double p8x = d1x-gap-rc;
+            double p8y = p7y; 
+            double p8a = 180; 
+
+            double p9x = d2x-gap-rc;
+            double p9y = d2y+gap+rc;
+            double p9a = 75;
+
+            double p10x = d2x+gap+rc;
+            double p10y = p9y;
+            double p10a = 0;
+            
+            double p11x = p10x;
+            double p11y = d2y-gap-rc; 
+            double p11a = 270;
+
+            double p12x = startX;
+            double p12y = startY;
+            double p12a = 180;
+            
+            addWayPoint(waypoints, p0x-p0x, p0y-p0y, p0a);
+            addWayPoint(waypoints, p1x-p0x, p1y-p0y, p1a);
+            addWayPoint(waypoints, p2x-p0x, p2y-p0y, p2a);
+            addWayPoint(waypoints, p3x-p0x, p3y-p0y, p3a);
+            addWayPoint(waypoints, p4x-p0x, p4y-p0y, p4a);
+            addWayPoint(waypoints, p5x-p0x, p5y-p0y, p5a);
+            addWayPoint(waypoints, p6x-p0x, p6y-p0y, p6a);
+            addWayPoint(waypoints, p7x-p0x, p7y-p0y, p7a);
+            addWayPoint(waypoints, p8x-p0x, p8y-p0y, p8a);
+            addWayPoint(waypoints, p9x-p0x, p9y-p0y, p9a);
+            addWayPoint(waypoints, p10x-p0x, p10y-p0y, p10a);
+            addWayPoint(waypoints, p11x-p0x, p11y-p0y, p11a);
+            addWayPoint(waypoints, p12x-p0x, p12y-p0y, p12a);            
 
             return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
+        }
+        private void addWayPoint(List<Pose2d> wp, double x, double y, double a){
+            System.out.println(x+", "+y+", "+a);
+            wp.add(new Pose2d(new Translation2d(x, y), Rotation2d.fromDegrees(a)));
         }
         private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath3() {
             List<Pose2d> waypoints = new ArrayList<>();
