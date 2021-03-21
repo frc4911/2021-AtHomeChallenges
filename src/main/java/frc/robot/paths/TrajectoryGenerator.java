@@ -16,6 +16,7 @@ import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TrajectoryGenerator {
     private static final double kMaxVelocity = 120.0;
@@ -140,8 +141,8 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory backAwayFromLinePath;
 
         public final MirroredTrajectory startToEndPath;
-        public final MirroredTrajectory testPath;
-        public final MirroredTrajectory testPath2;
+        public final MirroredTrajectory barrelPath;
+        public final MirroredTrajectory slalomPath;
         public final MirroredTrajectory testPath3;
         public final MirroredTrajectory testPath4;
 
@@ -177,9 +178,9 @@ public class TrajectoryGenerator {
 
             startToEndPath = new MirroredTrajectory(getStartToEndPath());
             // System.out.println(startToEndPath.left.toString());
-            testPath = new MirroredTrajectory(getTestPath());
+            barrelPath = new MirroredTrajectory(getBarrelPath());
             // System.out.println(testPath.left.toString());
-            testPath2 = new MirroredTrajectory(getTestPath2());
+            slalomPath = new MirroredTrajectory(getSlalomPath());
             // System.out.println(testPath2.left.toString());
             testPath3 = new MirroredTrajectory(getTestPath3());
             // System.out.println(testPath3.left.toString());
@@ -379,11 +380,14 @@ public class TrajectoryGenerator {
             double endAngleDegrees = endAngleRads*180/Math.PI;
             double radius = Math.sqrt(Math.pow(centerx-startx,2)+Math.pow(centery-starty,2));
             double startAngleRads = Math.atan2(starty-centery,startx-centerx);
-            double  startAngleDegrees = startAngleRads*360/2/Math.PI;
+            double startAngleDegrees = startAngleRads*360/2/Math.PI;
             double arcLengthDegrees = endAngleDegrees-startAngleDegrees;
             double leftright = 90;
             int steps = Math.round(Math.abs((int)(arcLengthDegrees/30.0)));
             double stepSize = arcLengthDegrees/(double)steps;
+            if(steps == 1){
+                stepSize = arcLengthDegrees;
+            }
             System.out.println("addArcSegment steps:"+steps+" stepSize:"+stepSize+" startAngle:"+startAngleDegrees+" arcLength:"+arcLengthDegrees+" radius"+radius);
             int startI = 1;
             if (addStart){
@@ -395,11 +399,13 @@ public class TrajectoryGenerator {
             for (int i=startI; i<=steps; i++){
                 double angleDegrees = startAngleDegrees+((double)i)*stepSize;
                 double angleRads = angleDegrees/360*2*Math.PI;
-                tpal.add(new ThreePoints(centerx+radius*Math.cos(angleRads), centery+radius*Math.sin(angleRads), angleDegrees+leftright));
+                ThreePoints tp = new ThreePoints(centerx+radius*Math.cos(angleRads), centery+radius*Math.sin(angleRads), angleDegrees+leftright);
+                tpal.add(tp);
+                System.out.println("Arc coords - "+tp.x+","+tp.y+","+tp.a+",("+angleDegrees+")");
             }
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath() {
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBarrelPath() {
             List<Pose2d> waypoints = new ArrayList<>();
             ArrayList<ThreePoints> tpal = new ArrayList<>();
             double exitAngle;
@@ -445,6 +451,7 @@ public class TrajectoryGenerator {
             addStraightSegment(tpal, false,d2x+radius*Math.cos(exitAngle),  d2y+radius*Math.sin(exitAngle),
                                            startx,                                  starty);
 
+            System.out.println("Barrel Path Coordinates - ");
             for (ThreePoints tp : tpal){
                 System.out.println(tp.x+","+tp.y+","+tp.a);
                 waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
@@ -452,11 +459,70 @@ public class TrajectoryGenerator {
             return generateTrajectory(   false, waypoints, Arrays.asList(),           40,        80,        80,           9, 40.0, 1);
             // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
         }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath2() {
+        private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
-            return generateTrajectory(   false, waypoints, Arrays.asList(),           40,        80,        80,           9, 40.0, 1);
+            ArrayList<ThreePoints> tpal = new ArrayList<>();
+            
+            double exitAngle;
+            double enterAngle;
+            double rc = 28/2;
+            double radius = 28; //30
+            
+            double startx = 60-rc;
+            double starty = 180-rc;
+
+            double d0x = 60;
+            double d1x = 120;
+            double d2x = 235; //240
+            double d3x = 295; //300
+
+            double dy = 120;
+
+            double endx = startx;
+            double endy = 60+rc;
+
+            enterAngle = -135*Math.PI/180;
+            addStraightSegment(tpal, true, startx,                          starty,
+                                          d1x+radius*Math.cos(enterAngle), dy+radius*Math.sin(enterAngle));
+            exitAngle = -90*Math.PI/180;
+            addArcSegment(tpal, false, d1x+radius*Math.cos(enterAngle), dy+radius*Math.sin(enterAngle),
+                                       d1x,                             dy,                           exitAngle);
+            enterAngle = -90*Math.PI/180;
+            addStraightSegment(tpal, false, d1x+radius*Math.cos(exitAngle),  dy+radius*Math.sin(exitAngle),
+                                            d2x+radius*Math.cos(enterAngle), dy+radius*Math.sin(enterAngle));
+            exitAngle = 0*Math.PI/180;
+            addArcSegment(tpal, false, d2x+radius*Math.cos(enterAngle), dy+radius*Math.sin(enterAngle),
+                                       d2x,                             dy,                           exitAngle);
+            enterAngle = 150*Math.PI/180;
+            exitAngle = -179*Math.PI/180;
+            addArcSegment(tpal, true, d3x+radius*Math.cos(enterAngle), dy+radius*Math.sin(enterAngle),
+                                      d3x,                             dy,                           exitAngle);
+            enterAngle = 0*Math.PI/180;
+            exitAngle = 90*Math.PI/180;
+            addArcSegment(tpal, false, d2x+radius*Math.cos(enterAngle), dy+radius*Math.sin(enterAngle),
+                                      d2x,                             dy,                           exitAngle);
+            enterAngle = 90*Math.PI/180;
+            addStraightSegment(tpal, false, d2x+radius*Math.cos(exitAngle),  dy+radius*Math.sin(exitAngle),
+                                            d1x+radius*Math.cos(enterAngle), dy+radius*Math.sin(enterAngle));
+            exitAngle = 135*Math.PI/180;
+            addArcSegment(tpal, false, d1x+radius*Math.cos(enterAngle), dy+radius*Math.sin(enterAngle),
+                                       d1x,                             dy,                           exitAngle);
+
+            addStraightSegment(tpal, false, d1x+radius*Math.cos(exitAngle),  dy+radius*Math.sin(exitAngle),
+                                            endx,                          endy);
+
+                                      
+            System.out.println("Slalom Path Coordinates - ");
+            for (ThreePoints tp : tpal){
+                System.out.println(tp.x+","+tp.y+","+tp.a);
+                waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+            }
+            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+            if(speed == -1){
+                SmartDashboard.putNumber("Autopath Speed", 20);
+                speed = 20;
+            }
+            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
             // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
         }
         private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath3() {
