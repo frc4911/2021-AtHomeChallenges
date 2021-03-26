@@ -29,12 +29,14 @@ public class Shooter extends Subsystem {
 
     public enum SystemState {
         HOLDING,
-        SHOOTING
+        SHOOTING,
+        TESTING
     }
 
     public enum WantedState {
         HOLD,
-        SHOOT
+        SHOOT,
+        TEST
     }
 
     private SystemState      mSystemState = SystemState.HOLDING;
@@ -90,10 +92,10 @@ public class Shooter extends Subsystem {
         mFXRight.configReverseSoftLimitEnable(false, Constants.kLongCANTimeoutMs);
 
         mFXLeft.setInverted(true);
-        mFXRight.setInverted(false);
+        mFXRight.setInverted(true);
 
         mFXLeft.setSensorPhase(true);
-        mFXRight.setSensorPhase(false);
+        mFXRight.setSensorPhase(true);
 
         mFXLeft.setNeutralMode(NeutralMode.Coast);
         mFXRight.setNeutralMode(NeutralMode.Coast);
@@ -178,6 +180,16 @@ public class Shooter extends Subsystem {
 
         return defaultStateTransfer();
     }
+
+    // private SystemState handleTesting() {
+    //     return defaultStateTransfer();
+    // }
+
+    // public void setFlywheelSpeed(double speed) {
+    //     setWantedState(WantedState.TEST);
+    //     mPeriodicIO.percentDemand = speed;
+    //     System.out.println("*****Setting Flywheel Speed***** - " + speed);
+    // }
 
     public synchronized boolean readyToShoot() {
         return mSystemState == SystemState.SHOOTING && mPeriodicIO.reachedDesiredSpeed;
@@ -338,10 +350,10 @@ public class Shooter extends Subsystem {
     public void writePeriodicOutputs() {
         if (mSystemState == SystemState.SHOOTING) {
             mFXLeft.set(ControlMode.Velocity, mPeriodicIO.velocityPIDDemand);
-            mFXRight.set(ControlMode.Velocity, mPeriodicIO.velocityPIDDemand);
+            //mFXRight.set(ControlMode.Velocity, mPeriodicIO.velocityPIDDemand);
         } else {
             mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.percentDemand);
-            mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.percentDemand);
+            //mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.percentDemand);
         }
     }
 

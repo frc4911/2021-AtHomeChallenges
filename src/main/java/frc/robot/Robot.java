@@ -45,11 +45,11 @@ public class Robot extends TimedRobot {
 	@SuppressWarnings("unused")
 	private RobotName robotName = new RobotName(Constants.kRobot1Name);
 	private SubsystemManager mSubsystems;
-	// private Superstructure mSuperstructure;
+	private Superstructure mSuperstructure;
 	private Swerve mSwerve;
-	// private Indexer mIndexer;
+	private Indexer mIndexer;
 	private Collector mCollector;
-	// private Shooter mShooter;
+	private Shooter mShooter;
 	// private Donger mDonger;
 	private RobotStateEstimator mRobotStateEstimator;
 	@SuppressWarnings("unused")
@@ -80,12 +80,12 @@ public class Robot extends TimedRobot {
 
 		robotState = RobotState.getInstance(mClassName);
 		// // note superstructure turns on most subsystems
-		// mSuperstructure = Superstructure.getInstance(mClassName);
+		mSuperstructure = Superstructure.getInstance(mClassName);
 		mSwerve = Swerve.getInstance(mClassName);
-		// mIndexer = Indexer.getInstance(mClassName);
+		mIndexer = Indexer.getInstance(mClassName);
 		mCollector = Collector.getInstance(mClassName);
 		// mDonger = Donger.getInstance(mClassName);
-		// mShooter = Shooter.getInstance(mClassName);
+		mShooter = Shooter.getInstance(mClassName);
 		// mShootwardsLimelight = ShootwardsLimelight.getInstance(mClassName);
 		// mCollectwardsLimelight = CollectwardsLimelight.getInstance(mClassName);
 		mRobotStateEstimator = RobotStateEstimator.getInstance(mClassName);
@@ -96,12 +96,12 @@ public class Robot extends TimedRobot {
 		mSubsystems.initializeSubsystemManager( (int)(mLoopPeriod*1000),
 				Arrays.asList(
 						mJStick,
-						// mSuperstructure,
+						mSuperstructure,
 						mSwerve,
-						// mIndexer,
-						///mCollector,
+						mIndexer,
+						mCollector,
 						// mDonger,
-						// mShooter,
+						mShooter,
 						// mShootwardsLimelight,
 						mRobotStateEstimator
 						// mCollectwardsLimelight,

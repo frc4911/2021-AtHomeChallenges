@@ -201,7 +201,7 @@ public class Collector extends Subsystem {
     public synchronized void setWantedState(WantedState state) {
         if (state != mWantedState) {
             mSubsystemManager.scheduleMe(mListIndex, 1, false);
-            System.out.println("waking " + sClassName);
+            //System.out.println("waking " + sClassName);
         }
 
         mWantedState = state;
