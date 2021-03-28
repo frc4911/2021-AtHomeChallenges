@@ -129,6 +129,7 @@ public class JSticks extends Subsystem {
     }
 
     int collectorState = 0;
+    double flywheelSpeed = 0;
     public void teleopRoutines() {
 		Superstructure.WantedState currentState = mSuperstructure.getWantedState();
 		Superstructure.WantedState previousState = currentState;
@@ -141,9 +142,10 @@ public class JSticks extends Subsystem {
 			mSwerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, mPeriodicIO.drLeftToggleDown_RobotOrient, false);
         }
 
-        // if (mPeriodicIO.opRightStickY_FlywheelSpeed > 0) {
-        //     mShooter.setFlywheelSpeed(mPeriodicIO.opRightStickY_FlywheelSpeed);
-        // }
+        if (mPeriodicIO.opRightStickY_FlywheelSpeed != flywheelSpeed) {
+            mShooter.setHoldSpeed(mPeriodicIO.opRightStickY_FlywheelSpeed);
+            flywheelSpeed = mPeriodicIO.opRightStickY_FlywheelSpeed;
+        }
 
         if (mPeriodicIO.opRightTrigger_COLLECT && collectorState == 0){
             mCollector.setWantedState(Collector.WantedState.COLLECT);
