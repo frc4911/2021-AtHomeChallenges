@@ -12,6 +12,7 @@ import frc.robot.auto.modes.TrenchMode;
 import frc.robot.auto.modes.BarrelMode;
 import frc.robot.auto.modes.SlalomMode;
 import frc.robot.auto.modes.BounceMode;
+import frc.robot.auto.modes.GalacticSearchAred;
 
 public class AutoModeSelector {
 
@@ -25,6 +26,7 @@ public class AutoModeSelector {
         BARREL,
         SLALOM,
         BOUNCE,
+        SEARCHARED,
         NONE
     }
 
@@ -41,6 +43,7 @@ public class AutoModeSelector {
         mAutoModeChooser.addOption("Barrel Mode", AutoModeChoice.BARREL);
         mAutoModeChooser.addOption("Slalom Mode", AutoModeChoice.SLALOM);
         mAutoModeChooser.addOption("Bounce Mode", AutoModeChoice.BOUNCE);
+        mAutoModeChooser.addOption("SearchARed Mode", AutoModeChoice.SEARCHARED);
         mAutoModeChooser.setDefaultOption("None", AutoModeChoice.NONE);
         SmartDashboard.putData("Auto Mode", mAutoModeChooser);
     }
@@ -67,6 +70,8 @@ public class AutoModeSelector {
                 return new SlalomMode();
             case BOUNCE:
                 return new BounceMode();
+            case SEARCHARED:
+                return new GalacticSearchAred();
             default:
                 return new DoNothingMode();
         }
