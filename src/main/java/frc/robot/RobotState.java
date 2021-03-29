@@ -179,7 +179,8 @@ public class RobotState {
     }
 
     private void updateTracker(double timestamp, List<Translation2d> cameraToTargets, LimelightConstants source) {
-        if (targetsAreViable(cameraToTargets, source.kExpectedTargetCount) && cameraToTargets != null) {
+
+        if (targetsAreViable(cameraToTargets, source.kExpectedTargetCount)) {
             if (source.kName.equals(Constants.kShootwardsLimelightConstants.kName)) {
                 mGoalTracker.update(timestamp, shooterTargetsToTrackerUpdate(timestamp, cameraToTargets, source));
             } else {
@@ -235,6 +236,10 @@ public class RobotState {
     // when calculating targets from target information, targets may be lost
     // check to see if there is a usable number of targets for aiming
     private boolean targetsAreViable(List<Translation2d> targets, double[] expectedTargetCount) {
+        if (targets == null){
+            return false;
+        }
+
         if (!(expectedTargetCount[0] <= targets.size() && targets.size() <= expectedTargetCount[1])) {
             return false;
         }
@@ -244,6 +249,7 @@ public class RobotState {
             noNulls = ((targets.get(i) != null) && noNulls);
         }
 
+        // seesTarget = noNulls;
         return noNulls;
     }
 
@@ -324,14 +330,15 @@ public class RobotState {
     //     }
     // }
 
-    public synchronized List<AimingParameters> getPowerCell() {
+    public synchronized Optional<AimingParameters> getPowerCell() {
         List<GoalTracker.TrackReport> reports = mPowerCellTracker.getTracks();
-        List<AimingParameters> aimingParameters = new ArrayList<>();
-        if (reports.size() >= 1) { 
-            for (TrackReport report : reports) {
-                lastKnownTargetPosition = report.field_to_target.getTranslation();
-
+        //raynli
+        // List<AimingParameters> aimingParameters = new ArrayList<>();
+        if (reports.size() >= minimumTargetQuantity) { 
+            // for (TrackReport report : reports) {
+                GoalTracker.TrackReport report = reports.get(primaryTargetIndex);
                 double timestamp = Timer.getFPGATimestamp();
+                lastKnownTargetPosition = report.field_to_target.getTranslation();
                 Pose2d vehicleToGoal = getFieldToVehicle(timestamp).inverse().transformBy(report.field_to_target).transformBy(getVisionTargetToGoalOffset());
                 AimingParameters params = new AimingParameters(
                         vehicleToGoal ,
@@ -341,10 +348,12 @@ public class RobotState {
                         report.stability,
                         new Rotation2d(), //targetOrientation,
                         report.id);
-                aimingParameters.add(params);
-            }
+                //aimingParameters.add(params);
+
+                return Optional.of(params);
+            // }
         } 
-        return aimingParameters;
+        return Optional.empty();
     }
 
 

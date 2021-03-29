@@ -128,10 +128,14 @@ public class JSticks extends Subsystem {
 		Superstructure.WantedState currentState = mSuperstructure.getWantedState();
 		Superstructure.WantedState previousState = currentState;
 
-		double swerveYInput = mPeriodicIO.drRightStickX_Translate;
-		double swerveXInput = mPeriodicIO.drRightStickY_Translate;
-		double swerveRotationInput = mPeriodicIO.drLeftStickX_Rotate;
+		// double swerveYInput = mPeriodicIO.drRightStickX_Translate;
+		// double swerveXInput = mPeriodicIO.drRightStickY_Translate;
+		// double swerveRotationInput = mPeriodicIO.drLeftStickX_Rotate;
 
+        double swerveYInput = mPeriodicIO.testRightStickX_Translate;
+		double swerveXInput = mPeriodicIO.testRightStickY_Translate;
+        double swerveRotationInput = mPeriodicIO.testLeftStickX_Rotate;
+        
 		if (!mPeriodicIO.drRightToggleDown_SHOOT) {
 			mSwerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, mPeriodicIO.drLeftToggleDown_RobotOrient, false);
 		}
@@ -142,36 +146,36 @@ public class JSticks extends Subsystem {
 			mSwerve.resetAveragedDirection();
 		}
 
-		if (mPeriodicIO.opXButton_IdleShooter) {
-            mSuperstructure.setShooterHoldSpeed(0.0);
-		}
+		// if (mPeriodicIO.opXButton_IdleShooter) {
+        //     mSuperstructure.setShooterHoldSpeed(0.0);
+		// }
 
-		if (currentState == Superstructure.WantedState.CLIMB) {
-			mSuperstructure.setClimbOpenLoop(mPeriodicIO.opLeftStickY_ClimbSpeed);
-		}
+		// if (currentState == Superstructure.WantedState.CLIMB) {
+		// 	mSuperstructure.setClimbOpenLoop(mPeriodicIO.opLeftStickY_ClimbSpeed);
+		// }
 
-        currentState = activeBtnIsReleased(currentState);
-		if (currentState == Superstructure.WantedState.HOLD) {
-			if (mPeriodicIO.drRightToggleDown_SHOOT) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT);
-			} else if (mPeriodicIO.opRightTrigger_COLLECT) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
-			} else if (mPeriodicIO.opLeftBumper_CLIMB) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.CLIMB);
-			} else if (mPeriodicIO.opPOV0_MANUAL10) {
-				mSuperstructure.setManualShootDistance(10);
-			} else if (mPeriodicIO.opPOV90_MANUAL15) {
-				mSuperstructure.setManualShootDistance(15);
-			} else if (mPeriodicIO.opPOV180_MANUAL20) {
-				mSuperstructure.setManualShootDistance(20);
-			} else if (mPeriodicIO.opPOV270_MANUAL25) {
-				mSuperstructure.setManualShootDistance(25);
-			} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
-			} else if (previousState != currentState) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
-			}
-		}
+        // currentState = activeBtnIsReleased(currentState);
+		// if (currentState == Superstructure.WantedState.HOLD) {
+		// 	if (mPeriodicIO.drRightToggleDown_SHOOT) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT);
+		// 	} else if (mPeriodicIO.opRightTrigger_COLLECT) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
+		// 	} else if (mPeriodicIO.opLeftBumper_CLIMB) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.CLIMB);
+		// 	} else if (mPeriodicIO.opPOV0_MANUAL10) {
+		// 		mSuperstructure.setManualShootDistance(10);
+		// 	} else if (mPeriodicIO.opPOV90_MANUAL15) {
+		// 		mSuperstructure.setManualShootDistance(15);
+		// 	} else if (mPeriodicIO.opPOV180_MANUAL20) {
+		// 		mSuperstructure.setManualShootDistance(20);
+		// 	} else if (mPeriodicIO.opPOV270_MANUAL25) {
+		// 		mSuperstructure.setManualShootDistance(25);
+		// 	} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
+		// 	} else if (previousState != currentState) {
+		// 		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
+		// 	}
+		// }
 	}
 
 	private Superstructure.WantedState activeBtnIsReleased(Superstructure.WantedState currentState) {
@@ -387,6 +391,9 @@ public class JSticks extends Subsystem {
         }
 
         // // button levels and raw values can be read every loop
+        mPeriodicIO.testRightStickX_Translate = mTester.getRaw(LogitechPS4.RIGHT_STICK_X, mDeadBand);
+        mPeriodicIO.testRightStickY_Translate = mTester.getRaw(LogitechPS4.RIGHT_STICK_Y, mDeadBand);
+        mPeriodicIO.testLeftStickX_Rotate = mTester.getRaw(LogitechPS4.LEFT_STICK_X, mDeadBand);
         mPeriodicIO.drRightStickX_Translate = mDriver.getRaw(Turnigy.RIGHT_STICK_X, mDeadBand);
         mPeriodicIO.drRightStickY_Translate = mDriver.getRaw(Turnigy.RIGHT_STICK_Y, mDeadBand);
         mPeriodicIO.drLeftStickX_Rotate = mDriver.getRaw(Turnigy.LEFT_STICK_X, mDeadBand);
@@ -445,6 +452,9 @@ public class JSticks extends Subsystem {
         public double batteryCurrent;
 
         // INPUTS
+        public double testRightStickX_Translate;
+        public double testRightStickY_Translate;
+        public double testLeftStickX_Rotate;
         public boolean opRightBumper; // manual shoot, clear faults
         public double drRightStickX_Translate; // drive
         public double drRightStickY_Translate; // drive

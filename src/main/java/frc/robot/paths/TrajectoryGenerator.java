@@ -140,10 +140,10 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory backAwayFromLinePath;
 
         public final MirroredTrajectory startToEndPath;
-        public final MirroredTrajectory testPath;
-        public final MirroredTrajectory testPath2;
-        public final MirroredTrajectory testPath3;
-        public final MirroredTrajectory testPath4;
+        public final MirroredTrajectory redAPath;
+        public final MirroredTrajectory redBPath;
+        public final MirroredTrajectory blueAPath;
+        public final MirroredTrajectory blueBPath;
 
         public final MirroredTrajectory testPathBrian;
 
@@ -177,14 +177,14 @@ public class TrajectoryGenerator {
 
             startToEndPath = new MirroredTrajectory(getStartToEndPath());
             // System.out.println(startToEndPath.left.toString());
-            testPath = new MirroredTrajectory(getTestPath());
-            // System.out.println(testPath.left.toString());
-            testPath2 = new MirroredTrajectory(getTestPath2());
-            // System.out.println(testPath2.left.toString());
-            testPath3 = new MirroredTrajectory(getTestPath3());
-            // System.out.println(testPath3.left.toString());
-            testPath4 = new MirroredTrajectory(getTestPath4());
-            // System.out.println(testPath4.left.toString());
+            redAPath = new MirroredTrajectory(getRedAPath());
+            // System.out.println(redAPath.left.toString());
+            redBPath = new MirroredTrajectory(getRedBPath());
+            // System.out.println(redBPath.left.toString());
+            blueAPath = new MirroredTrajectory(getBlueAPath());
+            // System.out.println(blueAPath.left.toString());
+            blueBPath = new MirroredTrajectory(getBlueBPath());
+            // System.out.println(blueBPath.left.toString());
 
             testPathBrian = new MirroredTrajectory(getBrianPath());
             // System.out.println("Brian's path");
@@ -346,40 +346,32 @@ public class TrajectoryGenerator {
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath() {
+        private Trajectory<TimedState<Pose2dWithCurvature>> getRedAPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(60.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(60.0, -95.0), Rotation2d.fromDegrees(270.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(225)));
+            waypoints.add(new Pose2d(new Translation2d(-30.0, -30.0), Rotation2d.fromDegrees(225)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath2() {
+        private Trajectory<TimedState<Pose2dWithCurvature>> getRedBPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(-60.0, 0.0), Rotation2d.fromDegrees(180.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(-30.0, 0.0), Rotation2d.fromDegrees(180)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath3() {
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBlueAPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(135.0)));
-            waypoints.add(new Pose2d(new Translation2d(-40.0, 40.0), Rotation2d.fromDegrees(135.0)));
-            waypoints.add(new Pose2d(new Translation2d(-185.0, 61.0), Rotation2d.fromDegrees(180.0)));
-            
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(217)));
+            waypoints.add(new Pose2d(new Translation2d(-120.0, -90.0), Rotation2d.fromDegrees(217)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath4() {
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBlueBPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-185.0, 61.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(-40.0, 40.0), Rotation2d.fromDegrees(-45.0)));
-            waypoints.add(new Pose2d(new Translation2d(-20.0, 20.0), Rotation2d.fromDegrees(-45.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(210)));
+            waypoints.add(new Pose2d(new Translation2d(-120.0, -60.0), Rotation2d.fromDegrees(210)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
         }
     }
     
