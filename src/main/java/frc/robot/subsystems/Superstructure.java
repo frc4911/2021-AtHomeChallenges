@@ -17,7 +17,7 @@ public class Superstructure extends Subsystem {
     private Swerve    mSwerve    = null;
     private Indexer   mIndexer   = null;
     private Collector mCollector = null;
-    private Donger    mDonger    = null;
+    //private Donger    mDonger    = null;
     private Shooter   mShooter   = null;
     private ShootwardsLimelight mShootwardsLimelight = null;
     private RobotState mRobotState = null;
@@ -81,7 +81,7 @@ public class Superstructure extends Subsystem {
         mIndexer             = Indexer.getInstance(sClassName);
         mCollector           = Collector.getInstance(sClassName);
         mShooter             = Shooter.getInstance(sClassName);
-        mDonger              = Donger.getInstance(sClassName);
+        //mDonger              = Donger.getInstance(sClassName);
         mShootwardsLimelight = ShootwardsLimelight.getInstance(sClassName);
         mRobotState          = RobotState.getInstance(sClassName);
         // mCollectwardsLimelight = CollectwardsLimelight.getInstance(sClassName);
@@ -155,11 +155,11 @@ public class Superstructure extends Subsystem {
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
             mCollector.setWantedState(Collector.WantedState.HOLD);
             mShooter.setWantedState(Shooter.WantedState.HOLD);
-            if (mIndexer.isFullyLoaded()) {
-                mDonger.setWantedState(Donger.WantedState.SECURE);
-            } else {
-                mDonger.setWantedState(Donger.WantedState.HOLD);
-            }
+            // if (mIndexer.isFullyLoaded()) {
+            //     mDonger.setWantedState(Donger.WantedState.SECURE);
+            // } else {
+            //     mDonger.setWantedState(Donger.WantedState.HOLD);
+            // }
 
             mShootwardsLimelight.setWantedState(ShootwardsLimelight.WantedState.TARGET);
             mPeriodicIO.schedDeltaDesired = mSlowCycle;
@@ -175,7 +175,7 @@ public class Superstructure extends Subsystem {
 
         if (!mIndexer.isFullyLoaded()) {
             mCollector.setWantedState(Collector.WantedState.COLLECT);
-            mDonger.setWantedState(Donger.WantedState.COLLECT);
+            //mDonger.setWantedState(Donger.WantedState.COLLECT);
             if (mIndexer.isBallEntering()) {
                 mIndexer.setWantedState(Indexer.WantedState.LOAD);
             } else {
@@ -183,7 +183,7 @@ public class Superstructure extends Subsystem {
             }
         } else {
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
-            mDonger.setWantedState(Donger.WantedState.SECURE);
+            //mDonger.setWantedState(Donger.WantedState.SECURE);
         }
 
         return collectingStateTransfer();
@@ -204,20 +204,20 @@ public class Superstructure extends Subsystem {
 
         if (readyToShootAndOnTarget()) {
             mIndexer.setWantedState(Indexer.WantedState.INDEX);
-            if (mIndexer.isBallEntering()) {
-                mDonger.setWantedState(Donger.WantedState.COLLECT);
-            } else {
-                mDonger.setWantedState(Donger.WantedState.HOLD);
-            }
+            // if (mIndexer.isBallEntering()) {
+            //     mDonger.setWantedState(Donger.WantedState.COLLECT);
+            // } else {
+            //     mDonger.setWantedState(Donger.WantedState.HOLD);
+            // }
 
             mShootSetup = false;
         } else {
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
-            if (mIndexer.isFullyLoaded()) {
-                mDonger.setWantedState(Donger.WantedState.SECURE);
-            } else {
-                mDonger.setWantedState(Donger.WantedState.HOLD);
-            }
+            // if (mIndexer.isFullyLoaded()) {
+            //     mDonger.setWantedState(Donger.WantedState.SECURE);
+            // } else {
+            //     mDonger.setWantedState(Donger.WantedState.HOLD);
+            // }
         }
 
         return shootingStateTransfer();
@@ -240,11 +240,11 @@ public class Superstructure extends Subsystem {
     private SystemState handleClearingBalls() {
         if (mStateChanged) {
             mPeriodicIO.schedDeltaDesired = mSlowCycle;
+            mCollector.setWantedState(Collector.WantedState.BACK);
+            mIndexer.setWantedState(Indexer.WantedState.BACK); //Matthew
         }
 
-        mCollector.setWantedState(Collector.WantedState.BACK);
-
-        return collectingStateTransfer();
+        return defaultStateTransfer(); //Matthew - was collectingStateTransfer()
     }
 
     private SystemState handleManualShooting() {
@@ -255,16 +255,16 @@ public class Superstructure extends Subsystem {
 
         if (mShooter.readyToShoot() || !mShootSetup) {
             mIndexer.setWantedState(Indexer.WantedState.INDEX);
-            if (mIndexer.isBallEntering()) {
-                mDonger.setWantedState(Donger.WantedState.COLLECT);
-            } else {
-                mDonger.setWantedState(Donger.WantedState.HOLD);
-            }
+            // if (mIndexer.isBallEntering()) {
+            //     mDonger.setWantedState(Donger.WantedState.COLLECT);
+            // } else {
+            //     mDonger.setWantedState(Donger.WantedState.HOLD);
+            // }
 
             mShootSetup = false;
         } else {
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
-            mDonger.setWantedState(Donger.WantedState.SECURE);
+            //mDonger.setWantedState(Donger.WantedState.SECURE);
         }
 
         return shootingStateTransfer();
@@ -274,11 +274,11 @@ public class Superstructure extends Subsystem {
         if (mWantedState != WantedState.COLLECT) {
             mCollector.setWantedState(Collector.WantedState.HOLD);
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
-            if (mIndexer.isFullyLoaded()) {
-                mDonger.setWantedState(Donger.WantedState.SECURE);
-            } else {
-                mDonger.setWantedState(Donger.WantedState.HOLD);
-            }
+            // if (mIndexer.isFullyLoaded()) {
+            //     mDonger.setWantedState(Donger.WantedState.SECURE);
+            // } else {
+            //     mDonger.setWantedState(Donger.WantedState.HOLD);
+            // }
         }
 
         return defaultStateTransfer();
@@ -289,11 +289,11 @@ public class Superstructure extends Subsystem {
             mShootSetup = true;
             mShooter.setWantedState(Shooter.WantedState.HOLD);
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
-            if (mIndexer.isFullyLoaded()) {
-                mDonger.setWantedState(Donger.WantedState.SECURE);
-            } else {
-                mDonger.setWantedState(Donger.WantedState.HOLD);
-            }
+            // if (mIndexer.isFullyLoaded()) {
+            //     mDonger.setWantedState(Donger.WantedState.SECURE);
+            // } else {
+            //     mDonger.setWantedState(Donger.WantedState.HOLD);
+            // }
             
             setShooterHoldSpeed(0.45);
         }
