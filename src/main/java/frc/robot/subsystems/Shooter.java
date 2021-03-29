@@ -23,8 +23,8 @@ public class Shooter extends Subsystem {
     private final double kMinShootDistance = 10.0;
     private final double kMidShootDistance = 15.0;
     private final double kMaxShootDistance = 20.0;
-    private final double kMinShootSpeed = 2350.0; //4700
-    private final double kMaxShootSpeed = 2600.0; //5200
+    private final double kMinShootSpeed = 4700;
+    private final double kMaxShootSpeed = 5200;
     private final double kSpeedTolerance = 250.0;
 
     public enum SystemState {
@@ -98,7 +98,7 @@ public class Shooter extends Subsystem {
         mFXLeft.setNeutralMode(NeutralMode.Coast);
         mFXRight.setNeutralMode(NeutralMode.Coast);
 
-        SupplyCurrentLimitConfiguration sclc = new SupplyCurrentLimitConfiguration(true, 30, 30, 0);
+        SupplyCurrentLimitConfiguration sclc = new SupplyCurrentLimitConfiguration(true, 50, 50, 0);
 
         mFXLeft.configSupplyCurrentLimit(sclc);
         mFXRight.configSupplyCurrentLimit(sclc);
@@ -129,7 +129,7 @@ public class Shooter extends Subsystem {
                 // this subsystem is "on demand" so goto sleep
                 mPeriodicIO.schedDeltaDesired = 0; //Matthew - was 0
                 mShootRate = (kMaxShootSpeed - kMinShootSpeed) / (kMaxShootDistance - kMidShootDistance);
-                mHoldSpeed = 0.45;
+                mHoldSpeed = 0.0;//0.45;
                 stop();
             }
         }
@@ -373,10 +373,12 @@ public class Shooter extends Subsystem {
     @Override
     public void outputTelemetry() {
         SmartDashboard.putNumber("Shooter RPM Set", ticksPer100MsToRPM(mPeriodicIO.velocityPIDDemand));
-        SmartDashboard.putNumber("Shooter RPM", mPeriodicIO.rpm);
-        SmartDashboard.putBoolean("Shooter Ready", readyToShoot());
-        SmartDashboard.putString("ShooterSRXLeftFaults", mPeriodicIO.SRXLeftFaults);
-        SmartDashboard.putString("ShooterSRXRightFaults", mPeriodicIO.SRXRightFaults);
+        SmartDashboard.putNumber("Shooter RPM", ticksPer100MsToRPM(mFXLeft.getSelectedSensorVelocity(0)));
+        SmartDashboard.putNumber("Shooter ticks per 100ms", mFXLeft.getSelectedSensorVelocity(0));
+        // SmartDashboard.putBoolean("Shooter Ready", readyToShoot());
+        SmartDashboard.putNumber("shooters current",mFXRight.getStatorCurrent()+mFXLeft.getStatorCurrent());
+        SmartDashboard.putNumber("shooter left current",mFXLeft.getStatorCurrent());
+        SmartDashboard.putNumber("shooter right current",mFXRight.getStatorCurrent());
     }
 
     public static class PeriodicIO {

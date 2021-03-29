@@ -24,7 +24,7 @@ public class Collector extends Subsystem {
     // private final Solenoid mSolenoid;
 
     // Constants
-    private final double kCollectSpeed   = 0.50;
+    private final double kCollectSpeed   = 0.25;
     // private final double kSerializeSpeed = 0.85;
 
     // public enum SolenoidState {
@@ -168,7 +168,12 @@ public class Collector extends Subsystem {
 
     private SystemState handleCollecting() {
         if (mStateChanged) {
-            mPeriodicIO.SRXFrontRollerDemand = kCollectSpeed;
+            double speed = SmartDashboard.getNumber("collector speed",-1);
+            if (speed == -1){
+                SmartDashboard.putNumber("collector speed",kCollectSpeed);
+                speed = kCollectSpeed;
+            }
+            mPeriodicIO.SRXFrontRollerDemand = speed; //kCollectSpeed;
             // mPeriodicIO.SRXSerializerDemand = kSerializeSpeed;
             // mPeriodicIO.solenoidDemand = SolenoidState.EXTEND;
         }

@@ -33,7 +33,7 @@ public class Indexer extends Subsystem {
     private double mFXRightPIDPos;
 
     private final double kIndexSpeed = 0.7;
-    private final double kLoadSpeed = 0.50;
+    private final double kLoadSpeed = 0.25; // .5 brian
     private final double kBackSpeed = -0.50;
     private final int beamBreakThreshold = 3;
     private PTO mPTOState;
@@ -239,7 +239,12 @@ public class Indexer extends Subsystem {
 
     private SystemState handleLoading() {
         if (mStateChanged) {
-            mPeriodicIO.indexerDemand = kLoadSpeed;
+            double speed = SmartDashboard.getNumber("indexer speed",-1);
+            if (speed == -1){
+                SmartDashboard.putNumber("indexer speed",kLoadSpeed);
+                speed = kLoadSpeed;
+            }
+            mPeriodicIO.indexerDemand = speed; //kLoadSpeed;
             mPeriodicIO.PTODemand = PTO.INDEXER;
             mPeriodicIO.schedDeltaDesired = 0; // goto sleep
         }
