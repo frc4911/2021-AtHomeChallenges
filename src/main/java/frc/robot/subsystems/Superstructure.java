@@ -167,7 +167,7 @@ public class Superstructure extends Subsystem {
                 mDonger.setWantedState(Donger.WantedState.HOLD);
             }
 
-            mShootwardsLimelight.setWantedState(ShootwardsLimelight.WantedState.TARGET);
+            mShootwardsLimelight.setWantedState(ShootwardsLimelight.WantedState.TARGETLED);
             mCollectwardsLimelight.setWantedState(CollectwardsLimelight.WantedState.TARGET);
             mPeriodicIO.schedDeltaDesired = mSlowCycle;
         }

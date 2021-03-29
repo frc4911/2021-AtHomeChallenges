@@ -68,7 +68,7 @@ public class JSticks extends Subsystem {
         mPeriodicIO = new PeriodicIO();
         mSuperstructure = Superstructure.getInstance(sClassName);
         mSwerve = Swerve.getInstance(sClassName);
-        // mTester = new LogitechPS4();
+        mTester = new LogitechPS4();
     }
 
     private Loop mLoop = new Loop() {
@@ -392,7 +392,7 @@ public class JSticks extends Subsystem {
 
         // // button levels and raw values can be read every loop
         mPeriodicIO.testRightStickX_Translate = mTester.getRaw(LogitechPS4.RIGHT_STICK_X, mDeadBand);
-        mPeriodicIO.testRightStickY_Translate = mTester.getRaw(LogitechPS4.RIGHT_STICK_Y, mDeadBand);
+        mPeriodicIO.testRightStickY_Translate = -mTester.getRaw(LogitechPS4.RIGHT_STICK_Y, mDeadBand);
         mPeriodicIO.testLeftStickX_Rotate = mTester.getRaw(LogitechPS4.LEFT_STICK_X, mDeadBand);
         mPeriodicIO.drRightStickX_Translate = mDriver.getRaw(Turnigy.RIGHT_STICK_X, mDeadBand);
         mPeriodicIO.drRightStickY_Translate = mDriver.getRaw(Turnigy.RIGHT_STICK_Y, mDeadBand);

@@ -72,6 +72,8 @@ public class Swerve extends Subsystem {
 	boolean firstVisionCyclePassed = false;
 	VisionCriteria visionCriteria = new VisionCriteria();
 	double initialVisionDistance = 0.0;
+	Optional<AimingParameters> aimingParameters;
+	double error = 0;
 	// AimingParameters latestAim = new AimingParameters(100.0, new Rotation2d(), 0.0, 0.0, new Rotation2d());
 	AimingParameters latestAim = new AimingParameters( new Pose2d(), new Pose2d(), new Rotation2d(), 0.0, 0.0, new Rotation2d(), 1);
 	Translation2d latestTargetPosition = new Translation2d();
@@ -431,26 +433,24 @@ public class Swerve extends Subsystem {
 		case DISABLED:	
 			break;
 		case VISION_AIM:
-			// Optional<AimingParameters> aimingParameters = robotState.getOuterGoalParameters();
-			// double error = 0;
-			// totalAimingCount++;
-			// mIsOnTarget = false;
-			// if (aimingParameters.isPresent()) {
-			// 	//error = -1 * aimingParameters.get().getRobotToGoal().getTranslation().y();
-			// 	//radians
-			// 	error = Math.atan2(-aimingParameters.get().getRobotToGoal().getTranslation().y(), aimingParameters.get().getRobotToGoal().getTranslation().x());
-			// 	mIsOnTarget = Math.abs(error) <= Math.toRadians(2.0); //0.5
-			// 	aimingParametersCount++;
-			// }
-			// SmartDashboard.putNumber("LL error", error);
-			// setRotateOutput(aimingPIDF.calculate(error, timestamp));
-			// // lastAimTimestamp = timestamp;
+			aimingParameters = robotState.getOuterGoalParameters();
+			totalAimingCount++;
+			mIsOnTarget = false;
+			if (aimingParameters.isPresent()) {
+				//error = -1 * aimingParameters.get().getRobotToGoal().getTranslation().y();
+				//radians
+				error = Math.atan2(-aimingParameters.get().getRobotToGoal().getTranslation().y(), aimingParameters.get().getRobotToGoal().getTranslation().x());
+				mIsOnTarget = Math.abs(error) <= Math.toRadians(2.0); //0.5
+				aimingParametersCount++;
+			}
+			SmartDashboard.putNumber("LL error", error);
+			setRotateOutput(aimingPIDF.calculate(error, timestamp));
+			// lastAimTimestamp = timestamp;
 			break;
 		//raynli
 		case CELL_AIM:
-			Optional<AimingParameters> aimingParameters = robotState.getPowerCell();
-			double error = 0;
-			boolean mIsOnTarget = false;
+			aimingParameters = robotState.getPowerCell();
+			mIsOnTarget = false;
 			System.out.println(aimingParameters.isPresent());
 			if (aimingParameters.isPresent()) {
 				error = Math.atan2(-aimingParameters.get().getRobotToGoal().getTranslation().y(), aimingParameters.get().getRobotToGoal().getTranslation().x());

@@ -123,7 +123,7 @@ public class Robot extends TimedRobot {
 
 		if (mSwerve != null) {
 			//mSwerve.zeroSensors();
-			mSwerve.zeroSensors(new Pose2d(new Translation2d(0,0), Rotation2d.fromDegrees(29.5)));
+			mSwerve.zeroSensors();
 
 			// robotState.feignVisionTargets();
 			// mSwerve.startTracking(Constants.kDiskTargetHeight, new Translation2d(-6.0,

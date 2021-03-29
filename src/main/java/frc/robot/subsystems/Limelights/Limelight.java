@@ -49,12 +49,14 @@ public abstract class Limelight extends Subsystem {
 
     public enum SystemState {
         HOLDING,
-        TARGETING
+        TARGETING,
+        TARGETINGLED
     }
 
     public enum WantedState {
         HOLD,
-        TARGET
+        TARGET,
+        TARGETLED
     }
 
     private SystemState mSystemState = SystemState.HOLDING;
@@ -128,6 +130,9 @@ public abstract class Limelight extends Subsystem {
                     case TARGETING:
                         newState = handleTargeting();
                         break;
+                    case TARGETINGLED:
+                        newState = handleTargetingLED();
+                        break;
                     case HOLDING:
                     default:
                         newState = handleHolding();
@@ -153,6 +158,8 @@ public abstract class Limelight extends Subsystem {
         switch (mWantedState) {
             case TARGET:
                 return SystemState.TARGETING;
+            case TARGETLED:
+                return SystemState.TARGETLED;
             case HOLD:
             default:
                 return SystemState.HOLDING;
@@ -171,9 +178,20 @@ public abstract class Limelight extends Subsystem {
         return defaultStateTransfer();
     }
 
+
     private SystemState handleTargeting() {
         if (mStateChanged) {
-            // setLed(LedMode.ON);
+            setLed(LedMode.OFF);
+            setSnapshot();
+        }
+        addVisionUpdate();
+                            
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleTargetingLED() {
+        if (mStateChanged) {
+            setLed(LedMode.ON);
             setSnapshot();
         }
         addVisionUpdate();
