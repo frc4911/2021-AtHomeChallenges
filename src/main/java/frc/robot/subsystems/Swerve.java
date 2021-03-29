@@ -411,6 +411,7 @@ public class Swerve extends Subsystem {
 				
 				lastTrajectoryVector = driveVector;
 			}else{
+				
 				if(!hasFinishedPath){ 
 					System.out.println("Path completed in: " + (timestamp - trajectoryStartTime));
 					hasFinishedPath = true;
@@ -1024,6 +1025,10 @@ public class Swerve extends Subsystem {
 			SmartDashboard.putString("Swerve State", currentState.toString());
 			SmartDashboard.putBoolean("Vision Updates Allowed", visionUpdatesAllowed);
 			SmartDashboard.putNumberArray("Pigeon YPR", pigeon.getYPR());
+		}
+		if(!hasFinishedPath() && hasStartedFollowing){
+			double currentTime = Timer.getFPGATimestamp();
+			SmartDashboard.putNumber("Autopath Timer", currentTime - trajectoryStartTime);
 		}
 	}
 

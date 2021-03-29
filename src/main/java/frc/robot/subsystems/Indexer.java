@@ -11,11 +11,13 @@ import com.team254.lib.subsystems.SubsystemManager;
 import cyberlib.utils.CheckFaults;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Ports;
+import frc.robot.auto.SmartDashboardInteractions;
 
 public class Indexer extends Subsystem {
 
@@ -23,14 +25,17 @@ public class Indexer extends Subsystem {
     private final TalonFX mFXLeft, mFXRight;
     private final DigitalInput mDIBallEntered;         // true == no ball, false == ball
     private final DigitalInput mDIBallTouchingShooter; // true == no ball, false == ball
+    private final AnalogInput mAIBallEntered; //Port 1
+    private final AnalogInput mAIBallTouchingShooter; //Port 0
     private final Solenoid mSolPTO;           // true == climber, false == indexer
 
     private double mFXLeftPIDPos;
     private double mFXRightPIDPos;
 
     private final double kIndexSpeed = 0.7;
-    private final double kLoadSpeed = 0.25;
+    private final double kLoadSpeed = 0.25; // .5 brian
     private final double kBackSpeed = -0.50;
+    private final int beamBreakThreshold = 3;
     private PTO mPTOState;
     private double mClimberPrepDemand = .15;
     private double mClimberPrepCnt = 0; // TODO: change to be Timer based
@@ -104,6 +109,8 @@ public class Indexer extends Subsystem {
         mSolPTO = new Solenoid(0, Ports.POWER_TAKE_OFF);
         mDIBallEntered = new DigitalInput(Ports.ENTRANCE_BEAM_BREAK);
         mDIBallTouchingShooter = new DigitalInput(Ports.EXIT_BEAM_BREAK);
+        mAIBallEntered = new AnalogInput(Ports.ENTERANCE_BEAM_BREAK_A);
+        mAIBallTouchingShooter = new AnalogInput(Ports.EXIT_BEAM_BREAK_A);
         mSubsystemManager = SubsystemManager.getInstance(sClassName);
         configMotors();
     }
@@ -232,7 +239,12 @@ public class Indexer extends Subsystem {
 
     private SystemState handleLoading() {
         if (mStateChanged) {
-            mPeriodicIO.indexerDemand = kLoadSpeed;
+            double speed = SmartDashboard.getNumber("indexer speed",-1);
+            if (speed == -1){
+                SmartDashboard.putNumber("indexer speed",kLoadSpeed);
+                speed = kLoadSpeed;
+            }
+            mPeriodicIO.indexerDemand = speed; //kLoadSpeed;
             mPeriodicIO.PTODemand = PTO.INDEXER;
             mPeriodicIO.schedDeltaDesired = 0; // goto sleep
         }
@@ -282,14 +294,18 @@ public class Indexer extends Subsystem {
 
     // method needs to be called at different cycle times
     public synchronized boolean isBallEntering() {
-        return !mDIBallEntered.get();
+        //return !mDIBallEntered.get();
+        return (mAIBallEntered.getVoltage() < beamBreakThreshold);
+
     }
 
     // method needs to be called at different cycle times
     public synchronized boolean isFullyLoaded() {
-        return !mDIBallTouchingShooter.get();
+        //return !mDIBallTouchingShooter.get();
+        return (mAIBallTouchingShooter.getVoltage() < beamBreakThreshold);
 
     }
+
 
     private SystemState defaultStateTransfer() {
         switch (mWantedState) {
@@ -479,6 +495,8 @@ public class Indexer extends Subsystem {
     public void outputTelemetry() {
         SmartDashboard.putBoolean("Ball Entered", isBallEntering());
         SmartDashboard.putBoolean("Fully Loaded", isFullyLoaded());
+        SmartDashboard.putNumber("Enterance Beam Break Analog", mAIBallEntered.getVoltage());
+        SmartDashboard.putNumber("Exit Beam Break Analog", mAIBallTouchingShooter.getVoltage());
     }
 
     public static class PeriodicIO {
