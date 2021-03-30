@@ -101,7 +101,7 @@ public class SubsystemManager implements ILooper {
         @Override
         public void onStart(Phase thePhase) {
             // thePhase is bogus, get the real one below
-            boolean disableLogging = false;
+            boolean disableLogging = true; //Matthew (3/34)
 
             lPhase = getPhase();
             mLoops.forEach(l -> l.onStart(lPhase));

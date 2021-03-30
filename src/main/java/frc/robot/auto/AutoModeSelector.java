@@ -9,6 +9,10 @@ import frc.robot.auto.modes.StealMode;
 import frc.robot.auto.modes.TenBallMode;
 import frc.robot.auto.modes.TestMode;
 import frc.robot.auto.modes.TrenchMode;
+import frc.robot.auto.modes.BarrelMode;
+import frc.robot.auto.modes.SlalomMode;
+import frc.robot.auto.modes.BounceMode;
+import frc.robot.auto.modes.GalacticSearchAred;
 
 public class AutoModeSelector {
 
@@ -19,6 +23,10 @@ public class AutoModeSelector {
         TRENCH,
         SHOOT,
         TESTMODE,
+        BARREL,
+        SLALOM,
+        BOUNCE,
+        SEARCHARED,
         NONE
     }
 
@@ -32,6 +40,10 @@ public class AutoModeSelector {
         mAutoModeChooser.addOption("Trench Mode", AutoModeChoice.TRENCH);
         mAutoModeChooser.addOption("Shoot Mode", AutoModeChoice.SHOOT);
         mAutoModeChooser.addOption("Test Mode", AutoModeChoice.TESTMODE);
+        mAutoModeChooser.addOption("Barrel Mode", AutoModeChoice.BARREL);
+        mAutoModeChooser.addOption("Slalom Mode", AutoModeChoice.SLALOM);
+        mAutoModeChooser.addOption("Bounce Mode", AutoModeChoice.BOUNCE);
+        mAutoModeChooser.addOption("SearchARed Mode", AutoModeChoice.SEARCHARED);
         mAutoModeChooser.setDefaultOption("None", AutoModeChoice.NONE);
         SmartDashboard.putData("Auto Mode", mAutoModeChooser);
     }
@@ -52,6 +64,14 @@ public class AutoModeSelector {
                 return new ShootMode();
             case TESTMODE:
                 return new TestMode();
+            case BARREL:
+                return new BarrelMode();
+            case SLALOM:
+                return new SlalomMode();
+            case BOUNCE:
+                return new BounceMode();
+            case SEARCHARED:
+                return new GalacticSearchAred();
             default:
                 return new DoNothingMode();
         }

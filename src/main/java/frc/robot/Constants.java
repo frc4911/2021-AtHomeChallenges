@@ -204,7 +204,7 @@ public class Constants {
 	public static final double kSwerveWheelDiameter = 4.0901; //inches (actual diamter is closer to 3.87, but secondary algorithm prefers 4.0901) 3.76
 	public static final double kSwerveRotationMotorTicksPerRotation = 2048.0 * 18.0; // FX encoder ticks per module rotation
 	/** The number of rotations the swerve drive encoder undergoes for every rotation of the wheel. */
-	public static final double kSwerveDriveTicksPerWheelRev = .85 * 14178; //2048 * 6.923 //SwerveDriveEncoderResolution * kSwerveEncoderToWheelRatio;
+	public static final double kSwerveDriveTicksPerWheelRev = .85*14178; //brian 1.21 new gear ratio 2048 * 6.923 //SwerveDriveEncoderResolution * kSwerveEncoderToWheelRatio;
 	public static final double kSwerveEncUnitsPerInch = kSwerveDriveTicksPerWheelRev / (Math.PI * kSwerveWheelDiameter);
 
 	//Swerve Speed Constants

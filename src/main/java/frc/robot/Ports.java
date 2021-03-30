@@ -36,7 +36,9 @@ public class Ports {
     public static final int INDEXER_RIGHT = 33;
     public static final int POWER_TAKE_OFF = 3;
     public static final int ENTRANCE_BEAM_BREAK = 0;
-    public static final int EXIT_BEAM_BREAK = 2;
+    public static final int EXIT_BEAM_BREAK = 8;
+    public static final int ENTERANCE_BEAM_BREAK_A = 1;
+    public static final int EXIT_BEAM_BREAK_A = 0;
 
     // Climber
     public static final int BRAKE = 2;

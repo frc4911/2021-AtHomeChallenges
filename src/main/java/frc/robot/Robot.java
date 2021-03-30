@@ -26,14 +26,8 @@ import frc.robot.subsystems.Limelights.Limelight;
 import frc.robot.subsystems.Limelights.ShootwardsLimelight;
 import frc.robot.subsystems.Superstructure.WantedState;
 
-import java.util.Optional;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.team254.lib.vision.AimingParameters;
-
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.loops.Looper;
 import com.team254.lib.subsystems.SubsystemManager;
 import com.team254.lib.util.CrashTracker;
@@ -60,11 +54,11 @@ public class Robot extends TimedRobot {
 	private Indexer mIndexer;
 	private Collector mCollector;
 	private Shooter mShooter;
-	private Donger mDonger;
+	// private Donger mDonger;
 	private RobotStateEstimator mRobotStateEstimator;
 	@SuppressWarnings("unused")
-	private CollectwardsLimelight mCollectwardsLimelight;
-	private ShootwardsLimelight mShootwardsLimelight;
+	// private CollectwardsLimelight mCollectwardsLimelight;
+	// private ShootwardsLimelight mShootwardsLimelight;
 	private JSticks mJStick;
 	private final double mLoopPeriod = .005;
 	private Looper mSubsystemLooper = new Looper(mLoopPeriod,Thread.NORM_PRIORITY+1);
@@ -94,11 +88,11 @@ public class Robot extends TimedRobot {
 		mSwerve = Swerve.getInstance(mClassName);
 		mIndexer = Indexer.getInstance(mClassName);
 		mCollector = Collector.getInstance(mClassName);
-		mDonger = Donger.getInstance(mClassName);
+		// mDonger = Donger.getInstance(mClassName);
 		mShooter = Shooter.getInstance(mClassName);
 		mShootwardsLimelight = ShootwardsLimelight.getInstance(mClassName);
 		mCollectwardsLimelight = CollectwardsLimelight.getInstance(mClassName);
-		// mRobotStateEstimator = RobotStateEstimator.getInstance(mClassName);
+		mRobotStateEstimator = RobotStateEstimator.getInstance(mClassName);
 		mJStick = JSticks.getInstance(mClassName);
 		// mPanelManipulator = PanelManipulator.getInstance(mClassName);
 
@@ -110,10 +104,10 @@ public class Robot extends TimedRobot {
 						mSwerve,
 						mIndexer,
 						mCollector,
-						mDonger,
+						// mDonger,
 						mShooter,
 						mShootwardsLimelight,
-						// mRobotStateEstimator,
+						mRobotStateEstimator,
 						mCollectwardsLimelight
 						)
 				);

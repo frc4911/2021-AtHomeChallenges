@@ -38,6 +38,8 @@ public class JSticks extends Subsystem {
     private final double mDeadBand = 0.05; // for the turnigy (driver) swerve controls
     private String mPrevGameState = "";
 	private Superstructure mSuperstructure = null;
+    private Collector mCollector = null;
+    private Shooter mShooter = null;
     private Swerve mSwerve = null;
     private final int mDefaultSchedDelta = 100; // axis updated every 100 msec
     @SuppressWarnings("unused")
@@ -67,6 +69,8 @@ public class JSticks extends Subsystem {
         mOperator = new Xbox();
         mPeriodicIO = new PeriodicIO();
         mSuperstructure = Superstructure.getInstance(sClassName);
+        mCollector = Collector.getInstance(sClassName);
+        mShooter = Shooter.getInstance(sClassName);
         mSwerve = Swerve.getInstance(sClassName);
         mTester = new LogitechPS4();
     }
@@ -124,6 +128,8 @@ public class JSticks extends Subsystem {
         return defaultStateTransfer();
     }
 
+    int collectorState = 0;
+    double flywheelSpeed = 0;
     public void teleopRoutines() {
 		Superstructure.WantedState currentState = mSuperstructure.getWantedState();
 		Superstructure.WantedState previousState = currentState;
@@ -138,7 +144,27 @@ public class JSticks extends Subsystem {
         
 		if (!mPeriodicIO.drRightToggleDown_SHOOT) {
 			mSwerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, mPeriodicIO.drLeftToggleDown_RobotOrient, false);
-		}
+        }
+
+        if (mPeriodicIO.opRightStickY_FlywheelSpeed != flywheelSpeed) {
+            mShooter.setHoldSpeed(mPeriodicIO.opRightStickY_FlywheelSpeed);
+            flywheelSpeed = mPeriodicIO.opRightStickY_FlywheelSpeed;
+        }
+
+        if (mPeriodicIO.opRightTrigger_COLLECT && collectorState == 0){
+            mCollector.setWantedState(Collector.WantedState.COLLECT);
+            collectorState = 1;
+        }
+
+        if (mPeriodicIO.opLeftTrigger_CLEARBALLS && collectorState == 0){
+            mCollector.setWantedState(Collector.WantedState.BACK);
+            collectorState = 1;
+        }
+
+        if (!mPeriodicIO.opRightTrigger_COLLECT && !mPeriodicIO.opLeftTrigger_CLEARBALLS && collectorState == 1){
+            mCollector.setWantedState(Collector.WantedState.HOLD);
+            collectorState = 0;
+        }
 
 		if (mPeriodicIO.drMidButton_ResetIMU) {
 			mSwerve.temporarilyDisableHeadingController();
@@ -146,36 +172,36 @@ public class JSticks extends Subsystem {
 			mSwerve.resetAveragedDirection();
 		}
 
-		// if (mPeriodicIO.opXButton_IdleShooter) {
-        //     mSuperstructure.setShooterHoldSpeed(0.0);
-		// }
+		if (mPeriodicIO.opXButton_IdleShooter) {
+            mSuperstructure.setShooterHoldSpeed(0.0);
+		}
 
 		// if (currentState == Superstructure.WantedState.CLIMB) {
 		// 	mSuperstructure.setClimbOpenLoop(mPeriodicIO.opLeftStickY_ClimbSpeed);
 		// }
 
-        // currentState = activeBtnIsReleased(currentState);
-		// if (currentState == Superstructure.WantedState.HOLD) {
-		// 	if (mPeriodicIO.drRightToggleDown_SHOOT) {
-		// 		mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT);
-		// 	} else if (mPeriodicIO.opRightTrigger_COLLECT) {
-		// 		mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
-		// 	} else if (mPeriodicIO.opLeftBumper_CLIMB) {
-		// 		mSuperstructure.setWantedState(Superstructure.WantedState.CLIMB);
-		// 	} else if (mPeriodicIO.opPOV0_MANUAL10) {
-		// 		mSuperstructure.setManualShootDistance(10);
-		// 	} else if (mPeriodicIO.opPOV90_MANUAL15) {
-		// 		mSuperstructure.setManualShootDistance(15);
-		// 	} else if (mPeriodicIO.opPOV180_MANUAL20) {
-		// 		mSuperstructure.setManualShootDistance(20);
-		// 	} else if (mPeriodicIO.opPOV270_MANUAL25) {
-		// 		mSuperstructure.setManualShootDistance(25);
-		// 	} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
-		// 		mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
-		// 	} else if (previousState != currentState) {
-		// 		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
-		// 	}
-		// }
+        currentState = activeBtnIsReleased(currentState);
+		if (currentState == Superstructure.WantedState.HOLD) {
+			if (mPeriodicIO.drRightToggleDown_SHOOT) {
+				mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT);
+			} else if (mPeriodicIO.opRightTrigger_COLLECT) {
+				mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
+			// } else if (mPeriodicIO.opLeftBumper_CLIMB) {
+			// 	mSuperstructure.setWantedState(Superstructure.WantedState.CLIMB);
+			} else if (mPeriodicIO.opPOV0_MANUAL10) {
+				mSuperstructure.setManualShootDistance(10);
+			} else if (mPeriodicIO.opPOV90_MANUAL15) {
+				mSuperstructure.setManualShootDistance(15);
+			} else if (mPeriodicIO.opPOV180_MANUAL20) {
+				mSuperstructure.setManualShootDistance(20);
+			} else if (mPeriodicIO.opPOV270_MANUAL25) {
+				mSuperstructure.setManualShootDistance(25);
+			} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
+				mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
+			} else if (previousState != currentState) {
+				mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
+			}
+		}
 	}
 
 	private Superstructure.WantedState activeBtnIsReleased(Superstructure.WantedState currentState) {
@@ -184,8 +210,8 @@ public class JSticks extends Subsystem {
 				return !mPeriodicIO.drRightToggleDown_SHOOT ? Superstructure.WantedState.HOLD : currentState;
 			case COLLECT:
 				return !mPeriodicIO.opRightTrigger_COLLECT ? Superstructure.WantedState.HOLD : currentState;
-			case CLIMB:
-				return !mPeriodicIO.opLeftBumper_CLIMB ? Superstructure.WantedState.HOLD : currentState;
+			// case CLIMB:
+			// 	return !mPeriodicIO.opLeftBumper_CLIMB ? Superstructure.WantedState.HOLD : currentState;
 			case MANUAL_SHOOT:
 				if (!mPeriodicIO.opPOV0_MANUAL10 && !mPeriodicIO.opPOV90_MANUAL15 && !mPeriodicIO.opPOV180_MANUAL20 && !mPeriodicIO.opPOV270_MANUAL25) {
 					return Superstructure.WantedState.HOLD;
@@ -296,8 +322,8 @@ public class JSticks extends Subsystem {
                 mPeriodicIO.eventName = mPeriodicIO.ds.getEventName();
                 mPeriodicIO.replayNumber = mPeriodicIO.ds.getReplayNumber();
             }
-            mPeriodicIO.batteryVoltage = mPeriodicIO.pdp.getVoltage();
-            mPeriodicIO.batteryCurrent = mPeriodicIO.pdp.getTotalCurrent();
+            // mPeriodicIO.batteryVoltage = mPeriodicIO.pdp.getVoltage();
+            // mPeriodicIO.batteryCurrent = mPeriodicIO.pdp.getTotalCurrent();
 
             values = ""+mPeriodicIO.date + "," +
                         mPeriodicIO.time + "," + 
@@ -398,6 +424,7 @@ public class JSticks extends Subsystem {
         mPeriodicIO.drRightStickY_Translate = mDriver.getRaw(Turnigy.RIGHT_STICK_Y, mDeadBand);
         mPeriodicIO.drLeftStickX_Rotate = mDriver.getRaw(Turnigy.LEFT_STICK_X, mDeadBand);
         mPeriodicIO.opLeftStickY_ClimbSpeed = mOperator.getRaw(Xbox.LEFT_STICK_Y, .08);
+        mPeriodicIO.opRightStickY_FlywheelSpeed = mOperator.getRaw(Xbox.RIGHT_STICK_Y, mDeadBand);
         mPeriodicIO.drRightToggleDown_SHOOT = mDriver.getToggle(Turnigy.RIGHT_TOGGLE, Turnigy.TOGGLE_DOWN);
         mPeriodicIO.drLeftToggleDown_RobotOrient = mDriver.getToggle(Turnigy.LEFT_TOGGLE, Turnigy.TOGGLE_DOWN);
         mPeriodicIO.opRightTrigger_COLLECT = mOperator.getButton(Xbox.RIGHT_TRIGGER, CW.PRESSED_LEVEL);
@@ -447,7 +474,7 @@ public class JSticks extends Subsystem {
         public String gameState;
         public double matchTime;
 
-        private PowerDistributionPanel pdp = new PowerDistributionPanel();
+        // private PowerDistributionPanel pdp = new PowerDistributionPanel();
         public double batteryVoltage;
         public double batteryCurrent;
 
@@ -470,6 +497,7 @@ public class JSticks extends Subsystem {
         public boolean opLeftTrigger_CLEARBALLS;    // clear balls
         public boolean opLeftBumper_CLIMB;     // climb pto
         public double opLeftStickY_ClimbSpeed;      // climb
+        public double opRightStickY_FlywheelSpeed; //Manual Flywheel
         public boolean opPOV0_MANUAL10;
         public boolean opPOV90_MANUAL15;
         public boolean opPOV180_MANUAL20;
