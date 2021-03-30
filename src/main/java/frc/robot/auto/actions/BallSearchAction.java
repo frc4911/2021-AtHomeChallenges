@@ -19,9 +19,6 @@ public class BallSearchAction extends RunOnceAction {
     private CollectwardsLimelight collectwardsLimelight = CollectwardsLimelight.getInstance("BallSearch");
     private RobotState RS = RobotState.getInstance("BallSearch");
     private Optional<AimingParameters> PC;
-    public enum PathSelection{
-        NOTHING, RED_A, RED_B, BLUE_A, BLUE_B
-    }
     private PathSelection selection;
 
     @Override

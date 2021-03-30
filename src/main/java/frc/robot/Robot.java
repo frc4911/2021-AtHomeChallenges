@@ -57,8 +57,8 @@ public class Robot extends TimedRobot {
 	// private Donger mDonger;
 	private RobotStateEstimator mRobotStateEstimator;
 	@SuppressWarnings("unused")
-	// private CollectwardsLimelight mCollectwardsLimelight;
-	// private ShootwardsLimelight mShootwardsLimelight;
+	private CollectwardsLimelight mCollectwardsLimelight;
+	private ShootwardsLimelight mShootwardsLimelight;
 	private JSticks mJStick;
 	private final double mLoopPeriod = .005;
 	private Looper mSubsystemLooper = new Looper(mLoopPeriod,Thread.NORM_PRIORITY+1);

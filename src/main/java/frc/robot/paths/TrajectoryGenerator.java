@@ -142,14 +142,14 @@ public class TrajectoryGenerator {
 
         public final MirroredTrajectory startToEndPath;
       
-        public final MirroredTrajectory redAPath;
-        public final MirroredTrajectory redBPath;
-        public final MirroredTrajectory blueAPath;
-        public final MirroredTrajectory blueBPath;
+        // public final MirroredTrajectory redAPath;
+        // public final MirroredTrajectory redBPath;
+        // public final MirroredTrajectory blueAPath;
+        // public final MirroredTrajectory blueBPath;
 
         public final MirroredTrajectory barrelPath;
         public final MirroredTrajectory slalomPath;
-        public final MirroredTrajectory bouncePath;
+        // public final MirroredTrajectory bouncePath;
         public final MirroredTrajectory galacticSearchARedPath1;
         public final MirroredTrajectory galacticSearchARedPath2;
         public final MirroredTrajectory galacticSearchARedPath3;
@@ -164,9 +164,9 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory galacticSearchBBluePath2;
         public final MirroredTrajectory galacticSearchBBluePath3;
         // public final MirroredTrajectory testPath3;
-        public final MirroredTrajectory testPath4;
+        // public final MirroredTrajectory testPath4;
 
-        public final MirroredTrajectory testPathBrian;
+        // public final MirroredTrajectory testPathBrian;
 
         private TrajectorySet() {
             // Rendezvous Paths
@@ -199,24 +199,24 @@ public class TrajectoryGenerator {
             startToEndPath = new MirroredTrajectory(getStartToEndPath());
             // System.out.println(startToEndPath.left.toString());
 
-            redAPath = new MirroredTrajectory(getRedAPath());
-            // System.out.println(redAPath.left.toString());
-            redBPath = new MirroredTrajectory(getRedBPath());
-            // System.out.println(redBPath.left.toString());
-            blueAPath = new MirroredTrajectory(getBlueAPath());
-            // System.out.println(blueAPath.left.toString());
-            blueBPath = new MirroredTrajectory(getBlueBPath());
-            // System.out.println(blueBPath.left.toString());
+            // redAPath = new MirroredTrajectory(getRedAPath());
+            // // System.out.println(redAPath.left.toString());
+            // redBPath = new MirroredTrajectory(getRedBPath());
+            // // System.out.println(redBPath.left.toString());
+            // blueAPath = new MirroredTrajectory(getBlueAPath());
+            // // System.out.println(blueAPath.left.toString());
+            // blueBPath = new MirroredTrajectory(getBlueBPath());
+            // // System.out.println(blueBPath.left.toString());
 
             barrelPath = new MirroredTrajectory(getBarrelPath());
             // System.out.println(testPath.left.toString());
             slalomPath = new MirroredTrajectory(getSlalomPath());
             // System.out.println(testPath2.left.toString());
-            bouncePath = new MirroredTrajectory(getBouncePath());
+            // bouncePath = new MirroredTrajectory(getBouncePath());
             // System.out.println(testPath2.left.toString());
             // testPath3 = new MirroredTrajectory(getTestPath3());
             // System.out.println(testPath3.left.toString());
-            testPath4 = new MirroredTrajectory(getTestPath4());
+            // testPath4 = new MirroredTrajectory(getTestPath4());
             // System.out.println(testPath4.left.toString());
 
             galacticSearchARedPath1 = new MirroredTrajectory(getGalacticSearchARedPath1());
@@ -236,7 +236,7 @@ public class TrajectoryGenerator {
             galacticSearchBBluePath2 = new MirroredTrajectory(getGalacticSearchBBluePath2());
             galacticSearchBBluePath3 = new MirroredTrajectory(getGalacticSearchBBluePath3());
 
-            testPathBrian = new MirroredTrajectory(getBrianPath());
+            // testPathBrian = new MirroredTrajectory(getBrianPath());
             // System.out.println("Brian's path");
             // System.out.println(testPathBrian.left.toString());
             // System.out.println("Brian's path end");
@@ -479,7 +479,7 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(217)));
             waypoints.add(new Pose2d(new Translation2d(-120.0, -90.0), Rotation2d.fromDegrees(217)));
             return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
-
+        }
         private double convertToDegrees(double angleRads){
             final double conversion = 180.0/Math.PI;
             return angleRads*conversion;
@@ -627,13 +627,13 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
             waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
 
-        //     double exitAngleRads;
-        //     double enterAngleRads;
-        //     double rc = 28/2;
-        //     double radius = 28; //30
+            double exitAngleRads;
+            double enterAngleRads;
+            double rc = 28/2;
+            double radius = 28; //30
             
-        //     double startx = 60-rc;
-        //     double starty = 180-rc;
+            double startx = 60-rc;
+            double starty = 180-rc;
 
             double d0x = 60; //B2
             double d0y = 120; //B2
@@ -698,8 +698,8 @@ public class TrajectoryGenerator {
             // return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
         }
-        double xscale = -1; 
-        double yscale = -1;
+        double xscale = 1; 
+        double yscale = 1;
         private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchARedPath1() {
             List<Pose2d> waypoints = new ArrayList<>();
             ArrayList<ThreePoints> tpal = new ArrayList<>();
