@@ -134,13 +134,13 @@ public class JSticks extends Subsystem {
 		Superstructure.WantedState currentState = mSuperstructure.getWantedState();
 		Superstructure.WantedState previousState = currentState;
 
-		// double swerveYInput = mPeriodicIO.drRightStickX_Translate;
-		// double swerveXInput = mPeriodicIO.drRightStickY_Translate;
-		// double swerveRotationInput = mPeriodicIO.drLeftStickX_Rotate;
+		double swerveYInput = mPeriodicIO.drRightStickX_Translate;
+		double swerveXInput = mPeriodicIO.drRightStickY_Translate;
+		double swerveRotationInput = mPeriodicIO.drLeftStickX_Rotate;
 
-        double swerveYInput = mPeriodicIO.testRightStickX_Translate;
-		double swerveXInput = mPeriodicIO.testRightStickY_Translate;
-        double swerveRotationInput = mPeriodicIO.testLeftStickX_Rotate;
+        // double swerveYInput = mPeriodicIO.testRightStickX_Translate;
+		// double swerveXInput = mPeriodicIO.testRightStickY_Translate;
+        // double swerveRotationInput = mPeriodicIO.testLeftStickX_Rotate;
         
 		if (!mPeriodicIO.drRightToggleDown_SHOOT) {
 			mSwerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, mPeriodicIO.drLeftToggleDown_RobotOrient, false);
@@ -414,12 +414,12 @@ public class JSticks extends Subsystem {
             mPeriodicIO.tsABUTTON_READALL = mTester.getButton(LogitechPS4.A_BUTTON, CW.PRESSED_EDGE);
             mPeriodicIO.tsBBUTTON_STARTSCAN = mTester.getButton(LogitechPS4.B_BUTTON, CW.PRESSED_EDGE);
             mPeriodicIO.tsXBUTTON_STOPSCAN = mTester.getButton(LogitechPS4.X_BUTTON, CW.PRESSED_EDGE);
+            mPeriodicIO.testRightStickX_Translate = mTester.getRaw(LogitechPS4.RIGHT_STICK_X, mDeadBand);
+            mPeriodicIO.testRightStickY_Translate = -mTester.getRaw(LogitechPS4.RIGHT_STICK_Y, mDeadBand);
+            mPeriodicIO.testLeftStickX_Rotate = mTester.getRaw(LogitechPS4.LEFT_STICK_X, mDeadBand);
         }
 
         // // button levels and raw values can be read every loop
-        mPeriodicIO.testRightStickX_Translate = mTester.getRaw(LogitechPS4.RIGHT_STICK_X, mDeadBand);
-        mPeriodicIO.testRightStickY_Translate = -mTester.getRaw(LogitechPS4.RIGHT_STICK_Y, mDeadBand);
-        mPeriodicIO.testLeftStickX_Rotate = mTester.getRaw(LogitechPS4.LEFT_STICK_X, mDeadBand);
         mPeriodicIO.drRightStickX_Translate = mDriver.getRaw(Turnigy.RIGHT_STICK_X, mDeadBand);
         mPeriodicIO.drRightStickY_Translate = mDriver.getRaw(Turnigy.RIGHT_STICK_Y, mDeadBand);
         mPeriodicIO.drLeftStickX_Rotate = mDriver.getRaw(Turnigy.LEFT_STICK_X, mDeadBand);
