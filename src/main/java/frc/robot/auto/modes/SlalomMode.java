@@ -9,9 +9,9 @@ public class SlalomMode extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        System.out.println("Slalom Auto Mode Running!!!");
-        runAction(new SetTrajectoryAction(trajectories.slalomPath.get(true), 0.0, 1.0));
-        runAction(new WaitToFinishPathAction());
+        // System.out.println("Slalom Auto Mode Running!!!");
+        // runAction(new SetTrajectoryAction(trajectories.slalomPath.get(true), 0.0, 1.0));
+        // runAction(new WaitToFinishPathAction());
     }
 
 }

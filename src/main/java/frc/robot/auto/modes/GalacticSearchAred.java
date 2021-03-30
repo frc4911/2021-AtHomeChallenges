@@ -10,17 +10,17 @@ public class GalacticSearchAred extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        System.out.println("Galactic Search A Red Mode Running!!!");
-        runAction(new CollectAction(true));
-        runAction(new SetTrajectoryAction(trajectories.galacticSearchARedPath1.get(true), 180.0, 1.0));
-        runAction(new WaitToFinishPathAction());
-        runAction(new SetTrajectoryAction(trajectories.galacticSearchARedPath2.get(true), 180.0, 1.0));
-        runAction(new WaitToFinishPathAction());
-        runAction(new SetTrajectoryAction(trajectories.galacticSearchARedPath3.get(true), 180.0, 1.0));
-        runAction(new WaitToFinishPathAction());
-        runAction(new SetTrajectoryAction(trajectories.galacticSearchARedPath4.get(true), 180.0, 1.0));
-        runAction(new WaitToFinishPathAction());
-        runAction(new CollectAction(false));
+        // System.out.println("Galactic Search A Red Mode Running!!!");
+        // runAction(new CollectAction(true));
+        // runAction(new SetTrajectoryAction(trajectories.galacticSearchARedPath1.get(true), 0, 1.0));
+        // runAction(new WaitToFinishPathAction());
+        // runAction(new SetTrajectoryAction(trajectories.galacticSearchARedPath2.get(true), 0, 1.0));
+        // runAction(new WaitToFinishPathAction());
+        // runAction(new SetTrajectoryAction(trajectories.galacticSearchARedPath3.get(true), 0, 1.0));
+        // runAction(new WaitToFinishPathAction());
+        // runAction(new SetTrajectoryAction(trajectories.galacticSearchARedPath4.get(true), 0, 1.0));
+        // runAction(new WaitToFinishPathAction());
+        // runAction(new CollectAction(false));
     }
 
 }
