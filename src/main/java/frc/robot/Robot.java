@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import frc.robot.auto.AutoModeExecuter;
 import frc.robot.auto.AutoModeSelector;
+import frc.robot.auto.SmartDashboardInteractions;
 import frc.robot.paths.TrajectoryGenerator;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.Donger;
@@ -21,8 +22,9 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Limelights.CollectwardsLimelight;
+import frc.robot.subsystems.Limelights.Limelight;
 import frc.robot.subsystems.Limelights.ShootwardsLimelight;
-
+import frc.robot.subsystems.Superstructure.WantedState;
 
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
@@ -88,8 +90,8 @@ public class Robot extends TimedRobot {
 		mCollector = Collector.getInstance(mClassName);
 		// mDonger = Donger.getInstance(mClassName);
 		mShooter = Shooter.getInstance(mClassName);
-		// mShootwardsLimelight = ShootwardsLimelight.getInstance(mClassName);
-		// mCollectwardsLimelight = CollectwardsLimelight.getInstance(mClassName);
+		mShootwardsLimelight = ShootwardsLimelight.getInstance(mClassName);
+		mCollectwardsLimelight = CollectwardsLimelight.getInstance(mClassName);
 		mRobotStateEstimator = RobotStateEstimator.getInstance(mClassName);
 		mJStick = JSticks.getInstance(mClassName);
 		// mPanelManipulator = PanelManipulator.getInstance(mClassName);
@@ -104,9 +106,9 @@ public class Robot extends TimedRobot {
 						mCollector,
 						// mDonger,
 						mShooter,
-						// mShootwardsLimelight,
-						mRobotStateEstimator
-						// mCollectwardsLimelight,
+						mShootwardsLimelight,
+						mRobotStateEstimator,
+						mCollectwardsLimelight
 						)
 				);
 
@@ -114,7 +116,7 @@ public class Robot extends TimedRobot {
 		mSubsystems.registerEnabledLoops(mSubsystemLooper);
 
 		if (mSwerve != null) {
-			mSwerve.zeroSensors();
+			//mSwerve.zeroSensors();
 			mSwerve.zeroSensors();
 
 			// robotState.feignVisionTargets();
@@ -160,7 +162,6 @@ public class Robot extends TimedRobot {
 			if (mSwerve != null) {
 				mSwerve.setCarpetDirection(robotState.onStandardCarpet());
 			}
-
 			mAutoModeExecuter.start();
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
@@ -183,6 +184,9 @@ public class Robot extends TimedRobot {
 			mSubsystemLooper.start();
 			teleopConfig();
 			robotState.enableXTarget(false);
+
+			//mCollectwardsLimelight.setWantedState(CollectwardsLimelight.WantedState.TARGET);
+
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -195,6 +199,8 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		try {
+			//mSwerve.setState(Swerve.ControlState.CELL_AIM);
+			// mSuperstructure.setWantedState(Superstructure.WantedState.CELL_AIM);
 			// teleopRoutines();
 			// allPeriodic();
 		} catch (Throwable t) {

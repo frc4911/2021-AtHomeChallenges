@@ -72,7 +72,7 @@ public class JSticks extends Subsystem {
         mCollector = Collector.getInstance(sClassName);
         mShooter = Shooter.getInstance(sClassName);
         mSwerve = Swerve.getInstance(sClassName);
-        // mTester = new LogitechPS4();
+        mTester = new LogitechPS4();
     }
 
     private Loop mLoop = new Loop() {
@@ -134,10 +134,14 @@ public class JSticks extends Subsystem {
 		Superstructure.WantedState currentState = mSuperstructure.getWantedState();
 		Superstructure.WantedState previousState = currentState;
 
-		double swerveYInput = mPeriodicIO.drRightStickX_Translate;
-		double swerveXInput = mPeriodicIO.drRightStickY_Translate;
-		double swerveRotationInput = mPeriodicIO.drLeftStickX_Rotate;
+		// double swerveYInput = mPeriodicIO.drRightStickX_Translate;
+		// double swerveXInput = mPeriodicIO.drRightStickY_Translate;
+		// double swerveRotationInput = mPeriodicIO.drLeftStickX_Rotate;
 
+        double swerveYInput = mPeriodicIO.testRightStickX_Translate;
+		double swerveXInput = mPeriodicIO.testRightStickY_Translate;
+        double swerveRotationInput = mPeriodicIO.testLeftStickX_Rotate;
+        
 		if (!mPeriodicIO.drRightToggleDown_SHOOT) {
 			mSwerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, mPeriodicIO.drLeftToggleDown_RobotOrient, false);
         }
@@ -318,13 +322,8 @@ public class JSticks extends Subsystem {
                 mPeriodicIO.eventName = mPeriodicIO.ds.getEventName();
                 mPeriodicIO.replayNumber = mPeriodicIO.ds.getReplayNumber();
             }
-<<<<<<< HEAD
             // mPeriodicIO.batteryVoltage = mPeriodicIO.pdp.getVoltage();
             // mPeriodicIO.batteryCurrent = mPeriodicIO.pdp.getTotalCurrent();
-=======
-            //mPeriodicIO.batteryVoltage = mPeriodicIO.pdp.getVoltage();
-            //mPeriodicIO.batteryCurrent = mPeriodicIO.pdp.getTotalCurrent();
->>>>>>> ad0a48c676cf998fe40889fefd2bbbda17668304
 
             values = ""+mPeriodicIO.date + "," +
                         mPeriodicIO.time + "," + 
@@ -418,6 +417,9 @@ public class JSticks extends Subsystem {
         }
 
         // // button levels and raw values can be read every loop
+        mPeriodicIO.testRightStickX_Translate = mTester.getRaw(LogitechPS4.RIGHT_STICK_X, mDeadBand);
+        mPeriodicIO.testRightStickY_Translate = -mTester.getRaw(LogitechPS4.RIGHT_STICK_Y, mDeadBand);
+        mPeriodicIO.testLeftStickX_Rotate = mTester.getRaw(LogitechPS4.LEFT_STICK_X, mDeadBand);
         mPeriodicIO.drRightStickX_Translate = mDriver.getRaw(Turnigy.RIGHT_STICK_X, mDeadBand);
         mPeriodicIO.drRightStickY_Translate = mDriver.getRaw(Turnigy.RIGHT_STICK_Y, mDeadBand);
         mPeriodicIO.drLeftStickX_Rotate = mDriver.getRaw(Turnigy.LEFT_STICK_X, mDeadBand);
@@ -477,6 +479,9 @@ public class JSticks extends Subsystem {
         public double batteryCurrent;
 
         // INPUTS
+        public double testRightStickX_Translate;
+        public double testRightStickY_Translate;
+        public double testLeftStickX_Rotate;
         public boolean opRightBumper; // manual shoot, clear faults
         public double drRightStickX_Translate; // drive
         public double drRightStickY_Translate; // drive

@@ -30,8 +30,8 @@ public class Constants {
 	public static final boolean kDebuggingOutput = false;
 	
 	//Physical Robot Dimensions (including bumpers)
-	public static final double kRobotWidth = 36.0;
-	public static final double kRobotLength = 36.0;
+	public static final double kRobotWidth = 28.0;
+	public static final double kRobotLength = 28.0;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
 	public static final double kRobotProbeExtrusion = 4.0;
@@ -116,10 +116,10 @@ public class Constants {
     public static final LimelightConstants kCollectwardsLimelightConstants = new LimelightConstants();
     static {
         kCollectwardsLimelightConstants.kName = "CollectwardsLimelight";
-        kCollectwardsLimelightConstants.kTableName = "limelight-shoot"; // TODO: "limelight-collect"
-        kCollectwardsLimelightConstants.kHeight = 10;  // inches
+        kCollectwardsLimelightConstants.kTableName = "limelight-collect"; // TODO: "limelight-collect"
+        kCollectwardsLimelightConstants.kHeight = 22;  // deadeye 23, pinkeye 22
         kCollectwardsLimelightConstants.kSubsystemToLens = new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0));
-		kCollectwardsLimelightConstants.kHorizontalPlaneToLens = Rotation2d.fromDegrees(0);
+		kCollectwardsLimelightConstants.kHorizontalPlaneToLens = Rotation2d.fromDegrees(-29.0);
 		kCollectwardsLimelightConstants.kExpectedTargetCount = new double[] {1, 3};
 		kCollectwardsLimelightConstants.kPipelineZoom = new int[] {1};
 		kCollectwardsLimelightConstants.kTargets = new Target[] {
@@ -150,7 +150,8 @@ public class Constants {
 		double[] targetHeights = new double[] {
 			/*98.25*/ 70 - 7.5, 
 			/*98.25*/70,
-			/*4.5*/ 43.5
+			//raynli
+			/*43.5*/ 4.5
 		};
 
 		public double getHeight() {

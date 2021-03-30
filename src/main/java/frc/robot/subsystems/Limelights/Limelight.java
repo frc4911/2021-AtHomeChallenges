@@ -8,6 +8,7 @@ import com.team254.lib.loops.Loop;
 import com.team254.lib.subsystems.Subsystem;
 import com.team254.lib.vision.TargetInfo;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -48,12 +49,14 @@ public abstract class Limelight extends Subsystem {
 
     public enum SystemState {
         HOLDING,
-        TARGETING
+        TARGETING,
+        TARGETINGLED
     }
 
     public enum WantedState {
         HOLD,
-        TARGET
+        TARGET,
+        TARGETLED
     }
 
     private SystemState mSystemState = SystemState.HOLDING;
@@ -127,6 +130,9 @@ public abstract class Limelight extends Subsystem {
                     case TARGETING:
                         newState = handleTargeting();
                         break;
+                    case TARGETINGLED:
+                        newState = handleTargetingLED();
+                        break;
                     case HOLDING:
                     default:
                         newState = handleHolding();
@@ -152,6 +158,8 @@ public abstract class Limelight extends Subsystem {
         switch (mWantedState) {
             case TARGET:
                 return SystemState.TARGETING;
+            case TARGETLED:
+                return SystemState.TARGETLED;
             case HOLD:
             default:
                 return SystemState.HOLDING;
@@ -170,7 +178,18 @@ public abstract class Limelight extends Subsystem {
         return defaultStateTransfer();
     }
 
+
     private SystemState handleTargeting() {
+        if (mStateChanged) {
+            setLed(LedMode.OFF);
+            setSnapshot();
+        }
+        addVisionUpdate();
+                            
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleTargetingLED() {
         if (mStateChanged) {
             setLed(LedMode.ON);
             setSnapshot();
@@ -228,6 +247,10 @@ public abstract class Limelight extends Subsystem {
 
     public double[] getExpectedTargetCount() {
         return mConstants.kExpectedTargetCount;
+    }
+
+    public boolean getStateChanged(){
+        return mStateChanged;
     }
 
     public synchronized double getLatency() {
@@ -340,7 +363,7 @@ public abstract class Limelight extends Subsystem {
 
     private void storeRawContoursToNormCoord() {
         for(int i = 0; i < mPeriodicIO.rawContours.size(); i++) {
-            System.out.println("Raw contour #" + i + ": " + mPeriodicIO.rawContours.get(i).toString());
+//            System.out.println("Raw contour #" + i + ": " + mPeriodicIO.rawContours.get(i).toString());
         }
         for (Translation2d contours : mPeriodicIO.rawContours) {
             mCachedNormCoordinates.add(new Translation2d(

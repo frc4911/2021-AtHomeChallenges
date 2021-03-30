@@ -141,6 +141,12 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory backAwayFromLinePath;
 
         public final MirroredTrajectory startToEndPath;
+      
+        public final MirroredTrajectory redAPath;
+        public final MirroredTrajectory redBPath;
+        public final MirroredTrajectory blueAPath;
+        public final MirroredTrajectory blueBPath;
+
         public final MirroredTrajectory barrelPath;
         public final MirroredTrajectory slalomPath;
         public final MirroredTrajectory bouncePath;
@@ -192,6 +198,16 @@ public class TrajectoryGenerator {
 
             startToEndPath = new MirroredTrajectory(getStartToEndPath());
             // System.out.println(startToEndPath.left.toString());
+
+            redAPath = new MirroredTrajectory(getRedAPath());
+            // System.out.println(redAPath.left.toString());
+            redBPath = new MirroredTrajectory(getRedBPath());
+            // System.out.println(redBPath.left.toString());
+            blueAPath = new MirroredTrajectory(getBlueAPath());
+            // System.out.println(blueAPath.left.toString());
+            blueBPath = new MirroredTrajectory(getBlueBPath());
+            // System.out.println(blueBPath.left.toString());
+
             barrelPath = new MirroredTrajectory(getBarrelPath());
             // System.out.println(testPath.left.toString());
             slalomPath = new MirroredTrajectory(getSlalomPath());
@@ -444,6 +460,26 @@ public class TrajectoryGenerator {
             return angleDegrees*conversion;
         }
 
+        private Trajectory<TimedState<Pose2dWithCurvature>> getRedAPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(225)));
+            waypoints.add(new Pose2d(new Translation2d(-30.0, -30.0), Rotation2d.fromDegrees(225)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getRedBPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(-30.0, 0.0), Rotation2d.fromDegrees(180)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBlueAPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(217)));
+            waypoints.add(new Pose2d(new Translation2d(-120.0, -90.0), Rotation2d.fromDegrees(217)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
+
         private double convertToDegrees(double angleRads){
             final double conversion = 180.0/Math.PI;
             return angleRads*conversion;
@@ -599,7 +635,6 @@ public class TrajectoryGenerator {
         //     double startx = 60-rc;
         //     double starty = 180-rc;
 
-<<<<<<< HEAD
             double d0x = 60; //B2
             double d0y = 120; //B2
 
@@ -649,21 +684,6 @@ public class TrajectoryGenerator {
                                             d2x,                                 d2y);
             waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
             waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
-=======
-        //     double d0x = 60;
-        //     double d1x = 120;
-        //     double d2x = 235; //240
-        //     double d3x = 295; //300
-
-        //     double dy = 120;
-
-        //     double endx = startx;
-        //     double endy = 60+rc;
-
-        //     // placeholder
-        //     waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-        //     waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
->>>>>>> ad0a48c676cf998fe40889fefd2bbbda17668304
 
             // System.out.println("Bounce Path Coordinates - ");
             // for (ThreePoints tp : tpal){
@@ -1287,13 +1307,11 @@ public class TrajectoryGenerator {
         //     return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
         // }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath4() {
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBlueBPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-185.0, 61.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(-40.0, 40.0), Rotation2d.fromDegrees(-45.0)));
-            waypoints.add(new Pose2d(new Translation2d(-20.0, 20.0), Rotation2d.fromDegrees(-45.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(210)));
+            waypoints.add(new Pose2d(new Translation2d(-120.0, -60.0), Rotation2d.fromDegrees(210)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
         }
     }
     
