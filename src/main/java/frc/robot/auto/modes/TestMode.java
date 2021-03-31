@@ -21,9 +21,15 @@ public class TestMode extends AutoModeBase {
         // runAction(new WaitAction(10.0));
         // runAction(new SetTrajectoryAction(trajectories.barrelPath.get(true), 0.0, 1.0));
         // runAction(new WaitToFinishPathAction());
+<<<<<<< HEAD
+        //  runAction(new SetTrajectoryAction(trajectories.testPath.get(true), 0.0, 1.0));
+        //  runAction(new WaitToFinishPathAction());
+        //  System.out.println("****************************Finished****************************");
+=======
         // runAction(new SetTrajectoryAction(trajectories.slalomPath.get(true), 0.0, 1.0));
         // runAction(new WaitToFinishPathAction());
         // System.out.println("****************************Finished****************************");
+>>>>>>> ad0a48c676cf998fe40889fefd2bbbda17668304
         // runAction(new SetTrajectoryAction(trajectories.testPath3.get(true), 0.0, 1.0));
         // runAction(new WaitToFinishPathAction());
         // runAction(new SetTrajectoryAction(trajectories.testPath4.get(true), 0.0, 1.0));

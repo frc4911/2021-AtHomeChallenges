@@ -23,7 +23,9 @@ import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Limelights.CollectwardsLimelight;
 import frc.robot.subsystems.Limelights.ShootwardsLimelight;
 
+
 import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.loops.Looper;
 import com.team254.lib.subsystems.SubsystemManager;
 import com.team254.lib.util.CrashTracker;
@@ -113,7 +115,7 @@ public class Robot extends TimedRobot {
 
 		if (mSwerve != null) {
 			mSwerve.zeroSensors();
-			mSwerve.zeroSensors(new Pose2d());
+			mSwerve.zeroSensors();
 
 			// robotState.feignVisionTargets();
 			// mSwerve.startTracking(Constants.kDiskTargetHeight, new Translation2d(-6.0,

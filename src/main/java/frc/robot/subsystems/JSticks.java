@@ -318,8 +318,13 @@ public class JSticks extends Subsystem {
                 mPeriodicIO.eventName = mPeriodicIO.ds.getEventName();
                 mPeriodicIO.replayNumber = mPeriodicIO.ds.getReplayNumber();
             }
+<<<<<<< HEAD
+            // mPeriodicIO.batteryVoltage = mPeriodicIO.pdp.getVoltage();
+            // mPeriodicIO.batteryCurrent = mPeriodicIO.pdp.getTotalCurrent();
+=======
             //mPeriodicIO.batteryVoltage = mPeriodicIO.pdp.getVoltage();
             //mPeriodicIO.batteryCurrent = mPeriodicIO.pdp.getTotalCurrent();
+>>>>>>> ad0a48c676cf998fe40889fefd2bbbda17668304
 
             values = ""+mPeriodicIO.date + "," +
                         mPeriodicIO.time + "," + 
@@ -467,7 +472,7 @@ public class JSticks extends Subsystem {
         public String gameState;
         public double matchTime;
 
-        private PowerDistributionPanel pdp = new PowerDistributionPanel();
+        // private PowerDistributionPanel pdp = new PowerDistributionPanel();
         public double batteryVoltage;
         public double batteryCurrent;
 
