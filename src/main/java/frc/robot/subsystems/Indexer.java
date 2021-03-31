@@ -34,12 +34,15 @@ public class Indexer extends Subsystem {
 
     private final double kIndexSpeed = 0.7;
     private final double kLoadSpeed = 0.25; // .5 brian
-    private final double kBackSpeed = -0.50;
+    private final double kBackSpeed = -0.1;
     private final int beamBreakThreshold = 3;
     private PTO mPTOState;
     private double mClimberPrepDemand = .15;
     private double mClimberPrepCnt = 0; // TODO: change to be Timer based
     
+    private double deltaFromEntrance = 3652.0; //Encoder ticks wanted after ball passing beam break *****************************************/
+    private double startBallPos = 0.0; //Position right as the ball leaves beam break *******************************************************/
+
     public enum PTO {
         CLIMBER(true),
         INDEXER(false);
@@ -58,6 +61,7 @@ public class Indexer extends Subsystem {
     public enum SystemState {
         HOLDING,
         LOADING,
+        CORRECTING,
         BACKING,
         INDEXING,
         CLIMBING_PREP,
@@ -67,6 +71,7 @@ public class Indexer extends Subsystem {
     public enum WantedState {
         HOLD,
         LOAD,
+        CORRECT,
         BACK,
         INDEX,
         CLIMB_PREP,
@@ -142,7 +147,7 @@ public class Indexer extends Subsystem {
         mFXLeft.selectProfileSlot(0, 0);
         mFXRight.selectProfileSlot(0, 0);
         
-        double kp = 0.25;
+        double kp = 0.45;
         double ki = 0.0;
         double kd = 0.0;
         double kf = 0.0;
@@ -166,7 +171,7 @@ public class Indexer extends Subsystem {
         mFXLeft.configSupplyCurrentLimit(sclc);
         mFXRight.configSupplyCurrentLimit(sclc);
 
-        setNeutralMode(NeutralMode.Coast);
+        setNeutralMode(NeutralMode.Brake);
     }
 
     private void setNeutralMode(NeutralMode mode) {
@@ -195,6 +200,9 @@ public class Indexer extends Subsystem {
                     case LOADING:
                         newState = handleLoading();
                         break;
+                    case CORRECTING:
+                        newState = handleCorrecting();
+                        break;
                     case BACKING:
                         newState = handleBacking();
                         break;
@@ -217,6 +225,7 @@ public class Indexer extends Subsystem {
                 } else {
                     mStateChanged = false;
                 }
+
             }
         }
 
@@ -232,6 +241,7 @@ public class Indexer extends Subsystem {
             mPeriodicIO.climberDemand = 0.0;
             mPeriodicIO.PTODemand = PTO.INDEXER;  // PTO is always indexer unless climbing
             mPeriodicIO.schedDeltaDesired = 0; // goto sleep
+            System.out.println("holdingEncPos - " + mPeriodicIO.FXLeftEncPos);
         }
         
         return defaultStateTransfer();
@@ -246,9 +256,35 @@ public class Indexer extends Subsystem {
             }
             mPeriodicIO.indexerDemand = speed; //kLoadSpeed;
             mPeriodicIO.PTODemand = PTO.INDEXER;
-            mPeriodicIO.schedDeltaDesired = 0; // goto sleep
+            mPeriodicIO.schedDeltaDesired = 20; // goto sleep
+        }else if (!isBallEntering()){
+            setWantedState(WantedState.CORRECT);
+            startBallPos = mPeriodicIO.FXLeftEncPos;
         }
 
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleCorrecting() {
+        if (mStateChanged) {            
+            deltaFromEntrance = SmartDashboard.getNumber("delta from start",-1);
+            if (deltaFromEntrance == -1){
+                SmartDashboard.putNumber("delta from start", 3562);
+                deltaFromEntrance = 3562;
+            }
+            mPeriodicIO.indexerPosDemand = startBallPos + deltaFromEntrance;
+            mPeriodicIO.indexerDemand = 0;
+            mPeriodicIO.schedDeltaDesired = 20;
+            //System.out.println("startBallPos - " + startBallPos);
+        }
+        System.out.println("delta from start - " + deltaFromEntrance);
+        System.out.println("indexerPosDemand - " + mPeriodicIO.indexerPosDemand + ", currentPos - " + mPeriodicIO.FXLeftEncPos + ", difference = " + Math.abs(mPeriodicIO.FXLeftEncPos - mPeriodicIO.indexerPosDemand));
+        if (Math.abs(mPeriodicIO.FXLeftEncPos - mPeriodicIO.indexerPosDemand) < 100) {
+            //System.out.println("Done Correcting");
+            setWantedState(WantedState.HOLD);
+        }else{
+            //System.out.println("Not Done Correcting");
+        }
         return defaultStateTransfer();
     }
 
@@ -306,11 +342,12 @@ public class Indexer extends Subsystem {
 
     }
 
-
     private SystemState defaultStateTransfer() {
         switch (mWantedState) {
             case LOAD:
                 return SystemState.LOADING;
+            case CORRECT:
+                return SystemState.CORRECTING;
             case BACK:
                 return SystemState.BACKING;
             case INDEX:
@@ -332,6 +369,10 @@ public class Indexer extends Subsystem {
         }
 
         mWantedState = state;
+    }
+
+    public synchronized WantedState getWantedState(){
+        return mWantedState;
     }
 
     @Override
@@ -436,10 +477,16 @@ public class Indexer extends Subsystem {
         double now = Timer.getFPGATimestamp();
         mPeriodicIO.schedDeltaActual = now - mPeriodicIO.lastSchedStart;
         mPeriodicIO.lastSchedStart = now;
-        if (mSystemState == SystemState.CLIMBING_PREP || mSystemState == SystemState.CLIMBING_MOVE) {
+        //if (mSystemState == SystemState.CLIMBING_PREP || mSystemState == SystemState.CLIMBING_MOVE) {
             mPeriodicIO.FXLeftEncPos  = mFXLeft.getSelectedSensorPosition();
             mPeriodicIO.FXRightEncPos = mFXRight.getSelectedSensorPosition();
-        }
+        //}
+        // if(mPeriodicIO.currentPos == mFXLeft.getSelectedSensorPosition()){
+        //     indexerMoving = false;
+        // }else{
+        //     indexerMoving = true;
+        // }
+        // mPeriodicIO.currentPos = mFXLeft.getSelectedSensorPosition();
      }
 
     @Override
@@ -471,16 +518,22 @@ public class Indexer extends Subsystem {
             }
         } 
         else {
-            // move indexer
-            mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
-            mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
+
+            System.out.println(mSystemState);
+            if(mSystemState == SystemState.CORRECTING){
+                mFXLeft.set(ControlMode.Position, mPeriodicIO.indexerPosDemand);
+                mFXRight.set(ControlMode.Position, mPeriodicIO.indexerPosDemand);
+            }else{
+                mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
+                mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
+            }
         }
 
         // control PTO
-        if (mPTOState != mPeriodicIO.PTODemand) {
-            mPTOState = mPeriodicIO.PTODemand;
-            mSolPTO.set(mPeriodicIO.PTODemand.get());
-        }
+        // if (mPTOState != mPeriodicIO.PTODemand) {
+        //     mPTOState = mPeriodicIO.PTODemand;
+        //     mSolPTO.set(mPeriodicIO.PTODemand.get());
+        // }
     }
 
     @Override
@@ -497,6 +550,9 @@ public class Indexer extends Subsystem {
         SmartDashboard.putBoolean("Fully Loaded", isFullyLoaded());
         SmartDashboard.putNumber("Enterance Beam Break Analog", mAIBallEntered.getVoltage());
         SmartDashboard.putNumber("Exit Beam Break Analog", mAIBallTouchingShooter.getVoltage());
+        SmartDashboard.putNumber("Left Indexer Enc", mPeriodicIO.FXLeftEncPos);
+        SmartDashboard.putNumber("Right Indexer Enc", mPeriodicIO.FXRightEncPos);
+        SmartDashboard.putNumber("startBallPos", startBallPos);
     }
 
     public static class PeriodicIO {
@@ -513,10 +569,12 @@ public class Indexer extends Subsystem {
         public double FXRightCurrent;
         public String FXLeftFaults;
         public String FXRightFaults;
+        public double currentPos; //end pos
         
         //OUTPUTS
         public PTO    PTODemand;
         public double indexerDemand;
         public double climberDemand;
+        public double indexerPosDemand;
     }
 }

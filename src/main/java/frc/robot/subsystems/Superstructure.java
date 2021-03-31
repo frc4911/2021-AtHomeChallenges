@@ -176,16 +176,16 @@ public class Superstructure extends Subsystem {
         if (!mIndexer.isFullyLoaded()) {
             mCollector.setWantedState(Collector.WantedState.COLLECT);
             //mDonger.setWantedState(Donger.WantedState.COLLECT);
-            if (mIndexer.isBallEntering()) {
-                mIndexer.setWantedState(Indexer.WantedState.LOAD);
-            } else {
-                mIndexer.setWantedState(Indexer.WantedState.HOLD);
+            if (mIndexer.getWantedState() == Indexer.WantedState.HOLD) {
+                if (mIndexer.isBallEntering()) {
+                    mIndexer.setWantedState(Indexer.WantedState.LOAD);
+                }
             }
         } else {
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
             //mDonger.setWantedState(Donger.WantedState.SECURE);
         }
-
+        
         return collectingStateTransfer();
     }
     
