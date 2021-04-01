@@ -146,11 +146,6 @@ public class JSticks extends Subsystem {
 			mSwerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, mPeriodicIO.drLeftToggleDown_RobotOrient, false);
         }
 
-        if (mPeriodicIO.opRightStickY_FlywheelSpeed != flywheelSpeed) {
-            mShooter.setHoldSpeed(mPeriodicIO.opRightStickY_FlywheelSpeed);
-            flywheelSpeed = mPeriodicIO.opRightStickY_FlywheelSpeed;
-        }
-
         if (mPeriodicIO.opRightTrigger_COLLECT && collectorState == 0){
             mCollector.setWantedState(Collector.WantedState.COLLECT);
             collectorState = 1;

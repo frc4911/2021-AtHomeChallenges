@@ -319,7 +319,7 @@ public class Superstructure extends Subsystem {
     }
 
     public synchronized void setShooterHoldSpeed(double speed) {
-        mShooter.setHoldSpeed(speed);
+        mShooter.setHoldRPM(speed);
     }
 
     private boolean readyToShootAndOnTarget() {
