@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
 import frc.robot.subsystems.Limelights.ShootwardsLimelight;
-import frc.robot.subsystems.Limelights.CollectwardsLimelight;
 
 public class Superstructure extends Subsystem {
 
@@ -22,7 +21,7 @@ public class Superstructure extends Subsystem {
     private Shooter   mShooter   = null;
     private ShootwardsLimelight mShootwardsLimelight = null;
     private RobotState mRobotState = null;
-    private CollectwardsLimelight mCollectwardsLimelight = null;
+    // private CollectwardsLimelight mCollectwardsLimelight = null;
 
     public enum SystemState {
         HOLDING,
@@ -30,8 +29,7 @@ public class Superstructure extends Subsystem {
         SHOOTING,
         CLIMBING,
         CLEARING_BALLS,
-        MANUAL_SHOOTING,
-        CELL_AIMING
+        MANUAL_SHOOTING
     }
 
     public enum WantedState {
@@ -40,8 +38,7 @@ public class Superstructure extends Subsystem {
         SHOOT,
         CLIMB,
         CLEAR_BALLS,
-        MANUAL_SHOOT,
-        CELL_AIM
+        MANUAL_SHOOT
     }
 
     private SystemState   mSystemState = SystemState.HOLDING;
@@ -87,7 +84,7 @@ public class Superstructure extends Subsystem {
         //mDonger              = Donger.getInstance(sClassName);
         mShootwardsLimelight = ShootwardsLimelight.getInstance(sClassName);
         mRobotState          = RobotState.getInstance(sClassName);
-        mCollectwardsLimelight = CollectwardsLimelight.getInstance(sClassName);
+        // mCollectwardsLimelight = CollectwardsLimelight.getInstance(sClassName);
 
         mPeriodicIO = new PeriodicIO();
     }
@@ -132,9 +129,6 @@ public class Superstructure extends Subsystem {
                     case MANUAL_SHOOTING:
                         newState = handleManualShooting();
                         break;
-                    case CELL_AIMING:
-                        newState = handleCellAiming();
-                        break;
                     case HOLDING:
                     default:
                         newState = handleHolding();
@@ -167,8 +161,7 @@ public class Superstructure extends Subsystem {
             //     mDonger.setWantedState(Donger.WantedState.HOLD);
             // }
 
-            mShootwardsLimelight.setWantedState(ShootwardsLimelight.WantedState.TARGETLED);
-            mCollectwardsLimelight.setWantedState(CollectwardsLimelight.WantedState.TARGET);
+            mShootwardsLimelight.setWantedState(ShootwardsLimelight.WantedState.TARGET);
             mPeriodicIO.schedDeltaDesired = mSlowCycle;
         }
 
@@ -183,16 +176,16 @@ public class Superstructure extends Subsystem {
         if (!mIndexer.isFullyLoaded()) {
             mCollector.setWantedState(Collector.WantedState.COLLECT);
             //mDonger.setWantedState(Donger.WantedState.COLLECT);
-            if (mIndexer.isBallEntering()) {
-                mIndexer.setWantedState(Indexer.WantedState.LOAD);
-            } else {
-                mIndexer.setWantedState(Indexer.WantedState.HOLD);
+            if (mIndexer.getWantedState() == Indexer.WantedState.HOLD) {
+                if (mIndexer.isBallEntering2()) {
+                    mIndexer.setWantedState(Indexer.WantedState.LOAD);
+                }
             }
         } else {
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
             //mDonger.setWantedState(Donger.WantedState.SECURE);
         }
-
+        
         return collectingStateTransfer();
     }
     
@@ -277,16 +270,6 @@ public class Superstructure extends Subsystem {
         return shootingStateTransfer();
     }
 
-    private SystemState handleCellAiming(){
-        if (mCollectwardsLimelight.seesTarget()){
-            mSwerve.cellAim();
-        } else {
-            mSwerve.setState(Swerve.ControlState.NEUTRAL);
-        }
-
-        return defaultStateTransfer();
-    }
-
     private SystemState collectingStateTransfer() {
         if (mWantedState != WantedState.COLLECT) {
             mCollector.setWantedState(Collector.WantedState.HOLD);
@@ -369,8 +352,6 @@ public class Superstructure extends Subsystem {
                 return SystemState.CLEARING_BALLS;
             case MANUAL_SHOOT:
                 return SystemState.MANUAL_SHOOTING;
-            case CELL_AIM:
-                return SystemState.CELL_AIMING;
             case HOLD:
             default:
                 return SystemState.HOLDING;
@@ -461,7 +442,6 @@ public class Superstructure extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putString("Superstructure State", mSystemState.toString());
         SmartDashboard.putBoolean("Ready To Shoot and On Target", mPeriodicIO.readyToShootAndOnTarget);
         SmartDashboard.putBoolean("Ready To Shoot", mShooter.readyToShoot());
         SmartDashboard.putBoolean("On Target", mSwerve.isOnTarget());
