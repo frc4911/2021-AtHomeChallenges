@@ -184,13 +184,13 @@ public class JSticks extends Subsystem {
 			// } else if (mPeriodicIO.opLeftBumper_CLIMB) {
 			// 	mSuperstructure.setWantedState(Superstructure.WantedState.CLIMB);
 			} else if (mPeriodicIO.opPOV0_MANUAL10) {
-				mSuperstructure.setManualShootDistance(10);
+				mSuperstructure.setManualShootDistance(4000);
 			} else if (mPeriodicIO.opPOV90_MANUAL15) {
-				mSuperstructure.setManualShootDistance(15);
+				mSuperstructure.setManualShootDistance(4500);
 			} else if (mPeriodicIO.opPOV180_MANUAL20) {
-				mSuperstructure.setManualShootDistance(20);
+				mSuperstructure.setManualShootDistance(5000);
 			} else if (mPeriodicIO.opPOV270_MANUAL25) {
-				mSuperstructure.setManualShootDistance(25);
+				mSuperstructure.setManualShootDistance(5500);
 			} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
 				mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
 			} else if (previousState != currentState) {

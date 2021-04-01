@@ -22,7 +22,7 @@ public class Shooter extends Subsystem {
     // Constants
     private final double kMinShootDistance = 10.0;
     private final double kMaxShootDistance = 30.0;
-    private final double kRPMTolerance = 50.0;
+    private final double kRPMTolerance = 250.0;
 
     private final double kMinShootRPM = 2000;
     private final double kMaxShootRPM = 6000;
@@ -173,18 +173,21 @@ public class Shooter extends Subsystem {
     private SystemState handleShooting() {
         if (mStateChanged) {
             mPeriodicIO.schedDeltaDesired = 20;
-            mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mShootRPM);
         }
+        mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mShootRPM);
 
         return defaultStateTransfer();
     }
 
     public synchronized boolean readyToShoot() {
+        //mShootRPM+" "+" "+mPeriodicIO.currentRPM);
         return mShootRPM < mPeriodicIO.currentRPM-kRPMTolerance;
     }
 
     public synchronized void setShootDistance(double distance) {
         setShootRPM(convertDistanceToRPM(distance));
+        setWantedState(WantedState.SHOOT);
+        //System.out.println(mShootRPM+" "+" "+mPeriodicIO.currentRPM);
     }
 
     public synchronized void setShootRPM(double requestedRPM) {
@@ -194,7 +197,7 @@ public class Shooter extends Subsystem {
             mSubsystemManager.scheduleMe(mListIndex, 1, false);
             System.out.println("waking " + sClassName);
         }
-
+        setWantedState(WantedState.SHOOT);
         mShootRPM = newRPM;
         mPeriodicIO.velocityPIDDemand = mShootRPM;
     }

@@ -198,7 +198,7 @@ public class Superstructure extends Subsystem {
 
         double distanceToGoal = getDistanceToGoal();
         if (mLastDistanceToGoal != distanceToGoal){
-            mShooter.setShootDistance(distanceToGoal); // TODO: check if only need to call once
+            mShooter.setShootRPM(distanceToGoal); // TODO: check if only need to call once
             mLastDistanceToGoal = distanceToGoal;
         }
 
@@ -249,7 +249,7 @@ public class Superstructure extends Subsystem {
 
     private SystemState handleManualShooting() {
         if (mStateChanged) {
-            mShooter.setShootDistance(mDistance);
+            mShooter.setShootRPM(mDistance);
             mPeriodicIO.schedDeltaDesired = mFastCycle;
         }
 
