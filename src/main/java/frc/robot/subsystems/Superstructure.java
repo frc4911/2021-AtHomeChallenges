@@ -44,6 +44,7 @@ public class Superstructure extends Subsystem {
     private boolean       mStateChanged;
     private boolean       mShootSetup = true;
     private double        mDistance;
+    private double        mRPM;
     private final boolean mLoggingEnabled = true;  // used to disable logging for this subsystem only
     public PeriodicIO     mPeriodicIO;
     private double        mLastDistanceToGoal;
@@ -153,8 +154,8 @@ public class Superstructure extends Subsystem {
             // } else {
             //     mDonger.setWantedState(Donger.WantedState.HOLD);
             // }
-
-            mShootwardsLimelight.setWantedState(ShootwardsLimelight.WantedState.TARGET);
+            
+            mShootwardsLimelight.setWantedState(ShootwardsLimelight.WantedState.TARGETLED);//brian
             mPeriodicIO.schedDeltaDesired = mSlowCycle;
         }
 
@@ -226,14 +227,16 @@ public class Superstructure extends Subsystem {
         return defaultStateTransfer(); //Matthew - was collectingStateTransfer()
     }
 
-    int count = 0;
     private SystemState handleManualShooting() {
         if (mStateChanged) {
-            mShooter.setShootRPM(mDistance);
-            count = 0;
+            if(mDistance>0){
+                mShooter.setShootDistance(mDistance);
+            }
+            else{
+                mShooter.setShootRPM(mRPM);
+            }
             mPeriodicIO.schedDeltaDesired = mFastCycle;
         }
-        count++;
 
         if (mShooter.readyToShoot() || !mShootSetup) {
             
@@ -270,6 +273,13 @@ public class Superstructure extends Subsystem {
 
     public synchronized void setManualShootDistance(double distance) {
         mDistance = distance;
+        mRPM = 0;
+        setWantedState(WantedState.MANUAL_SHOOT);
+    }
+
+    public synchronized void setManualShootRPM(double rpm) {
+        mRPM = rpm;
+        mDistance = 0;
         setWantedState(WantedState.MANUAL_SHOOT);
     }
 

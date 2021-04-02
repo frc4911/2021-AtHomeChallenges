@@ -184,13 +184,13 @@ public class JSticks extends Subsystem {
                     SmartDashboard.putNumber("shoot RPM",3700);
                     speed = 3700;
                 }
-				mSuperstructure.setManualShootDistance(speed);
+				mSuperstructure.setManualShootRPM(speed);
 			} else if (mPeriodicIO.opPOV90_MANUAL15) {
-				mSuperstructure.setManualShootDistance(3850);
+				mSuperstructure.setManualShootRPM(3850);
 			} else if (mPeriodicIO.opPOV180_MANUAL20) {
-				mSuperstructure.setManualShootDistance(4000);
+				mSuperstructure.setManualShootRPM(4000);
 			} else if (mPeriodicIO.opPOV270_MANUAL25) {
-				mSuperstructure.setManualShootDistance(4500);
+				mSuperstructure.setManualShootRPM(4500);
 			} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
 				mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
 			} else if (previousState != currentState) {

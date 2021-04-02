@@ -40,7 +40,7 @@ public class Indexer extends Subsystem {
     private double cobraStartTime = 0;
     private final double cobraMaxDuration = .5;
     private final double kBallOffset0and1 = 3562;
-    private final double kBallOffset2 = 500;
+    private final double kBallOffset2 = 750;
     private final double kBallOffsetTolerance = 100;
 
     public enum SystemState {
@@ -232,7 +232,7 @@ public class Indexer extends Subsystem {
             }
             mPeriodicIO.indexerDemand = speed + getLoadSpeed(); //kLoadSpeed;
             mPeriodicIO.schedDeltaDesired = 20; // stay awake to monitor beam break to jump to correcting
-        }else if (!isBallEntering()){
+        }else if (!isBallEnteringSimple()){
             setWantedState(WantedState.CORRECT);
             startBallPos = mPeriodicIO.FXLeftEncPos;
         }
@@ -410,7 +410,7 @@ public class Indexer extends Subsystem {
             values = ""+mSystemState + "," +
                         /*mPeriodicIO.FXLeftEncPos+*/","+
                         /*mPeriodicIO.FXRightEncPos+*/","+
-                        isBallEntering()+","+
+                        isBallEnteringSimple()+","+
                         isFullyLoaded()+","+
                         mPeriodicIO.indexerDemand+","+
                         mPeriodicIO.FXLeftCurrent+","+
@@ -427,7 +427,7 @@ public class Indexer extends Subsystem {
             values = ""+mSystemState + "," +
                         mPeriodicIO.FXLeftEncPos+","+
                         mPeriodicIO.FXRightEncPos+","+
-                        isBallEntering()+","+
+                        isBallEnteringSimple()+","+
                         isFullyLoaded()+","+
                         mPeriodicIO.indexerDemand+","+
                         /*mPeriodicIO.FXLeftCurrent+*/","+
@@ -481,7 +481,7 @@ public class Indexer extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putBoolean("Ball Entered", isBallEntering());
+        SmartDashboard.putBoolean("Ball Entered", isBallEnteringSimple());
         SmartDashboard.putBoolean("Fully Loaded", isFullyLoaded());
         SmartDashboard.putNumber("Enterance Beam Break Analog", mAIBallEntered.getVoltage());
         SmartDashboard.putNumber("Exit Beam Break Analog", mAIBallTouchingShooter.getVoltage());
