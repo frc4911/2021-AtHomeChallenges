@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class JSticks extends Subsystem {
 
@@ -171,26 +172,25 @@ public class JSticks extends Subsystem {
             mSuperstructure.setShooterHoldSpeed(0.0);
 		}
 
-		// if (currentState == Superstructure.WantedState.CLIMB) {
-		// 	mSuperstructure.setClimbOpenLoop(mPeriodicIO.opLeftStickY_ClimbSpeed);
-		// }
-
         currentState = activeBtnIsReleased(currentState);
 		if (currentState == Superstructure.WantedState.HOLD) {
 			if (mPeriodicIO.drRightToggleDown_SHOOT) {
 				mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT);
 			} else if (mPeriodicIO.opRightTrigger_COLLECT) {
 				mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
-			// } else if (mPeriodicIO.opLeftBumper_CLIMB) {
-			// 	mSuperstructure.setWantedState(Superstructure.WantedState.CLIMB);
 			} else if (mPeriodicIO.opPOV0_MANUAL10) {
-				mSuperstructure.setManualShootDistance(4000);
+                double speed = SmartDashboard.getNumber("shoot RPM",-1);
+                if (speed == -1){
+                    SmartDashboard.putNumber("shoot RPM",3700);
+                    speed = 3700;
+                }
+				mSuperstructure.setManualShootDistance(speed);
 			} else if (mPeriodicIO.opPOV90_MANUAL15) {
-				mSuperstructure.setManualShootDistance(4500);
+				mSuperstructure.setManualShootDistance(3850);
 			} else if (mPeriodicIO.opPOV180_MANUAL20) {
-				mSuperstructure.setManualShootDistance(5000);
+				mSuperstructure.setManualShootDistance(4000);
 			} else if (mPeriodicIO.opPOV270_MANUAL25) {
-				mSuperstructure.setManualShootDistance(5500);
+				mSuperstructure.setManualShootDistance(4500);
 			} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
 				mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
 			} else if (previousState != currentState) {
@@ -205,8 +205,6 @@ public class JSticks extends Subsystem {
 				return !mPeriodicIO.drRightToggleDown_SHOOT ? Superstructure.WantedState.HOLD : currentState;
 			case COLLECT:
 				return !mPeriodicIO.opRightTrigger_COLLECT ? Superstructure.WantedState.HOLD : currentState;
-			// case CLIMB:
-			// 	return !mPeriodicIO.opLeftBumper_CLIMB ? Superstructure.WantedState.HOLD : currentState;
 			case MANUAL_SHOOT:
 				if (!mPeriodicIO.opPOV0_MANUAL10 && !mPeriodicIO.opPOV90_MANUAL15 && !mPeriodicIO.opPOV180_MANUAL20 && !mPeriodicIO.opPOV270_MANUAL25) {
 					return Superstructure.WantedState.HOLD;
@@ -275,8 +273,6 @@ public class JSticks extends Subsystem {
                    sClassName+".opStartButton,"+
                    sClassName+".opRightTrigger_COLLECT,"+
                    sClassName+".opLeftTrigger_CLEARBALLS,"+
-                   sClassName+".opLeftBumper_CLIMB,"+
-                   sClassName+".opLeftStickY_ClimbSpeed,"+
                    sClassName+".opPOV0_MANUAL10,"+
                    sClassName+".opPOV90_MANUAL15,"+
                    sClassName+".opPOV180_MANUAL20,"+
@@ -360,8 +356,6 @@ public class JSticks extends Subsystem {
                         mPeriodicIO.opStartButton + "," + 
                         mPeriodicIO.opRightTrigger_COLLECT + "," + 
                         mPeriodicIO.opLeftTrigger_CLEARBALLS + "," + 
-                        mPeriodicIO.opLeftBumper_CLIMB + "," + 
-                        mPeriodicIO.opLeftStickY_ClimbSpeed + "," + 
                         mPeriodicIO.opPOV0_MANUAL10 + "," + 
                         mPeriodicIO.opPOV90_MANUAL15 + "," + 
                         mPeriodicIO.opPOV180_MANUAL20 + "," + 
@@ -418,13 +412,11 @@ public class JSticks extends Subsystem {
         mPeriodicIO.drRightStickX_Translate = mDriver.getRaw(Turnigy.RIGHT_STICK_X, mDeadBand);
         mPeriodicIO.drRightStickY_Translate = mDriver.getRaw(Turnigy.RIGHT_STICK_Y, mDeadBand);
         mPeriodicIO.drLeftStickX_Rotate = mDriver.getRaw(Turnigy.LEFT_STICK_X, mDeadBand);
-        mPeriodicIO.opLeftStickY_ClimbSpeed = mOperator.getRaw(Xbox.LEFT_STICK_Y, .08);
         mPeriodicIO.opRightStickY_FlywheelSpeed = mOperator.getRaw(Xbox.RIGHT_STICK_Y, mDeadBand);
         mPeriodicIO.drRightToggleDown_SHOOT = mDriver.getToggle(Turnigy.RIGHT_TOGGLE, Turnigy.TOGGLE_DOWN);
         mPeriodicIO.drLeftToggleDown_RobotOrient = mDriver.getToggle(Turnigy.LEFT_TOGGLE, Turnigy.TOGGLE_DOWN);
         mPeriodicIO.opRightTrigger_COLLECT = mOperator.getButton(Xbox.RIGHT_TRIGGER, CW.PRESSED_LEVEL);
         mPeriodicIO.opLeftTrigger_CLEARBALLS = mOperator.getButton(Xbox.LEFT_TRIGGER, CW.PRESSED_LEVEL);
-        mPeriodicIO.opLeftBumper_CLIMB = mOperator.getButton(Xbox.LEFT_BUMPER, CW.PRESSED_LEVEL);
         mPeriodicIO.opRightBumper = mOperator.getButton(Xbox.RIGHT_BUMPER, CW.PRESSED_LEVEL);
         mPeriodicIO.opPOV0_MANUAL10 = mOperator.getButton(Xbox.POV0_0, CW.PRESSED_LEVEL);
         mPeriodicIO.opPOV90_MANUAL15 = mOperator.getButton(Xbox.POV0_90, CW.PRESSED_LEVEL);
@@ -490,8 +482,6 @@ public class JSticks extends Subsystem {
         public boolean opStartButton;        // WoF
         public boolean opRightTrigger_COLLECT;   // collect
         public boolean opLeftTrigger_CLEARBALLS;    // clear balls
-        public boolean opLeftBumper_CLIMB;     // climb pto
-        public double opLeftStickY_ClimbSpeed;      // climb
         public double opRightStickY_FlywheelSpeed; //Manual Flywheel
         public boolean opPOV0_MANUAL10;
         public boolean opPOV90_MANUAL15;

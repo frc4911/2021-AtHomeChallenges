@@ -22,7 +22,7 @@ public class Shooter extends Subsystem {
     // Constants
     private final double kMinShootDistance = 10.0;
     private final double kMaxShootDistance = 30.0;
-    private final double kRPMTolerance = 250.0;
+    private final double kRPMTolerance = 100; //250.0;
 
     private final double kMinShootRPM = 2000;
     private final double kMaxShootRPM = 6000;
@@ -180,8 +180,11 @@ public class Shooter extends Subsystem {
     }
 
     public synchronized boolean readyToShoot() {
-        //mShootRPM+" "+" "+mPeriodicIO.currentRPM);
-        return mShootRPM < mPeriodicIO.currentRPM-kRPMTolerance;
+        // if(mPeriodicIO.currentRPM == 0 && mShootRPM == 0){
+        //         System.out.println("************error***************");
+        // }
+        mPeriodicIO.currentRPM = ticksPer100MsToRPM(mFXLeft.getSelectedSensorVelocity(0));
+        return mPeriodicIO.currentRPM > mShootRPM -kRPMTolerance;
     }
 
     public synchronized void setShootDistance(double distance) {
