@@ -86,6 +86,7 @@ public class JSticks extends Subsystem {
                 System.out.println(sClassName + " state " + mSystemState);
                 switch (phase) {
                     case DISABLED:
+                    case AUTONOMOUS:
                         mPeriodicIO.schedDeltaDesired = 0; // goto sleep
                         break;
                     default:

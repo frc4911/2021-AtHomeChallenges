@@ -1,9 +1,7 @@
 package frc.robot.auto.actions;
 
 import com.team254.lib.autos.actions.Action;
-
 import frc.robot.subsystems.Superstructure;
-
 import edu.wpi.first.wpilibj.Timer;
 
 public class CollectAction implements Action {
@@ -42,5 +40,4 @@ public class CollectAction implements Action {
 	public void done() {
 		System.out.println("***** Done Collecting - " + mTurnOn + " ***** " + Timer.getFPGATimestamp());
 	}
-	
 }

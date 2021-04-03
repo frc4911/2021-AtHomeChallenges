@@ -28,29 +28,36 @@ public class ManualShootAction implements Action {
 		this.duration = duration;
 		this.balls = balls;
 		this.rpm = rpm;
+		System.out.println("***** Manual Shooting constructor ***** " + Timer.getFPGATimestamp());
+
 	}
 
 	@Override
 	public boolean isFinished() {
-		return Timer.getFPGATimestamp() >= target;
+		if (Timer.getFPGATimestamp() >= target){
+			System.out.println("***** Manual Shooting isFinished - ***** " + Timer.getFPGATimestamp());
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
 	public void start() {
 		target = Timer.getFPGATimestamp() + duration;
 		mSuperstructure.setManualShootRPM(rpm);
-		System.out.println("***** Manual Shooting - " + duration + " ***** " + Timer.getFPGATimestamp());
+		System.out.println("***** Manual Shooting start ***** " + Timer.getFPGATimestamp());
 		mSuperstructure.setWantedState(Superstructure.WantedState.MANUAL_SHOOT);
 	}
 	
 	@Override
 	public void update() {
+		// System.out.println("***** Manual Shooting update ***** " + Timer.getFPGATimestamp());
 
 	}
 	
 	@Override
 	public void done() {
-		System.out.println("***** Done Manual Shooting - " + duration + " ***** " + Timer.getFPGATimestamp());
+		System.out.println("***** Manual Shooting done - ***** " + Timer.getFPGATimestamp());
 		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
 	}	
 }

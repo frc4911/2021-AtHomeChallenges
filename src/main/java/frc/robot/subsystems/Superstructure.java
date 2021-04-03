@@ -237,9 +237,9 @@ public class Superstructure extends Subsystem {
             else{
                 mShooter.setShootRPM(mRPM);
             }
-            mPeriodicIO.schedDeltaDesired = mFastCycle;
         }
 
+        mPeriodicIO.schedDeltaDesired = mFastCycle;
         if (mShooter.readyToShoot() || !mShootSetup) {
             
             mIndexer.setWantedState(Indexer.WantedState.INDEX);
@@ -319,15 +319,16 @@ public class Superstructure extends Subsystem {
             case MANUAL_SHOOT:
                 return SystemState.MANUAL_SHOOTING;
             case HOLD:
-            default:
                 return SystemState.HOLDING;
         }
+        return null;
     }
 
     public synchronized void setWantedState(WantedState state) {
         if (mWantedState != state){
             mPeriodicIO.schedDeltaDesired = 2;
         }
+        System.out.println("superstructure in "+mWantedState+" setWantedState to "+state);
         mWantedState = state;
     }
 
