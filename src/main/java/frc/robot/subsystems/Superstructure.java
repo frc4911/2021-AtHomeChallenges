@@ -185,16 +185,18 @@ public class Superstructure extends Subsystem {
     
     private SystemState handleShooting() {
         if (mStateChanged) {
+            // mShootwardsLimelight.setWantedState(ShootwardsLimelight.WantedState.TARGETLED);
             mSwerve.limeLightAim();
             mLastDistanceToGoal = Double.MIN_VALUE;
             mPeriodicIO.schedDeltaDesired = mFastCycle;
         }
 
-        double distanceToGoal = getDistanceToGoal();
-        if (mLastDistanceToGoal != distanceToGoal){
-            mShooter.setShootRPM(distanceToGoal); // TODO: check if only need to call once
-            mLastDistanceToGoal = distanceToGoal;
-        }
+        mShooter.setShootRPM(4000); 
+        // double distanceToGoal = getDistanceToGoal();
+        // if (mLastDistanceToGoal != distanceToGoal){
+        //    mShooter.setShootRPM(distanceToGoal); // TODO: check if only need to call once
+            // mLastDistanceToGoal = distanceToGoal;
+        // }
 
         if (readyToShootAndOnTarget()) {
             mIndexer.setWantedState(Indexer.WantedState.INDEX);
