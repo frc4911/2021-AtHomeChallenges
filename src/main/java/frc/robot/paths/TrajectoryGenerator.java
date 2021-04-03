@@ -163,6 +163,10 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory galacticSearchBBluePath1;
         public final MirroredTrajectory galacticSearchBBluePath2;
         public final MirroredTrajectory galacticSearchBBluePath3;
+
+        public final MirroredTrajectory powerPortForwardPath;
+        public final MirroredTrajectory powerPortBackwardPath;
+
         // public final MirroredTrajectory testPath3;
         // public final MirroredTrajectory testPath4;
 
@@ -235,6 +239,9 @@ public class TrajectoryGenerator {
             galacticSearchBBluePath1 = new MirroredTrajectory(getGalacticSearchBBluePath1());
             galacticSearchBBluePath2 = new MirroredTrajectory(getGalacticSearchBBluePath2());
             galacticSearchBBluePath3 = new MirroredTrajectory(getGalacticSearchBBluePath3());
+
+            powerPortForwardPath = new MirroredTrajectory(getPowerPortForwardPath());
+            powerPortBackwardPath = new MirroredTrajectory(getPowerPortBackwardPath());
 
             // testPathBrian = new MirroredTrajectory(getBrianPath());
             // System.out.println("Brian's path");
@@ -1313,6 +1320,22 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(new Translation2d(-120.0, -60.0), Rotation2d.fromDegrees(210)));
             return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
         }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getPowerPortForwardPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(new Translation2d(-100.0, 0.0), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 20.0, 60.0, 60.0, kMaxVoltage, 20.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getPowerPortBackwardPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(-100.0, 0.0), Rotation2d.fromDegrees(180)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 20.0, 60.0, 60.0, kMaxVoltage, 20.0, 1);
+        }
+        
+
     }
     
 }

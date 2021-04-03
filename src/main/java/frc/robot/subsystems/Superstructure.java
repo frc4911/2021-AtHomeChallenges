@@ -254,6 +254,7 @@ public class Superstructure extends Subsystem {
 
     private SystemState collectingStateTransfer() {
         if (mWantedState != WantedState.COLLECT) {
+            System.out.println("Collecting to Hold - " + mWantedState);
             mCollector.setWantedState(Collector.WantedState.HOLD);
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
         }

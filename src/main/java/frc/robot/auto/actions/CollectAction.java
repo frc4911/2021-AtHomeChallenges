@@ -4,6 +4,8 @@ import com.team254.lib.autos.actions.Action;
 
 import frc.robot.subsystems.Superstructure;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class CollectAction implements Action {
 	
 	private String sClassName;
@@ -23,6 +25,7 @@ public class CollectAction implements Action {
 	
 	@Override
 	public void start() {
+		System.out.println("***** Collecting - " + mTurnOn + " ***** " + Timer.getFPGATimestamp());
 		if (mTurnOn) {
 			mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
 		} else {
@@ -37,7 +40,7 @@ public class CollectAction implements Action {
 	
 	@Override
 	public void done() {
-
+		System.out.println("***** Done Collecting - " + mTurnOn + " ***** " + Timer.getFPGATimestamp());
 	}
 	
 }

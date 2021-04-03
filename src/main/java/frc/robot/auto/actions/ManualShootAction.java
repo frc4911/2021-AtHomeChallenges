@@ -14,21 +14,22 @@ public class ManualShootAction implements Action {
 	private Superstructure mSuperstructure = Superstructure.getInstance("ManualShootAction");
 	private Shooter mShooter = Shooter.getInstance("ManualShootAction");
 	private double target = 0.0;
+	private double duration = 0.0;
 
 	public ManualShootAction(double duration) {
-		target = Timer.getFPGATimestamp() + duration;
+		this.duration = duration;
 	}
 	
 	public ManualShootAction(double duration, double rpm) {
-		target = Timer.getFPGATimestamp() + duration;
+		this.duration = duration;
 	}
 	
 	public ManualShootAction(double duration, double rpm, int balls) {
-		target = Timer.getFPGATimestamp() + duration;
+		this.duration = duration;
 		this.balls = balls;
 		this.rpm = rpm;
 	}
-	
+
 	@Override
 	public boolean isFinished() {
 		return Timer.getFPGATimestamp() >= target;
@@ -36,8 +37,9 @@ public class ManualShootAction implements Action {
 	
 	@Override
 	public void start() {
+		target = Timer.getFPGATimestamp() + duration;
 		mSuperstructure.setManualShootRPM(rpm);
-		System.out.println("action set superstructure wanted state to manual_shoot");
+		System.out.println("***** Manual Shooting - " + duration + " ***** " + Timer.getFPGATimestamp());
 		mSuperstructure.setWantedState(Superstructure.WantedState.MANUAL_SHOOT);
 	}
 	
@@ -48,6 +50,7 @@ public class ManualShootAction implements Action {
 	
 	@Override
 	public void done() {
+		System.out.println("***** Done Manual Shooting - " + duration + " ***** " + Timer.getFPGATimestamp());
 		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
 	}	
 }
