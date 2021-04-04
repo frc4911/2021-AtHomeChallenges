@@ -163,6 +163,7 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory galacticSearchBBluePath1;
         public final MirroredTrajectory galacticSearchBBluePath2;
         public final MirroredTrajectory galacticSearchBBluePath3;
+        public final MirroredTrajectory bouncePath; 
         // public final MirroredTrajectory testPath3;
         // public final MirroredTrajectory testPath4;
 
@@ -211,6 +212,7 @@ public class TrajectoryGenerator {
             barrelPath = new MirroredTrajectory(getBarrelPath());
             // System.out.println(testPath.left.toString());
             slalomPath = new MirroredTrajectory(getSlalomPath());
+            bouncePath = new MirroredTrajectory(getBouncePath());
             // System.out.println(testPath2.left.toString());
             // bouncePath = new MirroredTrajectory(getBouncePath());
             // System.out.println(testPath2.left.toString());
@@ -623,73 +625,84 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePath() {
             List<Pose2d> waypoints = new ArrayList<>();
             ArrayList<ThreePoints> tpal = new ArrayList<>();         
-            //Temporary
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
 
             double exitAngleRads;
             double enterAngleRads;
             double rc = 28/2;
             double radius = 28; //30
-            
-            double startx = 60-rc;
-            double starty = 180-rc;
 
             double d0x = 60; //B2
-            double d0y = 120; //B2
+            double d0y = 60; //B2
 
-            double d1x = 120; //B4
-            double d1y = 120; //B4
+            double startx = d0x+radius*Math.cos(118);
+            double starty = d0y+radius*Math.sin(118);
 
-            double d2x = 90; //D3
-            double d2y = 60; //D3
+            double a3x = 90;
+            double a3y = 30; 
 
-            double d3x = 150; //D5
-            double d3y = 60; //D5
+            double d1x = 150; //D5
+            double d1y = 120; //D5
 
-            double d4x = 150; //B5
-            double d4y = 120; //B5
+            double a6x = 180;
+            double a6y = 30;
 
-            double d5x = 210; //B7
-            double d5y = 120; //B7
+            double d2x = 210; //D7
+            double d2y = 120; //D7
 
-            double d6x = 210; //D7
-            double d6y = 60; //D7
+            double d3x = 240; //D8
+            double d3y = 120; //D8
 
-            double d7x = 240; //D8
-            double d7y = 60; //D8
+            double a9x = 270;
+            double a9y = 30; 
 
-            double d8x = 240; //B8
-            double d8y = 60; //B8
-
-            double d9x = 300; //B10
-            double d9y = 120; //B10
+            double d4x = 300; //B10
+            double d4y = 60; //B10
         
-            double endx = startx;
-            double endy = 60+rc;
+            double endx = 330;
+            double endy = 90;
 
-            // placeholder
-            enterAngleRads = convertToRads(90);
+            enterAngleRads = convertToRads(118);
             exitAngleRads = convertToRads(0);
-            addArcSegment(tpal,     false, d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads),
+            addArcSegment(tpal,     true, d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads),
                                            d0x,                                 d0y,                 exitAngleRads);
+            addStraightSegment(tpal, false, d0x+radius*Math.cos(exitAngleRads),                              d0y+radius*Math.sin(exitAngleRads), 
+                                           a3x,                              a3y-rc+2);
+            //split here
+            enterAngleRads = convertToRads(180);
+            addStraightSegment(tpal, false, a3x,                              a3y-rc+2, 
+                                            d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads));
             exitAngleRads = convertToRads(0);
-            // addStraightSegment(tpal,     false, d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads),
-            //                                d1x,                                 d1y,                 exitAngleRads);
-            enterAngleRads = convertToRads(-90);
-            addArcSegment(tpal, false, d2x+radius*Math.cos(exitAngleRads),  d2y+radius*Math.sin(exitAngleRads),
-                                            d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads), exitAngleRads);
+            addArcSegment(tpal,     false, d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads),
+                                           d1x,                                 d1y,                 exitAngleRads);
+            addStraightSegment(tpal, false, d1x+radius*Math.cos(exitAngleRads),                              d1y+radius*Math.sin(exitAngleRads), 
+                                           a6x,                              a6y);
+            //split here
+            enterAngleRads = convertToRads(180);
+            addStraightSegment(tpal, false, a6x,                              a6y,
+                                            d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads));
+            exitAngleRads = convertToRads(90);
+            addArcSegment(tpal, false, d2x+radius*Math.cos(enterAngleRads),  d2y+radius*Math.sin(enterAngleRads),
+                                       d2x,                                 d2y,                exitAngleRads);
+            enterAngleRads = convertToRads(90);
+            addStraightSegment(tpal, false, d2x+radius*Math.cos(exitAngleRads), d2y+radius*Math.sin(exitAngleRads), 
+                                            d3x+radius*Math.cos(enterAngleRads), d3x+radius*Math.sin(enterAngleRads));
             exitAngleRads = convertToRads(0);
-            addStraightSegment(tpal, false,      d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads),
-                                            d2x,                                 d2y);
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
-
-            // System.out.println("Bounce Path Coordinates - ");
-            // for (ThreePoints tp : tpal){
-            //     System.out.println(tp.x+","+tp.y+","+tp.a);
-            //     waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
-            // }
+            addArcSegment(tpal, false,      d3x+radius*Math.cos(enterAngleRads), d3y+radius*Math.sin(enterAngleRads),
+                                            d3x,                                 d3y, exitAngleRads);
+            addStraightSegment(tpal, false, d3x+radius*Math.cos(exitAngleRads),                      d3y+radius*Math.sin(exitAngleRads), 
+                                           a9x,                              a9y);
+            //split here
+            enterAngleRads = convertToRads(180);
+            addStraightSegment(tpal, false, a9x,                              a9y,
+                                            d4x+radius*Math.cos(enterAngleRads),    d4y+radius*Math.sin(enterAngleRads));
+            exitAngleRads = convertToRads(90);
+            addArcSegment(tpal, false, d4x*Math.cos(enterAngleRads), d4y*Math.sin(enterAngleRads), 
+                                       d4x,                          d4y,           exitAngleRads);
+            System.out.println("Bounce Path Coordinates - ");
+            for (ThreePoints tp : tpal){
+                System.out.println(tp.x+","+tp.y+","+tp.a);
+                waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+            }
             // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
             // if(speed == -1){
             //     SmartDashboard.putNumber("Autopath Speed", 20);
