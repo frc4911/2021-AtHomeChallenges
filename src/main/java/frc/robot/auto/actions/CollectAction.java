@@ -2,6 +2,7 @@ package frc.robot.auto.actions;
 
 import com.team254.lib.autos.actions.Action;
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj.Timer;
 
 public class CollectAction implements Action {
@@ -18,7 +19,11 @@ public class CollectAction implements Action {
 	
 	@Override
 	public boolean isFinished() {
-		return true;
+		// if (turnOn) {
+		// 	return getNumberOfBalls() == 3;
+		// }else{
+			return true;
+		//}
 	}
 	
 	@Override

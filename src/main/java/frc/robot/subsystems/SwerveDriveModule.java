@@ -537,7 +537,7 @@ public class SwerveDriveModule extends Subsystem {
 		// SmartDashboard.putNumber(name + "Rotation", periodicIO.rotationPosition); // Alex
 		// SmartDashboard.putNumber(name + "Rotation velocity", rotationMotor.getSelectedSensorVelocity(0)); // Alex
 		// SmartDashboard.putNumber(name + "Rotation (cancoder)", enc.getAbsolutePosition()-cancoderOffsetDegrees); // Alex
-		// SmartDashboard.putNumber(name + "Rotation (cancoder)", enc.getAbsolutePosition()); // Alex
+		SmartDashboard.putNumber(name + "Rotation (cancoder)", canCoder.getAbsolutePosition()); // Alex
 		// SmartDashboard.putNumber(name + "Position", periodicIO.drivePosition); // Alex
 		// SmartDashboard.putNumber(name + "Velocity", driveMotor.getSelectedSensorVelocity(0)); // Alex
 		//SmartDashboard.putNumber(name + "Velocity", encVelocityToInchesPerSecond(periodicIO.velocity));

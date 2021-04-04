@@ -334,6 +334,10 @@ public class Indexer extends Subsystem {
         }
     }
 
+    public synchronized int getNumberOfBalls() {
+        return numberOfBalls;
+    }
+
     private SystemState defaultStateTransfer() {
         switch (mWantedState) {
             case LOAD:

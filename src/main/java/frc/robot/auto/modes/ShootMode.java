@@ -21,7 +21,7 @@ public class ShootMode extends AutoModeBase {
             runAction(new CollectAction(false));
             runAction(new SetTrajectoryAction(trajectories.powerPortForwardPath.get(true), 0.0, 1.0));
             runAction(new WaitToFinishPathAction());
-        //}
+        //}/
         // runAction(new SetTrajectoryAction(trajectories.backAwayFromLinePath.get(true), 0.0, 1.0));   
     }
 }
