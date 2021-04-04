@@ -23,41 +23,25 @@ public class Indexer extends Subsystem {
 
     // Hardware
     private final TalonFX mFXLeft, mFXRight;
-    private final DigitalInput mDIBallEntered;         // true == no ball, false == ball
-    private final DigitalInput mDIBallTouchingShooter; // true == no ball, false == ball
     private final AnalogInput mAIBallEntered; //Port 1
     private final AnalogInput mAIBallTouchingShooter; //Port 0
-    private final Solenoid mSolPTO;           // true == climber, false == indexer
 
     private double mFXLeftPIDPos;
     private double mFXRightPIDPos;
 
-    private final double kIndexSpeed = 0.7;
+    private final double kIndexSpeed = 0.1; //.7
     private final double kLoadSpeed = 0.25; // .5 brian
     private final double kBackSpeed = -0.25;
     private final int beamBreakThreshold = 3;
-    private PTO mPTOState;
-    private double mClimberPrepDemand = .15;
-    private double mClimberPrepCnt = 0; // TODO: change to be Timer based
     
     private double deltaFromEntrance = 3652.0; //Encoder ticks wanted after ball passing beam break *****************************************/
     private double startBallPos = 0.0; //Position right as the ball leaves beam break *******************************************************/
     private int numberOfBalls = 0;
-
-    public enum PTO {
-        CLIMBER(true),
-        INDEXER(false);
-
-        private final boolean state;
-
-        private PTO(boolean state){
-            this.state = state;
-        }
-
-        public boolean get(){
-            return state;
-        }
-    }
+    private double cobraStartTime = 0;
+    private final double cobraMaxDuration = .5;
+    private final double kBallOffset0and1 = 3562;
+    private final double kBallOffset2 = 750;
+    private final double kBallOffsetTolerance = 100;
 
     public enum SystemState {
         HOLDING,
@@ -65,8 +49,7 @@ public class Indexer extends Subsystem {
         CORRECTING,
         BACKING,
         INDEXING,
-        CLIMBING_PREP,
-        CLIMBING_MOVE
+        COBRAING
     }
 
     public enum WantedState {
@@ -75,8 +58,7 @@ public class Indexer extends Subsystem {
         CORRECT,
         BACK,
         INDEX,
-        CLIMB_PREP,
-        CLIMB_MOVE
+        COBRA
     }
 
     private SystemState      mSystemState = SystemState.HOLDING;
@@ -112,9 +94,6 @@ public class Indexer extends Subsystem {
         mPeriodicIO = new PeriodicIO();
         mFXLeft = TalonFXFactory.createDefaultTalon(Ports.INDEXER_LEFT);
         mFXRight = TalonFXFactory.createDefaultTalon(Ports.INDEXER_RIGHT);
-        mSolPTO = new Solenoid(0, Ports.POWER_TAKE_OFF);
-        mDIBallEntered = new DigitalInput(Ports.ENTRANCE_BEAM_BREAK);
-        mDIBallTouchingShooter = new DigitalInput(Ports.EXIT_BEAM_BREAK);
         mAIBallEntered = new AnalogInput(Ports.ENTERANCE_BEAM_BREAK_A);
         mAIBallTouchingShooter = new AnalogInput(Ports.EXIT_BEAM_BREAK_A);
         mSubsystemManager = SubsystemManager.getInstance(sClassName);
@@ -204,15 +183,14 @@ public class Indexer extends Subsystem {
                     case CORRECTING:
                         newState = handleCorrecting();
                         break;
+                    case COBRAING:
+                        newState = handleCobraing();
+                        break;
                     case BACKING:
                         newState = handleBacking();
                         break;
                     case INDEXING:
                         newState = handleIndexing();
-                        break;
-                    case CLIMBING_PREP:
-                    case CLIMBING_MOVE:
-                        newState = handleClimbing();
                         break;
                     case HOLDING:
                     default:
@@ -239,12 +217,9 @@ public class Indexer extends Subsystem {
     private SystemState handleHolding() {
         if (mStateChanged) {
             mPeriodicIO.indexerDemand = 0.0;
-            mPeriodicIO.climberDemand = 0.0;
-            mPeriodicIO.PTODemand = PTO.INDEXER;  // PTO is always indexer unless climbing
             mPeriodicIO.schedDeltaDesired = 0; // goto sleep
-            System.out.println("holdingEncPos - " + mPeriodicIO.FXLeftEncPos);
         }
-        
+
         return defaultStateTransfer();
     }
 
@@ -256,40 +231,52 @@ public class Indexer extends Subsystem {
                 speed = kLoadSpeed;
             }
             mPeriodicIO.indexerDemand = speed + getLoadSpeed(); //kLoadSpeed;
-            mPeriodicIO.PTODemand = PTO.INDEXER;
-            mPeriodicIO.schedDeltaDesired = 20; // goto sleep
-        }else if (!isBallEntering()){
+            mPeriodicIO.schedDeltaDesired = 20; // stay awake to monitor beam break to jump to correcting
+        }else if (!isBallEnteringSimple()){
             setWantedState(WantedState.CORRECT);
-            //setWantedState(WantedState.HOLD);
             startBallPos = mPeriodicIO.FXLeftEncPos;
         }
 
         return defaultStateTransfer();
     }
 
+    // position ball based on passing through beam break
     private SystemState handleCorrecting() {
         if (mStateChanged) {            
             deltaFromEntrance = SmartDashboard.getNumber("delta from start",-1);
             if (deltaFromEntrance == -1){
-                SmartDashboard.putNumber("delta from start", 3562);
-                deltaFromEntrance = 3562;
+                SmartDashboard.putNumber("delta from start", kBallOffset0and1);
+                deltaFromEntrance = kBallOffset0and1;
             }
             if(numberOfBalls == 2){
-                deltaFromEntrance -= 500;
+                deltaFromEntrance -= kBallOffset2;
             }
             mPeriodicIO.indexerPosDemand = startBallPos + deltaFromEntrance;
             mPeriodicIO.indexerDemand = 0;
             mPeriodicIO.schedDeltaDesired = 20;
             numberOfBalls++;
-            //System.out.println("startBallPos - " + startBallPos);
+            System.out.println("startBallPos - " + startBallPos);
         }
-        //System.out.println("delta from start - " + deltaFromEntrance);
-        //System.out.println("indexerPosDemand - " + mPeriodicIO.indexerPosDemand + ", currentPos - " + mPeriodicIO.FXLeftEncPos + ", difference = " + Math.abs(mPeriodicIO.FXLeftEncPos - mPeriodicIO.indexerPosDemand));
-        if (Math.abs(mPeriodicIO.FXLeftEncPos - mPeriodicIO.indexerPosDemand) < 100) {
-            //System.out.println("Done Correcting");
+        System.out.println("IndexCorrecting target:"+mPeriodicIO.indexerPosDemand+" current pos:"+mPeriodicIO.FXLeftEncPos+" delta:"+(mPeriodicIO.indexerPosDemand-mPeriodicIO.FXLeftEncPos));
+        if (Math.abs(mPeriodicIO.FXLeftEncPos - mPeriodicIO.indexerPosDemand) < kBallOffsetTolerance || isFullyLoaded()) {
             setWantedState(WantedState.HOLD);
-        }else{
-            //System.out.println("Not Done Correcting");
+        }
+
+        return defaultStateTransfer();
+    }
+
+    double cobraTarget = 0;
+    private SystemState handleCobraing() {
+        if (mStateChanged) {
+            // mPeriodicIO.indexerDemand = 0;
+            mPeriodicIO.schedDeltaDesired = 20; // stay awake to monitor progress
+            cobraStartTime = Timer.getFPGATimestamp();
+            cobraTarget = mPeriodicIO.FXLeftEncPos-500;
+            mPeriodicIO.indexerPosDemand = cobraTarget;
+        }
+
+        if (isBallEnteringSimple() || !isFullyLoaded() || Timer.getFPGATimestamp()-cobraStartTime > cobraMaxDuration){//} || mPeriodicIO.FXLeftEncPos < mPeriodicIO.indexerPosDemand+100){
+            setWantedState(WantedState.HOLD);
         }
         return defaultStateTransfer();
     }
@@ -297,7 +284,6 @@ public class Indexer extends Subsystem {
     private SystemState handleBacking() {
         if (mStateChanged) {
             mPeriodicIO.indexerDemand = kBackSpeed;
-            mPeriodicIO.PTODemand = PTO.INDEXER;
             mPeriodicIO.schedDeltaDesired = 0; // goto sleep
             numberOfBalls = 0;
         }
@@ -308,60 +294,36 @@ public class Indexer extends Subsystem {
     private SystemState handleIndexing() {
         if (mStateChanged) {
             mPeriodicIO.indexerDemand = kIndexSpeed;
-            mPeriodicIO.PTODemand = PTO.INDEXER;
             mPeriodicIO.schedDeltaDesired = 0; // goto sleep
         }
-
+        numberOfBalls = 0;
         return defaultStateTransfer();
     }
-
-    private SystemState handleClimbing() {
-        if (mStateChanged) {
-            mPeriodicIO.climberDemand = 0.0;
-            mPeriodicIO.PTODemand = PTO.CLIMBER;
-            mPeriodicIO.schedDeltaDesired = mDefaultSchedDelta; // stay awake
-        }
-
-        return defaultStateTransfer();
-    }   
-
-    public synchronized void setClimberSpeed(double speed) {
-        mPeriodicIO.climberDemand = speed;
-    }
-
-    // this needs more thought
-    // it needs to have a dedicated system state
-    // public synchronized void setIndexerSpeed(double speed) {
-        // mPeriodicIO.indexerDemand = speed;
-    // }
 
     // method needs to be called at different cycle times
-    public synchronized boolean isBallEntering() {
+    private synchronized boolean isBallEnteringSimple() {
         //return !mDIBallEntered.get();
         return mAIBallEntered.getVoltage() < beamBreakThreshold;
     }
 
-    public synchronized boolean isBallEntering2() {
-        if(mAIBallEntered.getVoltage() < beamBreakThreshold){
+    public synchronized boolean isBallEntering() {
+        if(isBallEnteringSimple()){
+            // this unorthodox code is trying to turn on the indexer asap when a ball is detected
+            // getLoadSpeed changes the speed to overcome the drag of already loaded balls
             mPeriodicIO.indexerDemand = kLoadSpeed + getLoadSpeed();
             mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
             mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
             return true;
-        }else{
-            // mPeriodicIO.indexerDemand = 0;
-            // mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
-            // mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
-            return false;
         }
+        return false;
     }
 
     // method needs to be called at different cycle times
     public synchronized boolean isFullyLoaded() {
-        //return !mDIBallTouchingShooter.get();
         return (mAIBallTouchingShooter.getVoltage() < beamBreakThreshold);
-
     }
 
+    // use different speeds to overcome drag of already loaded balls
     public synchronized double getLoadSpeed() {
         if(numberOfBalls == 0){
             return 0;
@@ -382,10 +344,8 @@ public class Indexer extends Subsystem {
                 return SystemState.BACKING;
             case INDEX:
                 return SystemState.INDEXING;
-            case CLIMB_PREP:
-                return SystemState.CLIMBING_PREP;
-            case CLIMB_MOVE:
-                return SystemState.CLIMBING_MOVE;
+            case COBRA:
+                return SystemState.COBRAING;
             case HOLD:
             default:
                 return SystemState.HOLDING;
@@ -410,11 +370,6 @@ public class Indexer extends Subsystem {
         mFXLeft.set(ControlMode.PercentOutput, 0.0);
         mFXRight.set(ControlMode.PercentOutput, 0.0);
         mPeriodicIO.indexerDemand = 0;
-        mPeriodicIO.climberDemand = 0;
-
-        mSolPTO.set(PTO.INDEXER.get());  
-        mPeriodicIO.PTODemand = PTO.INDEXER;
-        mPTOState = PTO.INDEXER;
     }
 
     @Override
@@ -433,8 +388,6 @@ public class Indexer extends Subsystem {
                     sClassName+".isBallEntering,"+
                     sClassName+".isFullyLoaded,"+
                     sClassName+".indexerDemand,"+
-                    sClassName+".climberDemand,"+
-                    sClassName+".powerTakeOffDemand,"+
                     sClassName+".FXLeftCurrent,"+
                     sClassName+".FXRightCurrent,"+
                     sClassName+".FXLeftMotorFault,"+
@@ -457,11 +410,9 @@ public class Indexer extends Subsystem {
             values = ""+mSystemState + "," +
                         /*mPeriodicIO.FXLeftEncPos+*/","+
                         /*mPeriodicIO.FXRightEncPos+*/","+
-                        isBallEntering()+","+
+                        isBallEnteringSimple()+","+
                         isFullyLoaded()+","+
                         mPeriodicIO.indexerDemand+","+
-                        mPeriodicIO.climberDemand+","+
-                        mPeriodicIO.PTODemand+","+
                         mPeriodicIO.FXLeftCurrent+","+
                         mPeriodicIO.FXRightCurrent+","+
                         mPeriodicIO.FXLeftFaults+","+
@@ -476,11 +427,9 @@ public class Indexer extends Subsystem {
             values = ""+mSystemState + "," +
                         mPeriodicIO.FXLeftEncPos+","+
                         mPeriodicIO.FXRightEncPos+","+
-                        isBallEntering()+","+
+                        isBallEnteringSimple()+","+
                         isFullyLoaded()+","+
                         mPeriodicIO.indexerDemand+","+
-                        mPeriodicIO.climberDemand+","+
-                        mPeriodicIO.PTODemand+","+
                         /*mPeriodicIO.FXLeftCurrent+*/","+
                         /*mPeriodicIO.FXRightCurrent+*/","+
                         /*mPeriodicIO.FXLeftFaults+*/","+
@@ -507,63 +456,19 @@ public class Indexer extends Subsystem {
         double now = Timer.getFPGATimestamp();
         mPeriodicIO.schedDeltaActual = now - mPeriodicIO.lastSchedStart;
         mPeriodicIO.lastSchedStart = now;
-        //if (mSystemState == SystemState.CLIMBING_PREP || mSystemState == SystemState.CLIMBING_MOVE) {
-            mPeriodicIO.FXLeftEncPos  = mFXLeft.getSelectedSensorPosition();
-            mPeriodicIO.FXRightEncPos = mFXRight.getSelectedSensorPosition();
-        //}
-        // if(mPeriodicIO.currentPos == mFXLeft.getSelectedSensorPosition()){
-        //     indexerMoving = false;
-        // }else{
-        //     indexerMoving = true;
-        // }
-        // mPeriodicIO.currentPos = mFXLeft.getSelectedSensorPosition();
+        mPeriodicIO.FXLeftEncPos  = mFXLeft.getSelectedSensorPosition();
+        mPeriodicIO.FXRightEncPos = mFXRight.getSelectedSensorPosition();
      }
 
     @Override
     public void writePeriodicOutputs() {
-        if (mSystemState == SystemState.CLIMBING_PREP){
-            // toggle motor back and forth to help free brake
-            mFXLeft.set(ControlMode.PercentOutput, mClimberPrepDemand);
-            mFXRight.set(ControlMode.PercentOutput, mClimberPrepDemand);
-            if (mClimberPrepCnt++ % 5 == 0)    {
-                mClimberPrepDemand *= -1;
-            }
-            mFXLeftPIDPos = Integer.MIN_VALUE;
+        if(mSystemState == SystemState.CORRECTING || mSystemState == SystemState.COBRAING){
+            mFXLeft.set(ControlMode.Position, mPeriodicIO.indexerPosDemand);
+            mFXRight.set(ControlMode.Position, mPeriodicIO.indexerPosDemand);
+        }else{
+            mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
+            mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
         }
-        else if (mSystemState == SystemState.CLIMBING_MOVE){
-            // holding PID if motion stops
-            if (mPeriodicIO.climberDemand == 0){
-                if (mFXLeftPIDPos == Integer.MIN_VALUE){
-                    mFXLeftPIDPos = mPeriodicIO.FXLeftEncPos;
-                    mFXRightPIDPos = mPeriodicIO.FXRightEncPos;
-                    mFXLeft.set(ControlMode.Position, mFXLeftPIDPos);
-                    mFXRight.set(ControlMode.Position, mFXRightPIDPos);    
-                }
-            }
-            else {
-                // move based on joystick
-                mFXLeftPIDPos = Integer.MIN_VALUE;
-                mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.climberDemand);
-                mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.climberDemand);
-            }
-        } 
-        else {
-
-            System.out.println(mSystemState);
-            if(mSystemState == SystemState.CORRECTING){
-                mFXLeft.set(ControlMode.Position, mPeriodicIO.indexerPosDemand);
-                mFXRight.set(ControlMode.Position, mPeriodicIO.indexerPosDemand);
-            }else{
-                mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
-                mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
-            }
-        }
-
-        // control PTO
-        // if (mPTOState != mPeriodicIO.PTODemand) {
-        //     mPTOState = mPeriodicIO.PTODemand;
-        //     mSolPTO.set(mPeriodicIO.PTODemand.get());
-        // }
     }
 
     @Override
@@ -576,7 +481,7 @@ public class Indexer extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putBoolean("Ball Entered", isBallEntering());
+        SmartDashboard.putBoolean("Ball Entered", isBallEnteringSimple());
         SmartDashboard.putBoolean("Fully Loaded", isFullyLoaded());
         SmartDashboard.putNumber("Enterance Beam Break Analog", mAIBallEntered.getVoltage());
         SmartDashboard.putNumber("Exit Beam Break Analog", mAIBallTouchingShooter.getVoltage());
@@ -603,9 +508,7 @@ public class Indexer extends Subsystem {
         public double currentPos; //end pos
         
         //OUTPUTS
-        public PTO    PTODemand;
         public double indexerDemand;
-        public double climberDemand;
         public double indexerPosDemand;
     }
 }

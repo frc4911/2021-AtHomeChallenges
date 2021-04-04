@@ -132,7 +132,7 @@ public class Swerve extends Subsystem {
 	public final double rotationDivision = 1.0;
 
 	// Aiming PID
-	SynchronousPIDF aimingPIDF = new SynchronousPIDF(0.75, 0.0, 5.0);
+	SynchronousPIDF aimingPIDF = new SynchronousPIDF(0.5, 0.0, 8.0);//0.75, 0, 5 deadeye
 	private int aimingParametersCount;
 	private int totalAimingCount;
 
@@ -175,6 +175,11 @@ public class Swerve extends Subsystem {
 			m1 = Constants.kFrontLeftCancoderStartingPosDegreesR1;
 			m2 = Constants.kRearLeftCancoderStartingPosDegreesR1;
 			m3 = Constants.kRearRightCancoderStartingPosDegreesR1;
+			// int angOffset = 30;
+			// m0 = 214 - angOffset;
+			// m1 = 104 - angOffset;
+			// m2 = 102 - angOffset;
+			// m3 = 259 - angOffset;
 		}
 		else if (RobotName.name.equals(Constants.kRobot2Name)){
 			m0 = Constants.kFrontRightCancoderStartingPosDegreesR2;
@@ -451,14 +456,14 @@ public class Swerve extends Subsystem {
 		//raynli
 		case CELL_AIM:
 			aimingParameters = robotState.getPowerCell();
-			mIsOnTarget = false;
+			boolean mIsOnCellTarget = false;
 			System.out.println(aimingParameters.isPresent());
 			if (aimingParameters.isPresent()) {
 				error = Math.atan2(-aimingParameters.get().getRobotToGoal().getTranslation().y(), aimingParameters.get().getRobotToGoal().getTranslation().x());
-				mIsOnTarget = Math.abs(error) <= Math.toRadians(2.0); //0.5
+				mIsOnCellTarget = Math.abs(error) <= Math.toRadians(2.0); //0.5
 			} 
 			SmartDashboard.putNumber("LL error", error);
-			SmartDashboard.putBoolean("OnTarget", mIsOnTarget);
+			SmartDashboard.putBoolean("OnTarget", mIsOnCellTarget);
 			setStrafeOutput(cellPIDF.calculate(error, timestamp));
 			break;
 		default:

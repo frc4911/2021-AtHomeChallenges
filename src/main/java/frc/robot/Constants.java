@@ -60,6 +60,7 @@ public class Constants {
 			Rotation2d.fromDegrees(-90.0));
 
 	public static final Pose2d kRobotStartingPose = new Pose2d();
+	public static final Pose2d kRobotSpecialPose = new Pose2d(new Translation2d(0,0), Rotation2d.fromDegrees(180));
 	public static final Pose2d kRobotLeftStartingPose = new Pose2d(
 			new Translation2d(48.0 + kRobotHalfLength, 97.0 + kRobotHalfWidth - 162.0), Rotation2d.fromDegrees(0));
 	public static final Pose2d kRobotRightStartingPose = new Pose2d(
@@ -89,8 +90,8 @@ public class Constants {
     static {
         kShootwardsLimelightConstants.kName = "ShootwardsLimelight";
         kShootwardsLimelightConstants.kTableName = "limelight-shooter";
-        kShootwardsLimelightConstants.kHeight = 25.25/*22.25*/;// cetus: 11  // robot1: 22.25// inches 
-        kShootwardsLimelightConstants.kSubsystemToLens = new Pose2d(new Translation2d(0, 0.0), Rotation2d.fromDegrees(-0.7)); // right is positive // -1.5
+        kShootwardsLimelightConstants.kHeight = 23 /*22.25*/;// cetus: 11  // robot1: 22.25// pinkeye: 23// inches 
+        kShootwardsLimelightConstants.kSubsystemToLens = new Pose2d(new Translation2d(0, 0.0), Rotation2d.fromDegrees(0.0)); // right is positive // -1.5
 		kShootwardsLimelightConstants.kHorizontalPlaneToLens = Rotation2d.fromDegrees(20.5); //38 // degrees
 		kShootwardsLimelightConstants.kExpectedTargetCount = new double[] {1, 3}; // expect 2 targets (2 top corners)
 		kShootwardsLimelightConstants.kPipelineZoom = new int[] {1, 2};

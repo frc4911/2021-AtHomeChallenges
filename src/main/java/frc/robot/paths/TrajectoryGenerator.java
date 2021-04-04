@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TrajectoryGenerator {
+    private boolean skipThisOne = true;
     private static final double kMaxVelocity = 120.0;
     private static final double kMaxAccel = 60.0; //120.0;
     private static final double kMaxDecel = 72.0; //72.0;
@@ -118,34 +119,6 @@ public class TrajectoryGenerator {
             public final Trajectory<TimedState<Pose2dWithCurvature>> right;
         }
 
-        // Rendezvous Paths
-        public final MirroredTrajectory startToThreePowerCells;
-        public final MirroredTrajectory startToThreePowerCells2;
-        public final MirroredTrajectory collectThreePowerCells;      
-        public final MirroredTrajectory moveToTwoPowerCells;
-        public final MirroredTrajectory moveToTwoPowerCells2;            
-        public final MirroredTrajectory collectTwoPowerCells; 
-        
-        // Steal Paths
-        public final MirroredTrajectory startToStealPath;
-        public final MirroredTrajectory stealToGoalPath;
-        public final MirroredTrajectory goalToRendezvousPath;
-        public final MirroredTrajectory threeBallsPath;
-        public final MirroredTrajectory threeBallsToGoalPath;
-
-        // Trench Paths
-        public final MirroredTrajectory startToTrenchPath;
-        public final MirroredTrajectory trenchToStartPath;
-
-        // Test Paths Alex
-        public final MirroredTrajectory backAwayFromLinePath;
-
-        public final MirroredTrajectory startToEndPath;
-      
-        // public final MirroredTrajectory redAPath;
-        // public final MirroredTrajectory redBPath;
-        // public final MirroredTrajectory blueAPath;
-        // public final MirroredTrajectory blueBPath;
 
         public final MirroredTrajectory barrelPath;
         public final MirroredTrajectory slalomPath;
@@ -164,51 +137,16 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory galacticSearchBBluePath2;
         public final MirroredTrajectory galacticSearchBBluePath3;
         public final MirroredTrajectory bouncePath; 
+
+        public final MirroredTrajectory powerPortForwardPath;
+        public final MirroredTrajectory powerPortBackwardPath;
+
         // public final MirroredTrajectory testPath3;
         // public final MirroredTrajectory testPath4;
 
         // public final MirroredTrajectory testPathBrian;
 
         private TrajectorySet() {
-            // Rendezvous Paths
-            startToThreePowerCells = new MirroredTrajectory(getStartToThreePowerCells());
-            startToThreePowerCells2 = new MirroredTrajectory(getStartToThreePowerCells2());
-            // System.out.println(startToThreePowerCells.left.toString());
-            collectThreePowerCells = new MirroredTrajectory(getCollectThreePowerCells());
-            // System.out.println(collectThreePowerCells.left.toString());
-            moveToTwoPowerCells = new MirroredTrajectory(getMoveToTwoPowerCells());
-            // System.out.println(moveToTwoPowerCells.left.toString());
-            moveToTwoPowerCells2 = new MirroredTrajectory(getMoveToTwoPowerCells2());
-            // System.out.println(moveToTwoPowerCells2.left.toString());
-            collectTwoPowerCells = new MirroredTrajectory(getCollectTwoPowerCells());
-            // System.out.println(collectTwoPowerCells.left.toString());
-
-            // Trench Paths
-            startToTrenchPath = new MirroredTrajectory(getStartToTrench());
-            trenchToStartPath = new MirroredTrajectory(getTrenchToStart());
-
-            // Steal Paths
-            startToStealPath = new MirroredTrajectory(getStartToSteal());
-            stealToGoalPath = new MirroredTrajectory(getStealToGoal());
-            goalToRendezvousPath = new MirroredTrajectory(getGoalToRendezvous());
-            threeBallsPath = new MirroredTrajectory(getThreeBalls());
-            threeBallsToGoalPath = new MirroredTrajectory(getThreeBallsToGoal());
-
-            // Test Paths Alex
-            backAwayFromLinePath = new MirroredTrajectory(getBackAwayFromLinePath());
-
-            startToEndPath = new MirroredTrajectory(getStartToEndPath());
-            // System.out.println(startToEndPath.left.toString());
-
-            // redAPath = new MirroredTrajectory(getRedAPath());
-            // // System.out.println(redAPath.left.toString());
-            // redBPath = new MirroredTrajectory(getRedBPath());
-            // // System.out.println(redBPath.left.toString());
-            // blueAPath = new MirroredTrajectory(getBlueAPath());
-            // // System.out.println(blueAPath.left.toString());
-            // blueBPath = new MirroredTrajectory(getBlueBPath());
-            // // System.out.println(blueBPath.left.toString());
-
             barrelPath = new MirroredTrajectory(getBarrelPath());
             // System.out.println(testPath.left.toString());
             slalomPath = new MirroredTrajectory(getSlalomPath());
@@ -238,6 +176,9 @@ public class TrajectoryGenerator {
             galacticSearchBBluePath2 = new MirroredTrajectory(getGalacticSearchBBluePath2());
             galacticSearchBBluePath3 = new MirroredTrajectory(getGalacticSearchBBluePath3());
 
+            powerPortForwardPath = new MirroredTrajectory(getPowerPortForwardPath());
+            powerPortBackwardPath = new MirroredTrajectory(getPowerPortBackwardPath());
+
             // testPathBrian = new MirroredTrajectory(getBrianPath());
             // System.out.println("Brian's path");
             // System.out.println(testPathBrian.left.toString());
@@ -246,121 +187,6 @@ public class TrajectoryGenerator {
         }
 
         /*************************************Rendezvous Paths*****************************************/
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToThreePowerCells() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(-133.5)));
-            waypoints.add(new Pose2d(new Translation2d(-100.0, -95.0), Rotation2d.fromDegrees(-133.5)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToThreePowerCells2() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-100.0, -95.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(-105.0, -95.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(-93.0, -71.0), Rotation2d.fromDegrees(63.4)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getCollectThreePowerCells() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-95.0, -95.0), Rotation2d.fromDegrees(60.0)));
-            waypoints.add(new Pose2d(new Translation2d(-83.0, -71.0), Rotation2d.fromDegrees(60.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getMoveToTwoPowerCells() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-83.0, -71.0), Rotation2d.fromDegrees(-30.0)));
-            waypoints.add(new Pose2d(new Translation2d(-70.0, -81.0), Rotation2d.fromDegrees(-30.0)));
-            waypoints.add(new Pose2d(new Translation2d(-33.0, -15.0), Rotation2d.fromDegrees(60.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getMoveToTwoPowerCells2() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-33.0, -15.0), Rotation2d.fromDegrees(150.0)));
-            waypoints.add(new Pose2d(new Translation2d(-118.0, 15.0), Rotation2d.fromDegrees(150.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }        
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getCollectTwoPowerCells() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-95.0, -95.0), Rotation2d.fromDegrees(60.0)));
-            waypoints.add(new Pose2d(new Translation2d(-83.0, -71.0), Rotation2d.fromDegrees(60.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        /*************************************Trench Paths*****************************************/
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToTrench() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(135.0)));
-            waypoints.add(new Pose2d(new Translation2d(-65.0, 65.0), Rotation2d.fromDegrees(135.0)));
-            waypoints.add(new Pose2d(new Translation2d(-195.0, 65.0), Rotation2d.fromDegrees(180.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getTrenchToStart() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            // waypoints.add(new Pose2d(new Translation2d(-185.0, 61.0), Rotation2d.fromDegrees(0.0)));
-            // waypoints.add(new Pose2d(new Translation2d(-40.0, 40.0), Rotation2d.fromDegrees(-45.0)));
-            // waypoints.add(new Pose2d(new Translation2d(-20.0, 20.0), Rotation2d.fromDegrees(-45.0)));
-            waypoints.add(new Pose2d(new Translation2d(-195.0, 65.0), Rotation2d.fromDegrees(-18.4)));
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(-18.4)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        /*************************************Steal Paths*****************************************/
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToSteal() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(-122.0, 0.0), Rotation2d.fromDegrees(180.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0, 60.0, 60.0, kMaxVoltage, 120.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStealToGoal() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-122.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(-100.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(-10.0, 160.0), Rotation2d.fromDegrees(60.6)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0 * 0.75, 60.0, 60.0, kMaxVoltage, 120.0 * 0.75, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGoalToRendezvous() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-10.0, 160.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(-80.0, 160.0), Rotation2d.fromDegrees(180.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0 * 0.5, 60.0, 60.0, kMaxVoltage, 120.0 * 0.5, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getThreeBalls() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-80.0, 160.0), Rotation2d.fromDegrees(120.0)));
-            waypoints.add(new Pose2d(new Translation2d(-108.0, 112.0), Rotation2d.fromDegrees(120.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0 * 0.5, 60.0, 60.0, kMaxVoltage, 120.0 * 0.5, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getThreeBallsToGoal() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-48.0, 112.0), Rotation2d.fromDegrees(32.0)));
-            waypoints.add(new Pose2d(new Translation2d(-10.0, 160.0), Rotation2d.fromDegrees(32.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0 * 0.5, 60.0, 60.0, kMaxVoltage, 120.0 * 0.5, 1);
-        }
 
         /*************************************Test Paths*****************************************/
 
@@ -372,32 +198,6 @@ public class TrajectoryGenerator {
             return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0, 60.0, 60.0, kMaxVoltage, 120.0, 1);
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getBrianPath(){
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d((10*12), 0.0), Rotation2d.fromDegrees(90.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), 30, kMaxAccel, kMaxDecel, kMaxVoltage, 30.0, 1);
-        }
-        
-        // private Trajectory<TimedState<Pose2dWithCurvature>> getStraightPath(){
-        //     List<Pose2d> waypoints = new ArrayList<>();
-        //     waypoints.add(Constants.kRobotLeftStartingPose);
-        //     waypoints.add(Constants.kRobotLeftStartingPose.transformBy(Pose2d.fromTranslation(new Translation2d(72.0, 0.0))));
-
-        //     return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        // }
-        
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToEndPath(){
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(startingPose);
-            waypoints.add(midPose);
-            waypoints.add(mid2Pose);
-            waypoints.add(endingPose);
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        
         private class ThreePoints{
             double x;
             double y;
@@ -462,94 +262,75 @@ public class TrajectoryGenerator {
             return angleDegrees*conversion;
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getRedAPath() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(225)));
-            waypoints.add(new Pose2d(new Translation2d(-30.0, -30.0), Rotation2d.fromDegrees(225)));
-            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getRedBPath() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180)));
-            waypoints.add(new Pose2d(new Translation2d(-30.0, 0.0), Rotation2d.fromDegrees(180)));
-            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getBlueAPath() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(217)));
-            waypoints.add(new Pose2d(new Translation2d(-120.0, -90.0), Rotation2d.fromDegrees(217)));
-            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
-        }
         private double convertToDegrees(double angleRads){
             final double conversion = 180.0/Math.PI;
             return angleRads*conversion;
         }
+
         private Trajectory<TimedState<Pose2dWithCurvature>> getBarrelPath() {
             List<Pose2d> waypoints = new ArrayList<>();
             ArrayList<ThreePoints> tpal = new ArrayList<>();
 
-                        //Temporary
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
+            if (false){
+                waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+                waypoints.add(new Pose2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)));
+            }
+            else {
+                double exitAngleRads;
+                double enterAngleRads;
+                double rc = 28/2;
+                double radius = 30;
 
-            // double exitAngleRads;
-            // double enterAngleRads;
-            // double rc = 28/2;
-            // double radius = 30;
+                double startx = 60-rc;
+                double starty = 120-radius; 
 
-            // double startx = 60-rc;
-            // double starty = 120-radius; 
+                double d0x = 147; //150
+                double d0y = 120;
 
-            // double d0x = 147; //150
-            // double d0y = 120;
+                double d1x = 235; //240
+                double d1y = 63; 
 
-            // double d1x = 235; //240
-            // double d1y = 63; 
+                double d2x = 292; //300
+                double d2y = 117; //120
 
-            // double d2x = 292; //300
-            // double d2y = 117; //120
+                double endx = startx;
+                double endy = starty;
 
-            // double endx = startx;
-            // double endy = starty;
+                enterAngleRads = convertToRads(-90);
+                addStraightSegment(tpal, true, startx,                              starty, 
+                                            d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads));
+                exitAngleRads = convertToRads(265);
+                addArcSegment(tpal,     false, d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads),
+                                            d0x,                                 d0y,                 exitAngleRads);
+                enterAngleRads = convertToRads(75);
+                addStraightSegment(tpal,false, d0x+radius*Math.cos(exitAngleRads),  d0y+radius*Math.sin(exitAngleRads),
+                                            d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads));
+                exitAngleRads = convertToRads(-225);
+                addArcSegment(tpal,      false,d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads),
+                                            d1x,                                 d1y,                 exitAngleRads);
+                enterAngleRads = convertToRads(135);
+                addStraightSegment(tpal,false, d1x+radius*Math.cos(exitAngleRads),  d1y+radius*Math.sin(exitAngleRads),
+                                            d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads));
+                exitAngleRads = convertToRads(-90);
+                addArcSegment(tpal,      false,d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads),
+                                            d2x,                                 d2y,                 exitAngleRads);
 
+                addStraightSegment(tpal, false,d2x+radius*Math.cos(exitAngleRads),  d2y+radius*Math.sin(exitAngleRads),
+                                            startx,                              starty);
 
-            // enterAngleRads = convertToRads(-90);
-            // addStraightSegment(tpal, true, startx,                              starty, 
-            //                                d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads));
-            // exitAngleRads = convertToRads(265);
-            // addArcSegment(tpal,     false, d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads),
-            //                                d0x,                                 d0y,                 exitAngleRads);
-            // enterAngleRads = convertToRads(75);
-            // addStraightSegment(tpal,false, d0x+radius*Math.cos(exitAngleRads),  d0y+radius*Math.sin(exitAngleRads),
-            //                                d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads));
-            // exitAngleRads = convertToRads(-225);
-            // addArcSegment(tpal,      false,d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads),
-            //                                d1x,                                 d1y,                 exitAngleRads);
-            // enterAngleRads = convertToRads(135);
-            // addStraightSegment(tpal,false, d1x+radius*Math.cos(exitAngleRads),  d1y+radius*Math.sin(exitAngleRads),
-            //                                d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads));
-            // exitAngleRads = convertToRads(-90);
-            // addArcSegment(tpal,      false,d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads),
-            //                                d2x,                                 d2y,                 exitAngleRads);
+                System.out.println("Barrel Path Coordinates - ");
+                for (ThreePoints tp : tpal){
+                    System.out.println(tp.x+","+tp.y+","+tp.a);
+                    waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+                }
 
-            // addStraightSegment(tpal, false,d2x+radius*Math.cos(exitAngleRads),  d2y+radius*Math.sin(exitAngleRads),
-            //                                startx,                              starty);
-
-            // System.out.println("Barrel Path Coordinates - ");
-            // for (ThreePoints tp : tpal){
-            //     System.out.println(tp.x+","+tp.y+","+tp.a);
-            //     waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
-            // }
-
-            // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            // if(speed == -1){
-            //     SmartDashboard.putNumber("Autopath Speed", 20);
-            //     speed = 20;
-            // }
-            // return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+                // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+                // if(speed == -1){
+                //     SmartDashboard.putNumber("Autopath Speed", 20);
+                //     speed = 20;
+                // }
+            }
+            return generateTrajectory(   false, waypoints, Arrays.asList(),        80,        80,        80,           12, 80, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPath() {
@@ -1326,6 +1107,22 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(new Translation2d(-120.0, -60.0), Rotation2d.fromDegrees(210)));
             return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
         }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getPowerPortForwardPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(new Translation2d(-100.0, 0.0), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 20.0, 60.0, 60.0, kMaxVoltage, 20.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getPowerPortBackwardPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(-100.0, 0.0), Rotation2d.fromDegrees(180)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 20.0, 60.0, 60.0, kMaxVoltage, 20.0, 1);
+        }
+        
+
     }
     
 }
