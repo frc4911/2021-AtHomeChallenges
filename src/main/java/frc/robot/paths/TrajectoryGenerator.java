@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TrajectoryGenerator {
-    private boolean skipThisOne = true;
+    private boolean skipThisOne = false;
     private static final double kMaxVelocity = 120.0;
     private static final double kMaxAccel = 60.0; //120.0;
     private static final double kMaxDecel = 72.0; //72.0;
@@ -126,7 +126,10 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory slalomPathRound;
         public final MirroredTrajectory slalomPathStraightB;
         public final MirroredTrajectory slalomPathEnd;
-        // public final MirroredTrajectory bouncePath;
+        public final MirroredTrajectory bouncePathA;
+        public final MirroredTrajectory bouncePathB;
+        public final MirroredTrajectory bouncePathC;
+        public final MirroredTrajectory bouncePathD;
 
         public final MirroredTrajectory galacticSearchARedPath1;
         public final MirroredTrajectory galacticSearchARedPath2;
@@ -141,7 +144,7 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory galacticSearchBBluePath1;
         public final MirroredTrajectory galacticSearchBBluePath2;
         public final MirroredTrajectory galacticSearchBBluePath3;
-        public final MirroredTrajectory bouncePath; 
+
 
         public final MirroredTrajectory powerPortForwardPath;
         public final MirroredTrajectory powerPortBackwardPath;
@@ -160,7 +163,10 @@ public class TrajectoryGenerator {
             slalomPathStraightB = new MirroredTrajectory(getSlalomPathStraightB());
             slalomPathEnd       = new MirroredTrajectory(getSlalomPathEnd());
             //slalomPath = new MirroredTrajectory(getSlalomPath());
-            bouncePath = new MirroredTrajectory(getBouncePath());
+            bouncePathA = new MirroredTrajectory(getBouncePathA());
+            bouncePathB = new MirroredTrajectory(getBouncePathB());
+            bouncePathC = new MirroredTrajectory(getBouncePathC());
+            bouncePathD = new MirroredTrajectory(getBouncePathD());
             // System.out.println(testPath2.left.toString());
             // bouncePath = new MirroredTrajectory(getBouncePath());
             // System.out.println(testPath2.left.toString());
@@ -458,7 +464,7 @@ public class TrajectoryGenerator {
 
             exitAngleRads = convertToRads(-90);
             enterAngleRads = convertToRads(-90);
-            addStraightSegment(tpal, false, d1x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
+            addStraightSegment(tpal, true, d1x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
                                             d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
 
             //System.out.println("Slalom Path Coordinates - ");
@@ -491,7 +497,7 @@ public class TrajectoryGenerator {
 
             enterAngleRads = convertToRads(-90);
             exitAngleRads = convertToRads(0);
-            addArcSegment(tpal, false,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+            addArcSegment(tpal, true,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
                                             d2x,                                 dy,                 exitAngleRads);                             
             enterAngleRads = convertToRads(150);
             exitAngleRads = convertToRads(0);
@@ -539,7 +545,7 @@ public class TrajectoryGenerator {
 
             enterAngleRads = convertToRads(90);
             exitAngleRads = convertToRads(90);
-            addStraightSegment(tpal, false, d2x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
+            addStraightSegment(tpal, true, d2x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
                                             d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
 
             //System.out.println("Slalom Path Coordinates - ");
@@ -577,7 +583,7 @@ public class TrajectoryGenerator {
             exitAngleRads = convertToRads(179);
             dy -= 15;
             endy -=15;
-            addArcSegment(tpal, false,      d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+            addArcSegment(tpal, true,      d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
                                             d1x,                                 dy,                 exitAngleRads);
             enterAngleRads = convertToRads(0);
             exitAngleRads = convertToRads(-90);
@@ -597,95 +603,272 @@ public class TrajectoryGenerator {
 
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePath() {
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathA() {
             List<Pose2d> waypoints = new ArrayList<>();
             ArrayList<ThreePoints> tpal = new ArrayList<>();         
-
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 28; //30
-
-            double d0x = 60; //B2
-            double d0y = 60; //B2
-
-            double startx = d0x+radius*Math.cos(118);
-            double starty = d0y+radius*Math.sin(118);
-
-            double a3x = 90;
-            double a3y = 30; 
-
-            double d1x = 150; //D5
-            double d1y = 120; //D5
-
-            double a6x = 180;
-            double a6y = 30;
-
-            double d2x = 210; //D7
-            double d2y = 120; //D7
-
-            double d3x = 240; //D8
-            double d3y = 120; //D8
-
-            double a9x = 270;
-            double a9y = 30; 
-
-            double d4x = 300; //B10
-            double d4y = 60; //B10
-        
-            double endx = 330;
-            double endy = 90;
-
-            enterAngleRads = convertToRads(118);
-            exitAngleRads = convertToRads(0);
-            addArcSegment(tpal,     true, d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads),
-                                           d0x,                                 d0y,                 exitAngleRads);
-            addStraightSegment(tpal, false, d0x+radius*Math.cos(exitAngleRads),                              d0y+radius*Math.sin(exitAngleRads), 
-                                           a3x,                              a3y-rc+2);
-            //split here
-            enterAngleRads = convertToRads(180);
-            addStraightSegment(tpal, false, a3x,                              a3y-rc+2, 
-                                            d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads));
-            exitAngleRads = convertToRads(0);
-            addArcSegment(tpal,     false, d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads),
-                                           d1x,                                 d1y,                 exitAngleRads);
-            addStraightSegment(tpal, false, d1x+radius*Math.cos(exitAngleRads),                              d1y+radius*Math.sin(exitAngleRads), 
-                                           a6x,                              a6y);
-            //split here
-            enterAngleRads = convertToRads(180);
-            addStraightSegment(tpal, false, a6x,                              a6y,
-                                            d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads));
-            exitAngleRads = convertToRads(90);
-            addArcSegment(tpal, false, d2x+radius*Math.cos(enterAngleRads),  d2y+radius*Math.sin(enterAngleRads),
-                                       d2x,                                 d2y,                exitAngleRads);
-            enterAngleRads = convertToRads(90);
-            addStraightSegment(tpal, false, d2x+radius*Math.cos(exitAngleRads), d2y+radius*Math.sin(exitAngleRads), 
-                                            d3x+radius*Math.cos(enterAngleRads), d3x+radius*Math.sin(enterAngleRads));
-            exitAngleRads = convertToRads(0);
-            addArcSegment(tpal, false,      d3x+radius*Math.cos(enterAngleRads), d3y+radius*Math.sin(enterAngleRads),
-                                            d3x,                                 d3y, exitAngleRads);
-            addStraightSegment(tpal, false, d3x+radius*Math.cos(exitAngleRads),                      d3y+radius*Math.sin(exitAngleRads), 
-                                           a9x,                              a9y);
-            //split here
-            enterAngleRads = convertToRads(180);
-            addStraightSegment(tpal, false, a9x,                              a9y,
-                                            d4x+radius*Math.cos(enterAngleRads),    d4y+radius*Math.sin(enterAngleRads));
-            exitAngleRads = convertToRads(90);
-            addArcSegment(tpal, false, d4x*Math.cos(enterAngleRads), d4y*Math.sin(enterAngleRads), 
-                                       d4x,                          d4y,           exitAngleRads);
-            System.out.println("Bounce Path Coordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+            if (skipThisOne){
+                waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+                waypoints.add(new Pose2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)));
             }
-            // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            // if(speed == -1){
-            //     SmartDashboard.putNumber("Autopath Speed", 20);
-            //     speed = 20;
-            // }
-            // return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+            else {
+                double exitAngleRads;
+                double enterAngleRads;
+                double rc = 28/2;
+                double radius = 28; //30
+
+                double d0x = 60; //B2
+                double d0y = 60; //B2
+
+                double startx = d0x+radius*Math.cos(118);
+                double starty = d0y+radius*Math.sin(118);
+
+                double a3x = 90;
+                double a3y = 30; 
+
+                double d1x = 150; //D5
+                double d1y = 120; //D5
+
+                double a6x = 180;
+                double a6y = 30;
+
+                double d2x = 210; //D7
+                double d2y = 120; //D7
+
+                double d3x = 240; //D8
+                double d3y = 120; //D8
+
+                double a9x = 270;
+                double a9y = 30; 
+
+                double d4x = 300; //B10
+                double d4y = 60;  //B10
+            
+                double endx = 330;
+                double endy = 90;
+
+                // start leg A
+                enterAngleRads = convertToRads(118);
+                exitAngleRads = convertToRads(0);
+                addArcSegment(tpal,      true,  d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads), d0x, d0y, exitAngleRads);
+                addStraightSegment(tpal, false, d0x+radius*Math.cos(exitAngleRads),  d0y+radius*Math.sin(exitAngleRads),  a3x, a3y-rc+2);
+
+                System.out.println("Bounce Path A Coordinates - ");
+                for (ThreePoints tp : tpal){
+                    System.out.println(tp.x+","+tp.y+","+tp.a);
+                    waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+                }
+                // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+                // if(speed == -1){
+                //     SmartDashboard.putNumber("Autopath Speed", 20);
+                //     speed = 20;
+                // }
+            }
+            return generateTrajectory(   false, waypoints, Arrays.asList(),        20,        80,        80,           9, 20, 1);
+            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
         }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathB() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            ArrayList<ThreePoints> tpal = new ArrayList<>();         
+            if (skipThisOne){
+                waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+                waypoints.add(new Pose2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)));
+            }
+            else {
+                double exitAngleRads;
+                double enterAngleRads;
+                double rc = 28/2;
+                double radius = 28; //30
+
+                double d0x = 60; //B2
+                double d0y = 60; //B2
+
+                double startx = d0x+radius*Math.cos(118);
+                double starty = d0y+radius*Math.sin(118);
+
+                double a3x = 90;
+                double a3y = 30; 
+
+                double d1x = 150; //D5
+                double d1y = 120; //D5
+
+                double a6x = 180;
+                double a6y = 30;
+
+                double d2x = 210; //D7
+                double d2y = 120; //D7
+
+                double d3x = 240; //D8
+                double d3y = 120; //D8
+
+                double a9x = 270;
+                double a9y = 30; 
+
+                double d4x = 300; //B10
+                double d4y = 60;  //B10
+            
+                double endx = 330;
+                double endy = 90;
+
+                // start leg B
+                enterAngleRads = convertToRads(180);
+                addStraightSegment(tpal, false, a3x, a3y-rc+2, d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads));
+                exitAngleRads = convertToRads(0);
+                addArcSegment(tpal,      false, d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads),d1x, d1y, exitAngleRads);
+                addStraightSegment(tpal, false, d1x+radius*Math.cos(exitAngleRads),  d1y+radius*Math.sin(exitAngleRads), a6x, a6y);
+
+                System.out.println("Bounce Path B Coordinates - ");
+                for (ThreePoints tp : tpal){
+                    System.out.println(tp.x+","+tp.y+","+tp.a);
+                    waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+                }
+                // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+                // if(speed == -1){
+                //     SmartDashboard.putNumber("Autopath Speed", 20);
+                //     speed = 20;
+                // }
+            }
+            return generateTrajectory(   false, waypoints, Arrays.asList(),        20,        80,        80,           9, 20, 1);
+            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathC() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            ArrayList<ThreePoints> tpal = new ArrayList<>();         
+            if (skipThisOne){
+                waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+                waypoints.add(new Pose2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)));
+            }
+            else {
+                double exitAngleRads;
+                double enterAngleRads;
+                double rc = 28/2;
+                double radius = 28; //30
+
+                double d0x = 60; //B2
+                double d0y = 60; //B2
+
+                double startx = d0x+radius*Math.cos(118);
+                double starty = d0y+radius*Math.sin(118);
+
+                double a3x = 90;
+                double a3y = 30; 
+
+                double d1x = 150; //D5
+                double d1y = 120; //D5
+
+                double a6x = 180;
+                double a6y = 30;
+
+                double d2x = 210; //D7
+                double d2y = 120; //D7
+
+                double d3x = 240; //D8
+                double d3y = 120; //D8
+
+                double a9x = 270;
+                double a9y = 30; 
+
+                double d4x = 300; //B10
+                double d4y = 60;  //B10
+            
+                double endx = 330;
+                double endy = 90;
+
+                // start leg C
+                enterAngleRads = convertToRads(180);
+                addStraightSegment(tpal, false, a6x, a6y, d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads));
+                exitAngleRads = convertToRads(90);
+                addArcSegment(tpal, false, d2x+radius*Math.cos(enterAngleRads),  d2y+radius*Math.sin(enterAngleRads), d2x, d2y, exitAngleRads);
+                enterAngleRads = convertToRads(90);
+                
+                addStraightSegment(tpal, false, d2x+radius*Math.cos(exitAngleRads), d2y+radius*Math.sin(exitAngleRads), d3x+radius*Math.cos(enterAngleRads), d3y+radius*Math.sin(enterAngleRads));
+                
+                exitAngleRads = convertToRads(0);
+                addArcSegment(tpal, false,      d3x+radius*Math.cos(enterAngleRads), d3y+radius*Math.sin(enterAngleRads), d3x,d3y, exitAngleRads);
+                addStraightSegment(tpal, false, d3x+radius*Math.cos(exitAngleRads),  d3y+radius*Math.sin(exitAngleRads), a9x, a9y);
+
+                System.out.println("Bounce Path C Coordinates - ");
+                for (ThreePoints tp : tpal){
+                    System.out.println(tp.x+","+tp.y+","+tp.a);
+                    waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+                }
+                // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+                // if(speed == -1){
+                //     SmartDashboard.putNumber("Autopath Speed", 20);
+                //     speed = 20;
+                // }
+            }
+            return generateTrajectory(   false, waypoints, Arrays.asList(),        20,        80,        80,           9, 20, 1);
+            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathD() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            ArrayList<ThreePoints> tpal = new ArrayList<>();         
+            if (skipThisOne){
+                waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+                waypoints.add(new Pose2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)));
+            }
+            else {
+                double exitAngleRads;
+                double enterAngleRads;
+                double rc = 28/2;
+                double radius = 28; //30
+
+                double d0x = 60; //B2
+                double d0y = 60; //B2
+
+                double startx = d0x+radius*Math.cos(118);
+                double starty = d0y+radius*Math.sin(118);
+
+                double a3x = 90;
+                double a3y = 30; 
+
+                double d1x = 150; //D5
+                double d1y = 120; //D5
+
+                double a6x = 180;
+                double a6y = 30;
+
+                double d2x = 210; //D7
+                double d2y = 120; //D7
+
+                double d3x = 240; //D8
+                double d3y = 120; //D8
+
+                double a9x = 270;
+                double a9y = 30; 
+
+                double d4x = 300; //B10
+                double d4y = 60;  //B10
+            
+                double endx = 330;
+                double endy = 90;
+
+
+                // start leg D
+
+                enterAngleRads = convertToRads(180);
+                addStraightSegment(tpal, false, a9x, a9y,d4x+radius*Math.cos(enterAngleRads), d4y+radius*Math.sin(enterAngleRads));
+                exitAngleRads = convertToRads(90);
+                addArcSegment(tpal, false, d4x+radius*Math.cos(enterAngleRads), d4y+radius*Math.sin(enterAngleRads), d4x, d4y,exitAngleRads);
+
+                System.out.println("Bounce Path D Coordinates - ");
+                for (ThreePoints tp : tpal){
+                    System.out.println(tp.x+","+tp.y+","+tp.a);
+                    waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+                }
+                // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+                // if(speed == -1){
+                //     SmartDashboard.putNumber("Autopath Speed", 20);
+                //     speed = 20;
+                // }
+            }
+            return generateTrajectory(   false, waypoints, Arrays.asList(),        20,        80,        80,           9, 20, 1);
+            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        }
+
         double xscale = 1; 
         double yscale = 1;
         private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchARedPath1() {

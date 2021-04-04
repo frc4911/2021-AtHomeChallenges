@@ -180,9 +180,6 @@ public class Shooter extends Subsystem {
     }
 
     public synchronized boolean readyToShoot() {
-        // if(mPeriodicIO.currentRPM == 0 && mShootRPM == 0){
-        //         System.out.println("************error***************");
-        // }
         mPeriodicIO.currentRPM = ticksPer100MsToRPM(mFXLeft.getSelectedSensorVelocity(0));
         return mPeriodicIO.currentRPM > mShootRPM -kRPMTolerance;
     }

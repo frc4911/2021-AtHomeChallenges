@@ -291,12 +291,18 @@ public class Indexer extends Subsystem {
         return defaultStateTransfer();
     }
 
+    double encoderCount = 0;
+    double kTicksToUnload = 20000; // needs tuning
     private SystemState handleIndexing() {
         if (mStateChanged) {
             mPeriodicIO.indexerDemand = kIndexSpeed;
             mPeriodicIO.schedDeltaDesired = 0; // goto sleep
+            encoderCount = mPeriodicIO.FXLeftEncPos;
         }
-        numberOfBalls = 0;
+
+        if (mPeriodicIO.FXLeftEncPos > encoderCount+kTicksToUnload){
+            numberOfBalls = 0;
+        }
         return defaultStateTransfer();
     }
 
