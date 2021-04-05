@@ -308,7 +308,7 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(new Translation2d(300-startx, 75-starty), Rotation2d.fromDegrees(180)));
             waypoints.add(new Pose2d(new Translation2d(startx-60-startx, starty-30-starty), Rotation2d.fromDegrees(180)));
 
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        125,        180,        180,           12, 120, 1);
+            return generateTrajectory(   false, waypoints, Arrays.asList(),        120,        180,        180,           12, 120, 1);
         }
 
         // private Trajectory<TimedState<Pose2dWithCurvature>> getBarrelPath() {

@@ -284,7 +284,7 @@ public class Indexer extends Subsystem {
     private SystemState handleBacking() {
         if (mStateChanged) {
             mPeriodicIO.indexerDemand = kBackSpeed;
-            mPeriodicIO.schedDeltaDesired = 0; // goto sleep
+            mPeriodicIO.schedDeltaDesired = 50; // to monitor encoder pos by automode action
             numberOfBalls = 0;
         }
 
@@ -322,6 +322,10 @@ public class Indexer extends Subsystem {
             return true;
         }
         return false;
+    }
+
+    public synchronized double getCurrentPosition() {
+        return mPeriodicIO.FXLeftEncPos;
     }
 
     // method needs to be called at different cycle times

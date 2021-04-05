@@ -7,6 +7,7 @@ import frc.robot.auto.actions.WaitToFinishPathAction;
 import frc.robot.auto.actions.ManualShootAction;
 import frc.robot.auto.actions.AimAction;
 import frc.robot.auto.actions.CollectBallsAction;
+import frc.robot.auto.actions.ClearBallsAction;
 import frc.robot.auto.actions.WaitAction; 
 import frc.robot.auto.actions.SetIdleShooterRPMAction; 
 
@@ -18,6 +19,8 @@ public class ShootMode extends AutoModeBase {
         //while (true) {
             // runAction(AimAction());
             runAction(new CollectBallsAction(3));
+            runAction(new WaitAction(5));
+            runAction(new ClearBallsAction());
             // runAction(new ManualShootBallsAction(4500.0));
             // runAction(new SetTrajectoryAction(trajectories.powerPortBackwardPath.get(true), 0.0, 1.0));
             // runAction(new WaitToFinishPathAction());
