@@ -163,7 +163,7 @@ public class Shooter extends Subsystem {
 
     private SystemState handleHolding() {
         if (mStateChanged) {
-            mPeriodicIO.schedDeltaDesired = 0;
+            mPeriodicIO.schedDeltaDesired = 20; // in case auto action needs current rpm
             mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mHoldRPM);
         }
 
@@ -211,7 +211,11 @@ public class Shooter extends Subsystem {
         }
 
         mHoldRPM = requestedRPM;
-        mPeriodicIO.velocityPIDDemand = mHoldRPM;
+        mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mHoldRPM);
+    }
+
+    public synchronized double getCurrentRPM() {
+        return mPeriodicIO.currentRPM;
     }
 
     public boolean reachedDesiredShootRPM(){

@@ -344,6 +344,10 @@ public class Indexer extends Subsystem {
         return numberOfBalls;
     }
 
+    public synchronized void setNumberOfBalls(int balls) {
+        numberOfBalls = balls;
+    }
+
     private SystemState defaultStateTransfer() {
         switch (mWantedState) {
             case LOAD:
