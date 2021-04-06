@@ -149,17 +149,17 @@ public class JSticks extends Subsystem {
         }
 
         if (mPeriodicIO.opRightTrigger_COLLECT && collectorState == 0){
-            mCollector.setWantedState(Collector.WantedState.COLLECT);
+            mCollector.setWantedState(Collector.WantedState.COLLECT, sClassName);
             collectorState = 1;
         }
 
         if (mPeriodicIO.opLeftTrigger_CLEARBALLS && collectorState == 0){
-            mCollector.setWantedState(Collector.WantedState.BACK);
+            mCollector.setWantedState(Collector.WantedState.BACK, sClassName);
             collectorState = 1;
         }
 
         if (!mPeriodicIO.opRightTrigger_COLLECT && !mPeriodicIO.opLeftTrigger_CLEARBALLS && collectorState == 1){
-            mCollector.setWantedState(Collector.WantedState.HOLD);
+            mCollector.setWantedState(Collector.WantedState.HOLD, sClassName);
             collectorState = 0;
         }
 
@@ -176,9 +176,9 @@ public class JSticks extends Subsystem {
         currentState = activeBtnIsReleased(currentState);
 		if (currentState == Superstructure.WantedState.HOLD) {
 			if (mPeriodicIO.drRightToggleDown_SHOOT) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT);
+				mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT, sClassName);
 			} else if (mPeriodicIO.opRightTrigger_COLLECT) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
+				mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT, sClassName);
 			} else if (mPeriodicIO.opPOV0_MANUAL10) {
                 double speed = SmartDashboard.getNumber("shoot RPM",-1);
                 if (speed == -1){
@@ -193,9 +193,9 @@ public class JSticks extends Subsystem {
 			} else if (mPeriodicIO.opPOV270_MANUAL25) {
 				mSuperstructure.setManualShootRPM(4500);
 			} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
+				mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS, sClassName);
 			} else if (previousState != currentState) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
+				mSuperstructure.setWantedState(Superstructure.WantedState.HOLD, sClassName);
 			}
 		}
 	}

@@ -29,7 +29,7 @@ public class Indexer extends Subsystem {
     private double mFXLeftPIDPos;
     private double mFXRightPIDPos;
 
-    private final double kIndexSpeed = 0.1; //.7
+    private double indexSpeed = 0.1; //.7
     private final double kLoadSpeed = 0.25; // .5 brian
     private final double kBackSpeed = -0.25;
     private final int beamBreakThreshold = 3;
@@ -166,7 +166,7 @@ public class Indexer extends Subsystem {
                 mSystemState = SystemState.HOLDING;
                 mWantedState = WantedState.HOLD;
                 mStateChanged = true;
-                System.out.println(sClassName + " state " + mSystemState);
+                System.out.println(sClassName + "onStart state " + mSystemState);
                 mPeriodicIO.schedDeltaDesired = 0; // goto sleep
                 stop();
             }
@@ -232,7 +232,7 @@ public class Indexer extends Subsystem {
             mPeriodicIO.indexerDemand = speed + getLoadSpeed(); //kLoadSpeed;
             mPeriodicIO.schedDeltaDesired = 20; // stay awake to monitor beam break to jump to correcting
         }else if (!isBallEnteringSimple()){
-            setWantedState(WantedState.CORRECT);
+            setWantedState(WantedState.CORRECT, sClassName);
             startBallPos = mPeriodicIO.FXLeftEncPos;
         }
 
@@ -254,11 +254,11 @@ public class Indexer extends Subsystem {
             mPeriodicIO.indexerDemand = 0;
             mPeriodicIO.schedDeltaDesired = 20;
             numberOfBalls++;
-            System.out.println("startBallPos - " + startBallPos);
+            System.out.println("Indexer handleCorrecting startBallPos " + startBallPos);
         }
-        System.out.println("IndexCorrecting target:"+mPeriodicIO.indexerPosDemand+" current pos:"+mPeriodicIO.FXLeftEncPos+" delta:"+(mPeriodicIO.indexerPosDemand-mPeriodicIO.FXLeftEncPos));
+        System.out.println("Indexer handleCorrecting target:"+mPeriodicIO.indexerPosDemand+" current pos:"+mPeriodicIO.FXLeftEncPos+" delta:"+(mPeriodicIO.indexerPosDemand-mPeriodicIO.FXLeftEncPos));
         if (Math.abs(mPeriodicIO.FXLeftEncPos - mPeriodicIO.indexerPosDemand) < kBallOffsetTolerance || isFullyLoaded()) {
-            setWantedState(WantedState.HOLD);
+            setWantedState(WantedState.HOLD, sClassName);
         }
 
         return defaultStateTransfer();
@@ -275,7 +275,8 @@ public class Indexer extends Subsystem {
         }
 
         if (isBallEnteringSimple() || !isFullyLoaded() || Timer.getFPGATimestamp()-cobraStartTime > cobraMaxDuration){//} || mPeriodicIO.FXLeftEncPos < mPeriodicIO.indexerPosDemand+100){
-            setWantedState(WantedState.HOLD);
+            setWantedState(WantedState.HOLD, sClassName);
+            numberOfBalls = 3; // assume 3 balls so automode actions can proceed
         }
         return defaultStateTransfer();
     }
@@ -294,13 +295,14 @@ public class Indexer extends Subsystem {
     double kTicksToUnload = 20000; // needs tuning
     private SystemState handleIndexing() {
         if (mStateChanged) {
-            mPeriodicIO.indexerDemand = kIndexSpeed;
-            mPeriodicIO.schedDeltaDesired = 0; // goto sleep
+            mPeriodicIO.indexerDemand = indexSpeed;
+            mPeriodicIO.schedDeltaDesired = 20; // stay awake to track encoder ticks
             encoderCount = mPeriodicIO.FXLeftEncPos;
         }
 
         if (mPeriodicIO.FXLeftEncPos > encoderCount+kTicksToUnload){
             numberOfBalls = 0;
+            System.out.println(sClassName+" number of balls is 0");
         }
         return defaultStateTransfer();
     }
@@ -334,6 +336,8 @@ public class Indexer extends Subsystem {
                 mPeriodicIO.indexerDemand = 0;
                 mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
                 mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
+                numberOfBalls = 3;
+                System.out.println(sClassName+" Fully Loaded, emergency stop, number of balls set to 3");
             }
             return true;
         }
@@ -353,6 +357,10 @@ public class Indexer extends Subsystem {
         }else{
             return 0.1;
         }
+    }
+
+    public synchronized void setIndexSpeed(double newIndexSpeed) {
+        indexSpeed = newIndexSpeed;
     }
 
     public synchronized int getNumberOfBalls() {
@@ -381,10 +389,10 @@ public class Indexer extends Subsystem {
         }
     }
 
-    public synchronized void setWantedState(WantedState state) {
+    public synchronized void setWantedState(WantedState state, String caller) {
         if (state != mWantedState) {
             mSubsystemManager.scheduleMe(mListIndex, 1, true);
-            System.out.println("waking " + sClassName);
+            System.out.println(sClassName+" setWantedState " + state + " ("+caller+")");
         }
 
         mWantedState = state;

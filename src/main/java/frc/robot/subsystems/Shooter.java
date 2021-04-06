@@ -125,7 +125,7 @@ public class Shooter extends Subsystem {
                 mSystemState = SystemState.HOLDING;
                 mWantedState = WantedState.HOLD;
                 mStateChanged = true;
-                System.out.println(sClassName + " state " + mSystemState);
+                System.out.println(sClassName + " onStart state " + mSystemState);
                 // this subsystem is "on demand" so goto sleep
                 mPeriodicIO.schedDeltaDesired = 0; //Matthew - was 0
                 stop();
@@ -166,7 +166,6 @@ public class Shooter extends Subsystem {
             mPeriodicIO.schedDeltaDesired = 20; // in case auto action needs current rpm
             mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mHoldRPM);
         }
-
         return defaultStateTransfer();
     }
 
@@ -186,7 +185,7 @@ public class Shooter extends Subsystem {
 
     public synchronized void setShootDistance(double distance) {
         setShootRPM(convertDistanceToRPM(distance));
-        setWantedState(WantedState.SHOOT);
+        setWantedState(WantedState.SHOOT, sClassName);
         //System.out.println(mShootRPM+" "+" "+mPeriodicIO.currentRPM);
     }
 
@@ -197,9 +196,9 @@ public class Shooter extends Subsystem {
             mSubsystemManager.scheduleMe(mListIndex, 1, false);
             System.out.println("waking " + sClassName);
         }
-        setWantedState(WantedState.SHOOT);
+        setWantedState(WantedState.SHOOT, sClassName);
         mShootRPM = newRPM;
-        mPeriodicIO.velocityPIDDemand = mShootRPM;
+        mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mShootRPM);
     }
 
     public synchronized void setHoldRPM(double requestedRPM) {
@@ -207,7 +206,7 @@ public class Shooter extends Subsystem {
 
         if (requestedRPM != mHoldRPM && mSystemState == SystemState.HOLDING) {
             mSubsystemManager.scheduleMe(mListIndex, 1, false);
-            System.out.println("waking " + sClassName);
+            System.out.println(sClassName +" setHoldRPM " + requestedRPM);
         }
 
         mHoldRPM = requestedRPM;
@@ -245,10 +244,10 @@ public class Shooter extends Subsystem {
         }
     }
 
-    public synchronized void setWantedState(WantedState state) {
+    public synchronized void setWantedState(WantedState state, String caller) {
         if (state != mWantedState) {
             mSubsystemManager.scheduleMe(mListIndex, 1, false);
-            System.out.println("waking " + sClassName);
+            System.out.println(sClassName+" setWantedState " + state + " ("+caller+")");
         }
 
         mWantedState = state;

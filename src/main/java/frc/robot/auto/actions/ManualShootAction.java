@@ -15,6 +15,7 @@ public class ManualShootAction implements Action {
 	private Shooter mShooter = Shooter.getInstance("ManualShootAction");
 	private double target = 0.0;
 	private double duration = 0.0;
+	private String sClassName;
 
 	public ManualShootAction(double duration) {
 		this.duration = duration;
@@ -28,6 +29,7 @@ public class ManualShootAction implements Action {
 		this.duration = duration;
 		this.balls = balls;
 		this.rpm = rpm;
+		sClassName = this.getClass().getSimpleName();
 		System.out.println("***** Manual Shooting constructor ***** " + Timer.getFPGATimestamp());
 
 	}
@@ -46,7 +48,7 @@ public class ManualShootAction implements Action {
 		target = Timer.getFPGATimestamp() + duration;
 		mSuperstructure.setManualShootRPM(rpm);
 		System.out.println("***** Manual Shooting start ***** " + Timer.getFPGATimestamp());
-		mSuperstructure.setWantedState(Superstructure.WantedState.MANUAL_SHOOT);
+		mSuperstructure.setWantedState(Superstructure.WantedState.MANUAL_SHOOT, sClassName);
 	}
 	
 	@Override
@@ -58,6 +60,6 @@ public class ManualShootAction implements Action {
 	@Override
 	public void done() {
 		System.out.println("***** Manual Shooting done - ***** " + Timer.getFPGATimestamp());
-		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
+		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD, sClassName);
 	}	
 }

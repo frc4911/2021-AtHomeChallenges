@@ -28,8 +28,8 @@ public class ClearBallsAction implements Action {
 	@Override
 	public void start() {
         mIndexerPos = mIndexer.getCurrentPosition();
-        System.out.println("***** ClearBallsAction start - position:"+mIndexerPos+" ***** " + Timer.getFPGATimestamp());
-        mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS);
+        System.out.println("***** "+ sClassName+" start - position:"+mIndexerPos+" ***** " + Timer.getFPGATimestamp());
+        mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS, sClassName);
 	}
 	
 	@Override
@@ -39,8 +39,8 @@ public class ClearBallsAction implements Action {
 	
 	@Override
 	public void done() {
-		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
-        System.out.println("***** ClearBallsAction done  ***** " + Timer.getFPGATimestamp());
+		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD, sClassName);
+        System.out.println(sClassName+" ***** done  ***** ("+Timer.getFPGATimestamp()+")");
         
 	}
 }

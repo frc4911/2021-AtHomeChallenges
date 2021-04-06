@@ -13,17 +13,21 @@ public class ManualShootBallsAction implements Action {
 	private Indexer mIndexer;
 	private Shooter mShooter;
 	private double rpm;
+	private double indexerSpeed;
+	private String sClassName;
 
-	public ManualShootBallsAction(double rpm) {
-		String sClassName = this.getClass().getSimpleName();
+	public ManualShootBallsAction(double rpm, double indexerSpeed) {
+		sClassName = this.getClass().getSimpleName();
         mSuperstructure = Superstructure.getInstance(sClassName);
 		mIndexer = Indexer.getInstance(sClassName);
 		mShooter = Shooter.getInstance(sClassName);
 		this.rpm = rpm;
+		this.indexerSpeed = indexerSpeed;
 	}
 	
 	@Override
 	public boolean isFinished() {
+		// System.out.println(sClassName+" ball count "+mIndexer.getNumberOfBalls());
 		return mIndexer.getNumberOfBalls() <= 0;
 	}
 	
@@ -31,7 +35,8 @@ public class ManualShootBallsAction implements Action {
 	public void start() {
 		System.out.println("ManualShootBallsAction start, current ball count:"+ mIndexer.getNumberOfBalls()+" ("+Timer.getFPGATimestamp()+")");
 		mSuperstructure.setManualShootRPM(rpm);
-		mSuperstructure.setWantedState(Superstructure.WantedState.MANUAL_SHOOT);
+		mIndexer.setIndexSpeed(indexerSpeed);
+		mSuperstructure.setWantedState(Superstructure.WantedState.MANUAL_SHOOT, sClassName);
 	}
 	
 	@Override
@@ -42,7 +47,7 @@ public class ManualShootBallsAction implements Action {
 	@Override
 	public void done() {
 		mShooter.setHoldRPM(rpm);
-		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
-        System.out.println("ManualShootBallsAction done ("+Timer.getFPGATimestamp()+")");
+		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD, sClassName);
+        System.out.println(sClassName+" ***** done  ***** ("+Timer.getFPGATimestamp()+")");
 	}
 }

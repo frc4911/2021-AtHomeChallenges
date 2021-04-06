@@ -3,6 +3,7 @@ package frc.robot.auto.actions;
 import com.team254.lib.autos.actions.Action;
 
 import frc.robot.subsystems.Swerve;
+import edu.wpi.first.wpilibj.Timer;
 
 public class AimAction implements Action {
 	
@@ -21,6 +22,7 @@ public class AimAction implements Action {
 	
 	@Override
 	public void start() {
+		System.out.println(sClassName+" start ("+Timer.getFPGATimestamp()+")");
         mSwerve.limeLightAim();
 	}
 	
@@ -31,6 +33,7 @@ public class AimAction implements Action {
 	
 	@Override
 	public void done() {
+		System.out.println(sClassName+" done ("+Timer.getFPGATimestamp()+")");
 
 	}
 	

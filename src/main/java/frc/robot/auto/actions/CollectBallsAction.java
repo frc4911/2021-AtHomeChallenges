@@ -11,7 +11,8 @@ public class CollectBallsAction implements Action {
     private Superstructure mSuperstructure;
     private Indexer mIndexer;
     private int ballTarget;
-    private int ballsToCollect;
+	private int ballsToCollect;
+	private int lastBallCount;
 
 	public CollectBallsAction(int ballsToCollect) {
 		sClassName = this.getClass().getSimpleName();
@@ -22,16 +23,22 @@ public class CollectBallsAction implements Action {
 	
 	@Override
 	public boolean isFinished() {
+		int currentBallCount = mIndexer.getNumberOfBalls();
+		if (currentBallCount != lastBallCount){
+			System.out.println("currentBallCount is "+currentBallCount);
+			lastBallCount = currentBallCount;
+		}
         return mIndexer.getNumberOfBalls() >= ballTarget;
 	}
 	
 	@Override
 	public void start() {
-        ballTarget = mIndexer.getNumberOfBalls()+ballsToCollect;
+		lastBallCount = mIndexer.getNumberOfBalls();
+        ballTarget = lastBallCount+ballsToCollect;
         ballTarget = Math.min(ballTarget,3);
         ballTarget = Math.max(ballTarget,0);
-        System.out.println("CollectBallsAction start, current ball count:"+ mIndexer.getNumberOfBalls()+ " target ball count:"+ballTarget+" ("+Timer.getFPGATimestamp()+")");
-    	mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
+        System.out.println(sClassName+" start, current ball count:"+ lastBallCount+ " target ball count:"+ballTarget+" ("+Timer.getFPGATimestamp()+")");
+    	mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT, sClassName);
 	}
 	
 	@Override
@@ -41,7 +48,8 @@ public class CollectBallsAction implements Action {
 	
 	@Override
 	public void done() {
-		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
-        System.out.println("CollectBallsAction done, current ball count:"+ mIndexer.getNumberOfBalls()+" ("+Timer.getFPGATimestamp()+")");
+		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD, sClassName);
+        System.out.println(sClassName+" ***** done  ***** ("+Timer.getFPGATimestamp()+")");
+        System.out.println("current ball count:"+ mIndexer.getNumberOfBalls());
 	}
 }

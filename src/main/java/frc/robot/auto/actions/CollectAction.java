@@ -30,9 +30,9 @@ public class CollectAction implements Action {
 	public void start() {
 		System.out.println("***** Collecting - " + mTurnOn + " ***** " + Timer.getFPGATimestamp());
 		if (mTurnOn) {
-			mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
+			mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT, sClassName);
 		} else {
-			mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
+			mSuperstructure.setWantedState(Superstructure.WantedState.HOLD, sClassName);
 		}
 	}
 	
@@ -43,6 +43,6 @@ public class CollectAction implements Action {
 	
 	@Override
 	public void done() {
-		System.out.println("***** Done Collecting - " + mTurnOn + " ***** " + Timer.getFPGATimestamp());
+        System.out.println(sClassName+" ***** done  ***** ("+Timer.getFPGATimestamp()+")");
 	}
 }
