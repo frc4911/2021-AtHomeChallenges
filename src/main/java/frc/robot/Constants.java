@@ -231,7 +231,7 @@ public class Constants {
 	public static final int kFrontRightCancoderStartingPosDegreesR1 = 34; //35; //34
 	public static final int kFrontLeftCancoderStartingPosDegreesR1 = -76; //-74; //-76
 	public static final int kRearLeftCancoderStartingPosDegreesR1 = -78; //-77; //-78
-	public static final int kRearRightCancoderStartingPosDegreesR1 = 79; 		//79
+	public static final int kRearRightCancoderStartingPosDegreesR1 = -152; 		//79
 	
 	public static final int kFrontRightCancoderStartingPosDegreesR2 = 0;
 	public static final int kFrontLeftCancoderStartingPosDegreesR2 = 0;
