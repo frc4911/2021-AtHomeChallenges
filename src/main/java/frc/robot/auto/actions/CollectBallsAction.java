@@ -22,7 +22,6 @@ public class CollectBallsAction implements Action {
 	
 	@Override
 	public boolean isFinished() {
-		System.out.println("current num of balls: "+mIndexer.getNumberOfBalls());
         return mIndexer.getNumberOfBalls() >= ballTarget;
 	}
 	
