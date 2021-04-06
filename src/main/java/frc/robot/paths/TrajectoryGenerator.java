@@ -126,10 +126,10 @@ public class TrajectoryGenerator {
 
         public final MirroredTrajectory barrelPath;
         public final MirroredTrajectory slalomPath;
-        public final MirroredTrajectory slalomPathStraightF;
-        public final MirroredTrajectory slalomPathRound;
-        public final MirroredTrajectory slalomPathStraightB;
-        public final MirroredTrajectory slalomPathEnd;
+        // public final MirroredTrajectory slalomPathStraightF;
+        // public final MirroredTrajectory slalomPathRound;
+        // public final MirroredTrajectory slalomPathStraightB;
+        // public final MirroredTrajectory slalomPathEnd;
         public final MirroredTrajectory bouncePathA;
         public final MirroredTrajectory bouncePathB;
         public final MirroredTrajectory bouncePathC;
@@ -162,10 +162,10 @@ public class TrajectoryGenerator {
             barrelPath = new MirroredTrajectory(getBarrelPath());
             // System.out.println(testPath.left.toString());
             slalomPath          = new MirroredTrajectory(getSlalomPath());
-            slalomPathStraightF = new MirroredTrajectory(getSlalomPathStraightF());
-            slalomPathRound     = new MirroredTrajectory(getSlalomPathRound());
-            slalomPathStraightB = new MirroredTrajectory(getSlalomPathStraightB());
-            slalomPathEnd       = new MirroredTrajectory(getSlalomPathEnd());
+            // slalomPathStraightF = new MirroredTrajectory(getSlalomPathStraightF());
+            // slalomPathRound     = new MirroredTrajectory(getSlalomPathRound());
+            // slalomPathStraightB = new MirroredTrajectory(getSlalomPathStraightB());
+            // slalomPathEnd       = new MirroredTrajectory(getSlalomPathEnd());
             //slalomPath = new MirroredTrajectory(getSlalomPath());
             bouncePathA = new MirroredTrajectory(getBouncePathA());
             bouncePathB = new MirroredTrajectory(getBouncePathB());
@@ -384,30 +384,34 @@ public class TrajectoryGenerator {
             double exitAngleRads;
             double enterAngleRads;
             double rc = 28/2;
-            double radius = 30; //30
             
-            double startx = 60-rc;
-            double starty = 120+30;
+            double startx = 60 - rc;
+            double starty = 150;
 
-            double d0x = 60;
-            double d1x = 120;
-            double d2x = 235; //240
-            double d3x = 305; //300
+            waypoints.add(new Pose2d(new Translation2d(startx-startx, starty-starty), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(85-startx, 120-starty), Rotation2d.fromDegrees(300)));
+            //waypoints.add(new Pose2d(new Translation2d(120-startx, 90-starty), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(250-startx, 90-starty), Rotation2d.fromDegrees(30)));
 
-            double dy = 120;
-
-            double endx = startx-120;
-            double endy = 120-30;
+            waypoints.add(new Pose2d(new Translation2d(300-startx, 150-starty), Rotation2d.fromDegrees(0)));
+            
+            waypoints.add(new Pose2d(new Translation2d(290-startx, 40-starty), Rotation2d.fromDegrees(205)));
+            waypoints.add(new Pose2d(new Translation2d(240-startx, 120-starty), Rotation2d.fromDegrees(120)));
+            waypoints.add(new Pose2d(new Translation2d(210-startx, 150-starty), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(105-startx, 135-starty), Rotation2d.fromDegrees(195)));
+            waypoints.add(new Pose2d(new Translation2d(60-startx, 90-starty), Rotation2d.fromDegrees(260)));
+            waypoints.add(new Pose2d(new Translation2d(30-startx, 65-starty), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(-15+rc-startx, 65-starty), Rotation2d.fromDegrees(180)));
 
             //1
-            enterAngleRads = convertToRads(118);
-            exitAngleRads = convertToRads(0);
-            addArcSegment(tpal, true,      d0x-rc,                              dy+radius*Math.sin(enterAngleRads),
-                                            d0x,                                 dy,                 exitAngleRads);
-            enterAngleRads = convertToRads(-179);
-            exitAngleRads = convertToRads(-90);
-            addArcSegment(tpal, false,      d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-                                            d1x,                                 dy,                 exitAngleRads);
+            // enterAngleRads = convertToRads(118);
+            // exitAngleRads = convertToRads(0);
+            // addArcSegment(tpal, true,      d0x-rc,                              dy+radius*Math.sin(enterAngleRads),
+            //                                 d0x,                                 dy,                 exitAngleRads);
+            // enterAngleRads = convertToRads(-179);
+            // exitAngleRads = convertToRads(-90);
+            // addArcSegment(tpal, false,      d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+            //                                 d1x,                                 dy,                 exitAngleRads);
 
                                             //Split
             //2                            
@@ -466,169 +470,170 @@ public class TrajectoryGenerator {
                 System.out.println(tp.x+","+tp.y+","+tp.a);
                 waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
             }
-            double speed = 40;
-             return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
+            double speed = 140;
+            double accel = 180;
+             return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        accel,        accel,           12, speed, 1);
             // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathStraightF() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathStraightF() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
             
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30; //30
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30; //30
 
-            double startx = 60-rc;
-            double starty = 120+30;
+        //     double startx = 60-rc;
+        //     double starty = 120+30;
 
-            double d0x = 60;
-            double d1x = 120;
-            double d2x = 235; //240
+        //     double d0x = 60;
+        //     double d1x = 120;
+        //     double d2x = 235; //240
 
-            double dy = 120;
+        //     double dy = 120;
 
-            exitAngleRads = convertToRads(-90);
-            enterAngleRads = convertToRads(-90);
-            addStraightSegment(tpal, true, d1x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
-                                            d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
+        //     exitAngleRads = convertToRads(-90);
+        //     enterAngleRads = convertToRads(-90);
+        //     addStraightSegment(tpal, true, d1x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
+        //                                     d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
 
-            //System.out.println("Slalom Path Coordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
-            }
-            double speed = 40;
-            return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        //     //System.out.println("Slalom Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //     }
+        //     double speed = 40;
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
 
-        }
+        // }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathRound() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathRound() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
             
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30; //30
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30; //30
             
-            double startx = 60-rc;
-            double starty = 120+30;
+        //     double startx = 60-rc;
+        //     double starty = 120+30;
 
-            double d2x = 235; //240
-            double d3x = 305; //300
+        //     double d2x = 235; //240
+        //     double d3x = 305; //300
 
-            double dy = 120;
+        //     double dy = 120;
 
-            enterAngleRads = convertToRads(-90);
-            exitAngleRads = convertToRads(0);
-            addArcSegment(tpal, true,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-                                            d2x,                                 dy,                 exitAngleRads);                             
-            enterAngleRads = convertToRads(150);
-            exitAngleRads = convertToRads(0);
-            addArcSegment(tpal, true,       d3x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-                                            d3x,                                 dy,                 exitAngleRads);
-            radius += 5;
-            enterAngleRads = convertToRads(0);
-            exitAngleRads = convertToRads(-179);
-            addArcSegment(tpal, false,       d3x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-                                            d3x,                                 dy,                 exitAngleRads);
-            //? radius -= 5;
-            enterAngleRads = convertToRads(0);
-            exitAngleRads = convertToRads(90);
-            addArcSegment(tpal, false,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-                                            d2x,                                 dy,                 exitAngleRads);
+        //     enterAngleRads = convertToRads(-90);
+        //     exitAngleRads = convertToRads(0);
+        //     addArcSegment(tpal, true,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d2x,                                 dy,                 exitAngleRads);                             
+        //     enterAngleRads = convertToRads(150);
+        //     exitAngleRads = convertToRads(0);
+        //     addArcSegment(tpal, true,       d3x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d3x,                                 dy,                 exitAngleRads);
+        //     radius += 5;
+        //     enterAngleRads = convertToRads(0);
+        //     exitAngleRads = convertToRads(-179);
+        //     addArcSegment(tpal, false,       d3x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d3x,                                 dy,                 exitAngleRads);
+        //     //? radius -= 5;
+        //     enterAngleRads = convertToRads(0);
+        //     exitAngleRads = convertToRads(90);
+        //     addArcSegment(tpal, false,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d2x,                                 dy,                 exitAngleRads);
 
-            //System.out.println("Slalom Path Coordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
-            }
-            double speed = 40;
-            return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        //     //System.out.println("Slalom Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //     }
+        //     double speed = 40;
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
 
-        }
+        // }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathStraightB() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathStraightB() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
             
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30; //30
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30; //30
 
-            double startx = 60-rc;
-            double starty = 120+30;
+        //     double startx = 60-rc;
+        //     double starty = 120+30;
 
-            double d0x = 60;
-            double d1x = 120;
-            double d2x = 235; //240
+        //     double d0x = 60;
+        //     double d1x = 120;
+        //     double d2x = 235; //240
 
-            double dy = 120;
+        //     double dy = 120;
 
-            enterAngleRads = convertToRads(90);
-            exitAngleRads = convertToRads(90);
-            addStraightSegment(tpal, true, d2x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
-                                            d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
+        //     enterAngleRads = convertToRads(90);
+        //     exitAngleRads = convertToRads(90);
+        //     addStraightSegment(tpal, true, d2x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
+        //                                     d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
 
-            //System.out.println("Slalom Path Coordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
-            }
-            double speed = 40;
-            return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        //     //System.out.println("Slalom Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //     }
+        //     double speed = 40;
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
 
-        }
+        // }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathEnd() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathEnd() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
             
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30; //30
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30; //30
             
-            double startx = 60-rc;
-            double starty = 120+30;
+        //     double startx = 60-rc;
+        //     double starty = 120+30;
 
-            double d0x = 60;
-            double d1x = 120;
+        //     double d0x = 60;
+        //     double d1x = 120;
 
-            double dy = 120;
+        //     double dy = 120;
 
-            double endx = startx-120;
-            double endy = 120-30;
+        //     double endx = startx-120;
+        //     double endy = 120-30;
 
-            enterAngleRads = convertToRads(90);
-            exitAngleRads = convertToRads(179);
-            dy -= 15;
-            endy -=15;
-            addArcSegment(tpal, true,      d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-                                            d1x,                                 dy,                 exitAngleRads);
-            enterAngleRads = convertToRads(0);
-            exitAngleRads = convertToRads(-90);
-            addArcSegment(tpal, false,      d1x-radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-                                            d0x,                                 dy,                 exitAngleRads);
-            addStraightSegment(tpal, false, d0x-radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
-                                            endx,                                endy);
+        //     enterAngleRads = convertToRads(90);
+        //     exitAngleRads = convertToRads(179);
+        //     dy -= 15;
+        //     endy -=15;
+        //     addArcSegment(tpal, true,      d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d1x,                                 dy,                 exitAngleRads);
+        //     enterAngleRads = convertToRads(0);
+        //     exitAngleRads = convertToRads(-90);
+        //     addArcSegment(tpal, false,      d1x-radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d0x,                                 dy,                 exitAngleRads);
+        //     addStraightSegment(tpal, false, d0x-radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
+        //                                     endx,                                endy);
 
-            //System.out.println("Slalom Path Coordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
-            }
-            double speed = 40;
-            return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        //     //System.out.println("Slalom Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //     }
+        //     double speed = 40;
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
 
-        }
+        // }
         private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathA() {
             List<Pose2d> waypoints = new ArrayList<>();
             double startx = 46;
