@@ -12,7 +12,7 @@ public class ClearBallsAction implements Action {
 	private Indexer mIndexer;
     private boolean mTurnOn;
     private double mIndexerPos=0;
-    private final double mIndexerTicksToEmpty = 20000;
+    private final double mIndexerTicksToEmpty = 50000;
 
 	public ClearBallsAction() {
 		sClassName = this.getClass().getSimpleName();
@@ -22,7 +22,7 @@ public class ClearBallsAction implements Action {
 	
 	@Override
 	public boolean isFinished() {
-			return mIndexer.getCurrentPosition() >= mIndexerPos+mIndexerTicksToEmpty;
+		return mIndexer.getCurrentPosition() <= mIndexerPos-mIndexerTicksToEmpty;
 	}
 	
 	@Override
@@ -34,11 +34,12 @@ public class ClearBallsAction implements Action {
 	
 	@Override
 	public void update() {
-
+		
 	}
 	
 	@Override
 	public void done() {
+		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
         System.out.println("***** ClearBallsAction done  ***** " + Timer.getFPGATimestamp());
         
 	}

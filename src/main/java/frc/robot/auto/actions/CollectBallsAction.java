@@ -36,11 +36,12 @@ public class CollectBallsAction implements Action {
 	
 	@Override
 	public void update() {
-
+		
 	}
 	
 	@Override
 	public void done() {
+		mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
         System.out.println("CollectBallsAction done, current ball count:"+ mIndexer.getNumberOfBalls()+" ("+Timer.getFPGATimestamp()+")");
 	}
 }
