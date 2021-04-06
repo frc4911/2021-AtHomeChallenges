@@ -15,12 +15,14 @@ public class ShootMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         System.out.println("Shoot Auto Mode Running!!!");
-        // runAction(new SetIdleShooterRPMAction(4500));
+            runAction(new SetIdleShooterRPMAction(4500));
         //while (true) {
             // runAction(AimAction());
-            runAction(new CollectBallsAction(3));
-            runAction(new WaitAction(5));
-            runAction(new ClearBallsAction());
+            //for(int i=0; i<5; i++){
+                runAction(new CollectBallsAction(3));
+                runAction(new WaitAction(1));
+                runAction(new ClearBallsAction());
+            //}
             // runAction(new ManualShootBallsAction(4500.0));
             // runAction(new SetTrajectoryAction(trajectories.powerPortBackwardPath.get(true), 0.0, 1.0));
             // runAction(new WaitToFinishPathAction());

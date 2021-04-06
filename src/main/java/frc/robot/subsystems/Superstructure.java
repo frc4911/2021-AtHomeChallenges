@@ -145,6 +145,7 @@ public class Superstructure extends Subsystem {
     };
 
     private SystemState handleHolding() {
+        System.out.println("Superstructure: "+mSystemState.toString());
         if (mStateChanged) {
             mIndexer.setWantedState(Indexer.WantedState.HOLD);
             mCollector.setWantedState(Collector.WantedState.HOLD);
@@ -176,7 +177,7 @@ public class Superstructure extends Subsystem {
                 }
             }
         } else {
-            mIndexer.setWantedState(Indexer.WantedState.COBRA);
+            mIndexer.setWantedState(Indexer.WantedState.COBRA); 
             mCollector.setWantedState(Collector.WantedState.HOLD);
         }
         

@@ -219,7 +219,6 @@ public class Indexer extends Subsystem {
             mPeriodicIO.indexerDemand = 0.0;
             mPeriodicIO.schedDeltaDesired = 0; // goto sleep
         }
-
         return defaultStateTransfer();
     }
 
@@ -330,7 +329,13 @@ public class Indexer extends Subsystem {
 
     // method needs to be called at different cycle times
     public synchronized boolean isFullyLoaded() {
-        return (mAIBallTouchingShooter.getVoltage() < beamBreakThreshold);
+        if(mAIBallTouchingShooter.getVoltage() < beamBreakThreshold){
+            mPeriodicIO.indexerDemand = 0;
+            mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
+            mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
+            return true;
+        }
+        return false;
     }
 
     // use different speeds to overcome drag of already loaded balls
@@ -371,6 +376,7 @@ public class Indexer extends Subsystem {
     }
 
     public synchronized void setWantedState(WantedState state) {
+        System.out.println("indexer: "+state.toString()+" "+ (state != mWantedState));
         if (state != mWantedState) {
             mSubsystemManager.scheduleMe(mListIndex, 1, true);
             System.out.println("waking " + sClassName);
