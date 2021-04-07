@@ -1648,14 +1648,14 @@ public class TrajectoryGenerator {
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(new Translation2d(-100.0, 0.0), Rotation2d.fromDegrees(0)));
             waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
-            return generateTrajectory(false, waypoints, Arrays.asList(), 20.0, 60.0, 60.0, kMaxVoltage, 20.0, 1);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 50.0, 120.0, 120.0, kMaxVoltage, 50.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getPowerPortBackwardPath() {
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180)));
             waypoints.add(new Pose2d(new Translation2d(-100.0, 0.0), Rotation2d.fromDegrees(180)));
-            return generateTrajectory(false, waypoints, Arrays.asList(), 20.0, 60.0, 60.0, kMaxVoltage, 20.0, 1);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 50.0, 120.0, 120.0, kMaxVoltage, 50.0, 1);
         }
         
 

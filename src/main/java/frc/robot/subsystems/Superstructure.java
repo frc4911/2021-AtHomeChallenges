@@ -185,8 +185,8 @@ public class Superstructure extends Subsystem {
             mLastDistanceToGoal = Double.MIN_VALUE;
             mPeriodicIO.schedDeltaDesired = mFastCycle;
         }
-
-        mShooter.setShootRPM(4000); 
+        System.out.println("SuperStructure handle shooting");
+        //mShooter.setShootRPM(4000); 
         // double distanceToGoal = getDistanceToGoal();
         // if (mLastDistanceToGoal != distanceToGoal){
         //    mShooter.setShootRPM(distanceToGoal); // TODO: check if only need to call once
@@ -229,9 +229,11 @@ public class Superstructure extends Subsystem {
     private SystemState handleManualShooting() {
         if (mStateChanged) {
             if(mDistance>0){
-                mShooter.setShootDistance(mDistance);
+                System.out.println("~~~~~~~~~TRY TO SET SHOOT DISTANCE~~~~~~~~");
+                //mShooter.setShootDistance(mDistance);
             }
             else{
+                System.out.println(sClassName+", set shoot RPM: "+mRPM);
                 mShooter.setShootRPM(mRPM);
             }
         }
@@ -273,17 +275,17 @@ public class Superstructure extends Subsystem {
             mShooter.setWantedState(Shooter.WantedState.HOLD, sClassName);
             mIndexer.setWantedState(Indexer.WantedState.HOLD, sClassName);
                         
-            setShooterHoldSpeed(0.45);
+            // setShooterHoldSpeed(0.45);
         }
 
         return defaultStateTransfer();
     }
 
-    public synchronized void setManualShootDistance(double distance) {
-        mDistance = distance;
-        mRPM = 0;
-        setWantedState(WantedState.MANUAL_SHOOT, sClassName);
-    }
+    // public synchronized void setManualShootDistance(double distance) {
+    //     mDistance = distance;
+    //     mRPM = 0;
+    //     setWantedState(WantedState.MANUAL_SHOOT, sClassName);
+    // }
 
     public synchronized void setManualShootRPM(double rpm) {
         mRPM = rpm;

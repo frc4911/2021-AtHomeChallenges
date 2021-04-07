@@ -22,9 +22,9 @@ public class Shooter extends Subsystem {
     // Constants
     private final double kMinShootDistance = 10.0;
     private final double kMaxShootDistance = 30.0;
-    private final double kRPMTolerance = 100; //250.0;
+    private final double kRPMTolerance = 500; //250.0;
 
-    private final double kMinShootRPM = 2000;
+    private final double kMinShootRPM = 0;
     private final double kMaxShootRPM = 6000;
 
     public enum SystemState {
@@ -164,8 +164,8 @@ public class Shooter extends Subsystem {
     private SystemState handleHolding() {
         if (mStateChanged) {
             mPeriodicIO.schedDeltaDesired = 20; // in case auto action needs current rpm
-            mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mHoldRPM);
         }
+        mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mHoldRPM);
         return defaultStateTransfer();
     }
 
@@ -218,7 +218,7 @@ public class Shooter extends Subsystem {
     }
 
     public boolean reachedDesiredShootRPM(){
-        return mPeriodicIO.currentRPM >= (ticksPer100MsToRPM(mShootRPM) - kRPMTolerance);
+        return mPeriodicIO.currentRPM >= mShootRPM - kRPMTolerance;
     }
 
     private double ticksPer100MsToRPM(double ticksPer100Ms) {
@@ -356,6 +356,10 @@ public class Shooter extends Subsystem {
     double lastPercentSpeed = 0;
     @Override
     public void writePeriodicOutputs() {
+        if(lastPIDSpeed!=mPeriodicIO.velocityPIDDemand){
+            System.out.println("NEW SHOOTER RPM: "+ticksPer100MsToRPM(mPeriodicIO.velocityPIDDemand));
+            lastPIDSpeed = mPeriodicIO.velocityPIDDemand;
+        }
         mFXLeft.set(ControlMode.Velocity, mPeriodicIO.velocityPIDDemand);
         mFXRight.set(ControlMode.Velocity, mPeriodicIO.velocityPIDDemand);
     }
@@ -377,6 +381,8 @@ public class Shooter extends Subsystem {
         SmartDashboard.putNumber("shooters current",mFXRight.getStatorCurrent()+mFXLeft.getStatorCurrent());
         SmartDashboard.putNumber("shooter left current",mFXLeft.getStatorCurrent());
         SmartDashboard.putNumber("shooter right current",mFXRight.getStatorCurrent());
+        SmartDashboard.putNumber("hold rpm",mHoldRPM);
+        SmartDashboard.putNumber("shoot rpm",mShootRPM);
     }
 
     public static class PeriodicIO {

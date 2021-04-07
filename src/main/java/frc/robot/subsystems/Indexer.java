@@ -30,7 +30,7 @@ public class Indexer extends Subsystem {
     private double mFXRightPIDPos;
 
     private double indexSpeed = 0.1; //.7
-    private final double kLoadSpeed = 0.25; // .5 brian
+    private final double kLoadSpeed = 0.2; // .5 brian
     private final double kBackSpeed = -0.25;
     private final int beamBreakThreshold = 3;
     
@@ -292,7 +292,7 @@ public class Indexer extends Subsystem {
     }
 
     double encoderCount = 0;
-    double kTicksToUnload = 20000; // needs tuning
+    double kTicksToUnload = 40000; // needs tuning
     private SystemState handleIndexing() {
         if (mStateChanged) {
             mPeriodicIO.indexerDemand = indexSpeed;
