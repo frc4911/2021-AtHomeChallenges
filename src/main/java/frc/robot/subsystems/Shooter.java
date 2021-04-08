@@ -21,11 +21,11 @@ public class Shooter extends Subsystem {
 
     // Constants
     private final double kMinShootDistance = 10.0;
-    private final double kMidShootDistance = 15.0;
-    private final double kMaxShootDistance = 20.0;
-    private final double kMinShootSpeed = 4700;
-    private final double kMaxShootSpeed = 5200;
-    private final double kSpeedTolerance = 250.0;
+    private final double kMaxShootDistance = 30.0;
+    private final double kRPMTolerance = 500; //250.0;
+
+    private final double kMinShootRPM = 0;
+    private final double kMaxShootRPM = 6000;
 
     public enum SystemState {
         HOLDING,
@@ -41,9 +41,9 @@ public class Shooter extends Subsystem {
     private WantedState      mWantedState = WantedState.HOLD;
     private PeriodicIO       mPeriodicIO;
     private boolean          mStateChanged;
-    private double           mShootRate;
-    private double           mHoldSpeed;
-    private double           mDistance;
+    private final double     kDistToRPMFactor = (kMaxShootRPM - kMinShootRPM) / (kMaxShootDistance - kMinShootDistance);
+    private double           mShootRPM;
+    private double           mHoldRPM;
     private CheckFaults      mCF = new CheckFaults();
     private final boolean    mLoggingEnabled = true;   // used to disable logging for this subsystem only
     private SubsystemManager mSubsystemManager;
@@ -125,11 +125,10 @@ public class Shooter extends Subsystem {
                 mSystemState = SystemState.HOLDING;
                 mWantedState = WantedState.HOLD;
                 mStateChanged = true;
-                System.out.println(sClassName + " state " + mSystemState);
+                System.out.println(sClassName + " onStart state " + mSystemState);
                 // this subsystem is "on demand" so goto sleep
                 mPeriodicIO.schedDeltaDesired = 0; //Matthew - was 0
-                mShootRate = (kMaxShootSpeed - kMinShootSpeed) / (kMaxShootDistance - kMidShootDistance);
-                mHoldSpeed = 0.0;//0.45;
+                mHoldRPM = mShootRPM = 0; // 4500
                 stop();
             }
         }
@@ -165,60 +164,76 @@ public class Shooter extends Subsystem {
 
     private SystemState handleHolding() {
         if (mStateChanged) {
-            mPeriodicIO.schedDeltaDesired = 0; //Matthew - was 0
+            mPeriodicIO.schedDeltaDesired = 20; // in case auto action needs current rpm
         }
-
-        mPeriodicIO.percentDemand = mHoldSpeed;
-
+        mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mHoldRPM);
         return defaultStateTransfer();
     }
 
     private SystemState handleShooting() {
         if (mStateChanged) {
             mPeriodicIO.schedDeltaDesired = 20;
-            mPeriodicIO.reachedDesiredSpeed = false; // TODO: TEST THIS ON SATURDAY (6th)
         }
-
-        mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(getDistanceToVelocityRPM(mDistance));
+        mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mShootRPM);
 
         return defaultStateTransfer();
     }
 
     public synchronized boolean readyToShoot() {
-        return mSystemState == SystemState.SHOOTING && mPeriodicIO.reachedDesiredSpeed;
+        mPeriodicIO.currentRPM = ticksPer100MsToRPM(mFXLeft.getSelectedSensorVelocity(0));
+        return mPeriodicIO.currentRPM > mShootRPM -kRPMTolerance;
     }
 
     public synchronized void setShootDistance(double distance) {
-        if (mSystemState != SystemState.SHOOTING) {
-            mWantedState = WantedState.SHOOT;
-        }
-        if (mSystemState != SystemState.SHOOTING || distance != mDistance) {
+        setShootRPM(convertDistanceToRPM(distance));
+        setWantedState(WantedState.SHOOT, sClassName);
+        //System.out.println(mShootRPM+" "+" "+mPeriodicIO.currentRPM);
+    }
+
+    public synchronized void setShootRPM(double requestedRPM) {
+        double newRPM = Math.min(kMaxShootRPM,Math.max(kMinShootRPM, requestedRPM));
+
+        if (newRPM != mShootRPM && mSystemState == SystemState.SHOOTING) {
             mSubsystemManager.scheduleMe(mListIndex, 1, false);
             System.out.println("waking " + sClassName);
         }
-
-        mDistance = Math.max(kMinShootDistance, Math.min(distance, 35.0));
+        setWantedState(WantedState.SHOOT, sClassName);
+        mShootRPM = newRPM;
+        mHoldRPM = mShootRPM;
+        mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mShootRPM);
     }
 
-    public synchronized void setHoldSpeed(double speed) {
-        if (speed != mHoldSpeed && mSystemState == SystemState.HOLDING) {
+    public synchronized void setHoldRPM(double requestedRPM) {
+        requestedRPM = Math.min(kMaxShootRPM,Math.max(0, requestedRPM));
+
+        if (requestedRPM != mHoldRPM && mSystemState == SystemState.HOLDING) {
             mSubsystemManager.scheduleMe(mListIndex, 1, false);
-            System.out.println("waking " + sClassName);
+            System.out.println(sClassName +" setHoldRPM " + requestedRPM);
         }
 
-        mHoldSpeed = speed;
+        mHoldRPM = requestedRPM;
+        mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mHoldRPM);
     }
 
-    private double ticksPer100MsToRPM(double speed) {
-        return speed / 1365.0 * 1000.0 / 100.0 * 60.0; //Matthew - 1365
+    public synchronized double getCurrentRPM() {
+        return mPeriodicIO.currentRPM;
     }
 
-    private double rpmToTicksPer100Ms(double speed) {
-        return speed * 1365.0 / 1000.0 * 100.0 / 60.0;
+    public boolean reachedDesiredShootRPM(){
+        return mPeriodicIO.currentRPM >= mShootRPM - kRPMTolerance;
     }
 
-    private double getDistanceToVelocityRPM(double distance) {
-        return mShootRate * Math.abs(distance - kMidShootDistance) + kMinShootSpeed;
+    private double ticksPer100MsToRPM(double ticksPer100Ms) {
+        return ticksPer100Ms / 1365.0 * 1000.0 / 100.0 * 60.0;
+    }
+
+    private double rpmToTicksPer100Ms(double rpm) {
+        return rpm * 1365.0 / 1000.0 * 100.0 / 60.0;
+    }
+
+    private double convertDistanceToRPM(double distance) {
+        distance = Math.min(kMaxShootDistance,Math.max(distance,kMinShootDistance));
+        return  kDistToRPMFactor * (distance - kMinShootDistance) + kMinShootRPM;
     }
 
     private SystemState defaultStateTransfer() {
@@ -231,10 +246,10 @@ public class Shooter extends Subsystem {
         }
     }
 
-    public synchronized void setWantedState(WantedState state) {
+    public synchronized void setWantedState(WantedState state, String caller) {
         if (state != mWantedState) {
             mSubsystemManager.scheduleMe(mListIndex, 1, false);
-            System.out.println("waking " + sClassName);
+            System.out.println(sClassName+" setWantedState " + state + " ("+caller+")");
         }
 
         mWantedState = state;
@@ -260,8 +275,8 @@ public class Shooter extends Subsystem {
             mCF.clearFaults(mFXRight);
             return  sClassName+".systemState,"+
                     sClassName+".distance,"+
-                    sClassName+".reachedDesiredSpeed,"+
-                    sClassName+".rpm,"+
+                    sClassName+".reachedDesiredShootRPM,"+
+                    sClassName+".currentRPM,"+
                     sClassName+".percentDemand,"+
                     sClassName+".velocityPIDDemand,"+
                     sClassName+".SRXLeftCurrent,"+
@@ -286,8 +301,8 @@ public class Shooter extends Subsystem {
 
             values = ""+mSystemState+","+
                         mPeriodicIO.distance+","+
-                        mPeriodicIO.reachedDesiredSpeed+","+
-                        mPeriodicIO.rpm+","+
+                        reachedDesiredShootRPM()+","+
+                        mPeriodicIO.currentRPM+","+
                         mPeriodicIO.percentDemand+","+
                         mPeriodicIO.velocityPIDDemand+","+
                         mPeriodicIO.SRXLeftCurrent+","+
@@ -302,8 +317,8 @@ public class Shooter extends Subsystem {
             mPeriodicIO.schedDuration = Timer.getFPGATimestamp() - mPeriodicIO.lastSchedStart;
             values = ""+mSystemState+","+
                         mPeriodicIO.distance+","+
-                        mPeriodicIO.reachedDesiredSpeed+","+
-                        mPeriodicIO.rpm+","+
+                        reachedDesiredShootRPM()+","+
+                        mPeriodicIO.currentRPM+","+
                         mPeriodicIO.percentDemand+","+
                         mPeriodicIO.velocityPIDDemand+","+
                         /*mPeriodicIO.SRXLeftCurrent+*/","+
@@ -333,9 +348,9 @@ public class Shooter extends Subsystem {
         mPeriodicIO.schedDeltaActual = now - mPeriodicIO.lastSchedStart;
         mPeriodicIO.lastSchedStart   = now;
 
-        if (mSystemState == SystemState.SHOOTING) {
-            mPeriodicIO.rpm = ticksPer100MsToRPM(mFXLeft.getSelectedSensorVelocity(0));
-            mPeriodicIO.reachedDesiredSpeed = mPeriodicIO.rpm >= (ticksPer100MsToRPM(mPeriodicIO.velocityPIDDemand) - kSpeedTolerance);
+        // if (mSystemState == SystemState.SHOOTING) 
+        {
+            mPeriodicIO.currentRPM = ticksPer100MsToRPM(mFXLeft.getSelectedSensorVelocity(0));
         }
     }
 
@@ -343,23 +358,12 @@ public class Shooter extends Subsystem {
     double lastPercentSpeed = 0;
     @Override
     public void writePeriodicOutputs() {
-         if (mSystemState == SystemState.SHOOTING) {
-        //     lastPIDSpeed += 0.01;
-        //     if(lastPIDSpeed > mPeriodicIO.velocityPIDDemand){
-                 lastPIDSpeed = mPeriodicIO.velocityPIDDemand;
-        //     }
-            mFXLeft.set(ControlMode.Velocity, lastPIDSpeed);
-            mFXRight.set(ControlMode.Velocity, lastPIDSpeed);
-        //     System.out.println("PIDDemand - " + lastPIDSpeed);
-         } else {
-        //     lastPercentSpeed += 0.01;
-        //     if(lastPercentSpeed > mPeriodicIO.percentDemand){
-                 lastPercentSpeed = mPeriodicIO.percentDemand;
-        //     }
-            mFXLeft.set(ControlMode.PercentOutput, lastPercentSpeed);
-            mFXRight.set(ControlMode.PercentOutput, lastPercentSpeed);
-        //     System.out.println("PercentDemand - " + lastPercentSpeed);
-         }
+        if(lastPIDSpeed!=mPeriodicIO.velocityPIDDemand){
+            System.out.println("NEW SHOOTER RPM: "+ticksPer100MsToRPM(mPeriodicIO.velocityPIDDemand));
+            lastPIDSpeed = mPeriodicIO.velocityPIDDemand;
+        }
+        mFXLeft.set(ControlMode.Velocity, mPeriodicIO.velocityPIDDemand);
+        mFXRight.set(ControlMode.Velocity, mPeriodicIO.velocityPIDDemand);
     }
 
     @Override
@@ -379,6 +383,8 @@ public class Shooter extends Subsystem {
         SmartDashboard.putNumber("shooters current",mFXRight.getStatorCurrent()+mFXLeft.getStatorCurrent());
         SmartDashboard.putNumber("shooter left current",mFXLeft.getStatorCurrent());
         SmartDashboard.putNumber("shooter right current",mFXRight.getStatorCurrent());
+        SmartDashboard.putNumber("hold rpm",mHoldRPM);
+        SmartDashboard.putNumber("shoot rpm",mShootRPM);
     }
 
     public static class PeriodicIO {
@@ -390,12 +396,11 @@ public class Shooter extends Subsystem {
         private double lastSchedStart;
 
         // INPUTS
-        public boolean reachedDesiredSpeed;
         public double  SRXLeftCurrent;
         public double  SRXRightCurrent;
         public String  SRXLeftFaults;
         public String  SRXRightFaults;
-        public double  rpm;
+        public double  currentRPM;
         
         //OUTPUTS
         public double percentDemand;

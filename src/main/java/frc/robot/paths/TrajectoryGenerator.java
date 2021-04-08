@@ -19,10 +19,15 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TrajectoryGenerator {
+    private boolean skipThisOne = false;
     private static final double kMaxVelocity = 120.0;
     private static final double kMaxAccel = 60.0; //120.0;
     private static final double kMaxDecel = 72.0; //72.0;
     private static final double kMaxVoltage = 9.0;
+
+    private static final double defSpeed = 40; // bounce 120
+    private static final double defAccel = 180; // bounce 180
+    private static final double defDecel = 180; // bounce 180
 
     private static TrajectoryGenerator mInstance = new TrajectoryGenerator();
     private final DriveMotionPlanner mMotionPlanner;
@@ -38,7 +43,7 @@ public class TrajectoryGenerator {
 
     public void generateTrajectories() {
         if(mTrajectorySet == null) {
-        	double startTime = Timer.getFPGATimestamp();
+        double startTime = Timer.getFPGATimestamp();
             System.out.println("Generating trajectories...");
             mTrajectorySet = new TrajectorySet();
             System.out.println("Finished trajectory generation in: " + (Timer.getFPGATimestamp() - startTime) + " seconds");
@@ -118,125 +123,83 @@ public class TrajectoryGenerator {
             public final Trajectory<TimedState<Pose2dWithCurvature>> right;
         }
 
-        // Rendezvous Paths
-        public final MirroredTrajectory startToThreePowerCells;
-        public final MirroredTrajectory startToThreePowerCells2;
-        public final MirroredTrajectory collectThreePowerCells;      
-        public final MirroredTrajectory moveToTwoPowerCells;
-        public final MirroredTrajectory moveToTwoPowerCells2;            
-        public final MirroredTrajectory collectTwoPowerCells; 
-        
-        // Steal Paths
-        public final MirroredTrajectory startToStealPath;
-        public final MirroredTrajectory stealToGoalPath;
-        public final MirroredTrajectory goalToRendezvousPath;
-        public final MirroredTrajectory threeBallsPath;
-        public final MirroredTrajectory threeBallsToGoalPath;
-
-        // Trench Paths
-        public final MirroredTrajectory startToTrenchPath;
-        public final MirroredTrajectory trenchToStartPath;
-
-        // Test Paths Alex
-        public final MirroredTrajectory backAwayFromLinePath;
-
-        public final MirroredTrajectory startToEndPath;
-      
-        public final MirroredTrajectory redAPath;
-        public final MirroredTrajectory redBPath;
-        public final MirroredTrajectory blueAPath;
-        public final MirroredTrajectory blueBPath;
 
         public final MirroredTrajectory barrelPath;
         public final MirroredTrajectory slalomPath;
-        public final MirroredTrajectory bouncePath;
-        public final MirroredTrajectory galacticSearchARedPath1;
-        public final MirroredTrajectory galacticSearchARedPath2;
-        public final MirroredTrajectory galacticSearchARedPath3;
-        public final MirroredTrajectory galacticSearchARedPath4;
-        public final MirroredTrajectory galacticSearchABluePath1;
-        public final MirroredTrajectory galacticSearchABluePath2;
-        public final MirroredTrajectory galacticSearchABluePath3;
-        public final MirroredTrajectory galacticSearchBRedPath1;
-        public final MirroredTrajectory galacticSearchBRedPath2;
-        public final MirroredTrajectory galacticSearchBRedPath3;
-        public final MirroredTrajectory galacticSearchBBluePath1;
-        public final MirroredTrajectory galacticSearchBBluePath2;
-        public final MirroredTrajectory galacticSearchBBluePath3;
-        // public final MirroredTrajectory testPath3;
-        public final MirroredTrajectory testPath4;
+        // public final MirroredTrajectory slalomPathStraightF;
+        // public final MirroredTrajectory slalomPathRound;
+        // public final MirroredTrajectory slalomPathStraightB;
+        // public final MirroredTrajectory slalomPathEnd;
+        public final MirroredTrajectory bouncePathA;
+        public final MirroredTrajectory bouncePathB;
+        public final MirroredTrajectory bouncePathC;
+        public final MirroredTrajectory bouncePathD;
 
-        public final MirroredTrajectory testPathBrian;
+        // public final MirroredTrajectory galacticSearchARedPath1;
+        // public final MirroredTrajectory galacticSearchARedPath2;
+        // public final MirroredTrajectory galacticSearchARedPath3;
+        // public final MirroredTrajectory galacticSearchARedPath4;
+        // public final MirroredTrajectory galacticSearchABluePath1;
+        // public final MirroredTrajectory galacticSearchABluePath2;
+        // public final MirroredTrajectory galacticSearchABluePath3;
+        // public final MirroredTrajectory galacticSearchBRedPath1;
+        // public final MirroredTrajectory galacticSearchBRedPath2;
+        // public final MirroredTrajectory galacticSearchBRedPath3;
+        // public final MirroredTrajectory galacticSearchBBluePath1;
+        // public final MirroredTrajectory galacticSearchBBluePath2;
+        // public final MirroredTrajectory galacticSearchBBluePath3;
+
+
+        public final MirroredTrajectory powerPortForwardPath;
+        public final MirroredTrajectory powerPortBackwardPath;
+
+        // public final MirroredTrajectory testPath3;
+        // public final MirroredTrajectory testPath4;
+
+        // public final MirroredTrajectory testPathBrian;
 
         private TrajectorySet() {
-            // Rendezvous Paths
-            startToThreePowerCells = new MirroredTrajectory(getStartToThreePowerCells());
-            startToThreePowerCells2 = new MirroredTrajectory(getStartToThreePowerCells2());
-            // System.out.println(startToThreePowerCells.left.toString());
-            collectThreePowerCells = new MirroredTrajectory(getCollectThreePowerCells());
-            // System.out.println(collectThreePowerCells.left.toString());
-            moveToTwoPowerCells = new MirroredTrajectory(getMoveToTwoPowerCells());
-            // System.out.println(moveToTwoPowerCells.left.toString());
-            moveToTwoPowerCells2 = new MirroredTrajectory(getMoveToTwoPowerCells2());
-            // System.out.println(moveToTwoPowerCells2.left.toString());
-            collectTwoPowerCells = new MirroredTrajectory(getCollectTwoPowerCells());
-            // System.out.println(collectTwoPowerCells.left.toString());
-
-            // Trench Paths
-            startToTrenchPath = new MirroredTrajectory(getStartToTrench());
-            trenchToStartPath = new MirroredTrajectory(getTrenchToStart());
-
-            // Steal Paths
-            startToStealPath = new MirroredTrajectory(getStartToSteal());
-            stealToGoalPath = new MirroredTrajectory(getStealToGoal());
-            goalToRendezvousPath = new MirroredTrajectory(getGoalToRendezvous());
-            threeBallsPath = new MirroredTrajectory(getThreeBalls());
-            threeBallsToGoalPath = new MirroredTrajectory(getThreeBallsToGoal());
-
-            // Test Paths Alex
-            backAwayFromLinePath = new MirroredTrajectory(getBackAwayFromLinePath());
-
-            startToEndPath = new MirroredTrajectory(getStartToEndPath());
-            // System.out.println(startToEndPath.left.toString());
-
-            redAPath = new MirroredTrajectory(getRedAPath());
-            // System.out.println(redAPath.left.toString());
-            redBPath = new MirroredTrajectory(getRedBPath());
-            // System.out.println(redBPath.left.toString());
-            blueAPath = new MirroredTrajectory(getBlueAPath());
-            // System.out.println(blueAPath.left.toString());
-            blueBPath = new MirroredTrajectory(getBlueBPath());
-            // System.out.println(blueBPath.left.toString());
-
             barrelPath = new MirroredTrajectory(getBarrelPath());
             // System.out.println(testPath.left.toString());
-            slalomPath = new MirroredTrajectory(getSlalomPath());
+            slalomPath          = new MirroredTrajectory(getSlalomPath());
+            // slalomPathStraightF = new MirroredTrajectory(getSlalomPathStraightF());
+            // slalomPathRound     = new MirroredTrajectory(getSlalomPathRound());
+            // slalomPathStraightB = new MirroredTrajectory(getSlalomPathStraightB());
+            // slalomPathEnd       = new MirroredTrajectory(getSlalomPathEnd());
+            //slalomPath = new MirroredTrajectory(getSlalomPath());
+            bouncePathA = new MirroredTrajectory(getBouncePathA());
+            bouncePathB = new MirroredTrajectory(getBouncePathB());
+            bouncePathC = new MirroredTrajectory(getBouncePathC());
+            bouncePathD = new MirroredTrajectory(getBouncePathD());
             // System.out.println(testPath2.left.toString());
-            bouncePath = new MirroredTrajectory(getBouncePath());
+            // bouncePath = new MirroredTrajectory(getBouncePath());
             // System.out.println(testPath2.left.toString());
             // testPath3 = new MirroredTrajectory(getTestPath3());
             // System.out.println(testPath3.left.toString());
-            testPath4 = new MirroredTrajectory(getTestPath4());
+            // testPath4 = new MirroredTrajectory(getTestPath4());
             // System.out.println(testPath4.left.toString());
 
-            galacticSearchARedPath1 = new MirroredTrajectory(getGalacticSearchARedPath1());
-            galacticSearchARedPath2 = new MirroredTrajectory(getGalacticSearchARedPath2());
-            galacticSearchARedPath3 = new MirroredTrajectory(getGalacticSearchARedPath3());
-            galacticSearchARedPath4 = new MirroredTrajectory(getGalacticSearchARedPath4());
+            // galacticSearchARedPath1 = new MirroredTrajectory(getGalacticSearchARedPath1());
+            // galacticSearchARedPath2 = new MirroredTrajectory(getGalacticSearchARedPath2());
+            // galacticSearchARedPath3 = new MirroredTrajectory(getGalacticSearchARedPath3());
+            // galacticSearchARedPath4 = new MirroredTrajectory(getGalacticSearchARedPath4());
 
-            galacticSearchABluePath1 = new MirroredTrajectory(getGalacticSearchABluePath1());
-            galacticSearchABluePath2 = new MirroredTrajectory(getGalacticSearchABluePath2());
-            galacticSearchABluePath3 = new MirroredTrajectory(getGalacticSearchABluePath3());
+            // galacticSearchABluePath1 = new MirroredTrajectory(getGalacticSearchABluePath1());
+            // galacticSearchABluePath2 = new MirroredTrajectory(getGalacticSearchABluePath2());
+            // galacticSearchABluePath3 = new MirroredTrajectory(getGalacticSearchABluePath3());
 
-            galacticSearchBRedPath1 = new MirroredTrajectory(getGalacticSearchBRedPath1());
-            galacticSearchBRedPath2 = new MirroredTrajectory(getGalacticSearchBRedPath2());
-            galacticSearchBRedPath3 = new MirroredTrajectory(getGalacticSearchBRedPath3());
+            // galacticSearchBRedPath1 = new MirroredTrajectory(getGalacticSearchBRedPath1());
+            // galacticSearchBRedPath2 = new MirroredTrajectory(getGalacticSearchBRedPath2());
+            // galacticSearchBRedPath3 = new MirroredTrajectory(getGalacticSearchBRedPath3());
 
-            galacticSearchBBluePath1 = new MirroredTrajectory(getGalacticSearchBBluePath1());
-            galacticSearchBBluePath2 = new MirroredTrajectory(getGalacticSearchBBluePath2());
-            galacticSearchBBluePath3 = new MirroredTrajectory(getGalacticSearchBBluePath3());
+            // galacticSearchBBluePath1 = new MirroredTrajectory(getGalacticSearchBBluePath1());
+            // galacticSearchBBluePath2 = new MirroredTrajectory(getGalacticSearchBBluePath2());
+            // galacticSearchBBluePath3 = new MirroredTrajectory(getGalacticSearchBBluePath3());
 
-            testPathBrian = new MirroredTrajectory(getBrianPath());
+            powerPortForwardPath = new MirroredTrajectory(getPowerPortForwardPath());
+            powerPortBackwardPath = new MirroredTrajectory(getPowerPortBackwardPath());
+
+            // testPathBrian = new MirroredTrajectory(getBrianPath());
             // System.out.println("Brian's path");
             // System.out.println(testPathBrian.left.toString());
             // System.out.println("Brian's path end");
@@ -244,121 +207,6 @@ public class TrajectoryGenerator {
         }
 
         /*************************************Rendezvous Paths*****************************************/
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToThreePowerCells() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(-133.5)));
-            waypoints.add(new Pose2d(new Translation2d(-100.0, -95.0), Rotation2d.fromDegrees(-133.5)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToThreePowerCells2() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-100.0, -95.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(-105.0, -95.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(-93.0, -71.0), Rotation2d.fromDegrees(63.4)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getCollectThreePowerCells() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-95.0, -95.0), Rotation2d.fromDegrees(60.0)));
-            waypoints.add(new Pose2d(new Translation2d(-83.0, -71.0), Rotation2d.fromDegrees(60.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getMoveToTwoPowerCells() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-83.0, -71.0), Rotation2d.fromDegrees(-30.0)));
-            waypoints.add(new Pose2d(new Translation2d(-70.0, -81.0), Rotation2d.fromDegrees(-30.0)));
-            waypoints.add(new Pose2d(new Translation2d(-33.0, -15.0), Rotation2d.fromDegrees(60.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getMoveToTwoPowerCells2() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-33.0, -15.0), Rotation2d.fromDegrees(150.0)));
-            waypoints.add(new Pose2d(new Translation2d(-118.0, 15.0), Rotation2d.fromDegrees(150.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }        
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getCollectTwoPowerCells() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-95.0, -95.0), Rotation2d.fromDegrees(60.0)));
-            waypoints.add(new Pose2d(new Translation2d(-83.0, -71.0), Rotation2d.fromDegrees(60.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        /*************************************Trench Paths*****************************************/
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToTrench() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(135.0)));
-            waypoints.add(new Pose2d(new Translation2d(-65.0, 65.0), Rotation2d.fromDegrees(135.0)));
-            waypoints.add(new Pose2d(new Translation2d(-195.0, 65.0), Rotation2d.fromDegrees(180.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getTrenchToStart() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            // waypoints.add(new Pose2d(new Translation2d(-185.0, 61.0), Rotation2d.fromDegrees(0.0)));
-            // waypoints.add(new Pose2d(new Translation2d(-40.0, 40.0), Rotation2d.fromDegrees(-45.0)));
-            // waypoints.add(new Pose2d(new Translation2d(-20.0, 20.0), Rotation2d.fromDegrees(-45.0)));
-            waypoints.add(new Pose2d(new Translation2d(-195.0, 65.0), Rotation2d.fromDegrees(-18.4)));
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(-18.4)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/20.0, 20.0, 60.0, kMaxVoltage, 20.0, 1);
-        }
-
-        /*************************************Steal Paths*****************************************/
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToSteal() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(-122.0, 0.0), Rotation2d.fromDegrees(180.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0, 60.0, 60.0, kMaxVoltage, 120.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStealToGoal() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-122.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(-100.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(-10.0, 160.0), Rotation2d.fromDegrees(60.6)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0 * 0.75, 60.0, 60.0, kMaxVoltage, 120.0 * 0.75, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGoalToRendezvous() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-10.0, 160.0), Rotation2d.fromDegrees(180.0)));
-            waypoints.add(new Pose2d(new Translation2d(-80.0, 160.0), Rotation2d.fromDegrees(180.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0 * 0.5, 60.0, 60.0, kMaxVoltage, 120.0 * 0.5, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getThreeBalls() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-80.0, 160.0), Rotation2d.fromDegrees(120.0)));
-            waypoints.add(new Pose2d(new Translation2d(-108.0, 112.0), Rotation2d.fromDegrees(120.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0 * 0.5, 60.0, 60.0, kMaxVoltage, 120.0 * 0.5, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getThreeBallsToGoal() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(-48.0, 112.0), Rotation2d.fromDegrees(32.0)));
-            waypoints.add(new Pose2d(new Translation2d(-10.0, 160.0), Rotation2d.fromDegrees(32.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0 * 0.5, 60.0, 60.0, kMaxVoltage, 120.0 * 0.5, 1);
-        }
 
         /*************************************Test Paths*****************************************/
 
@@ -370,32 +218,6 @@ public class TrajectoryGenerator {
             return generateTrajectory(false, waypoints, Arrays.asList(), /*kMaxVelocity*/120.0, 60.0, 60.0, kMaxVoltage, 120.0, 1);
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getBrianPath(){
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d((10*12), 0.0), Rotation2d.fromDegrees(90.0)));
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), 30, kMaxAccel, kMaxDecel, kMaxVoltage, 30.0, 1);
-        }
-        
-        // private Trajectory<TimedState<Pose2dWithCurvature>> getStraightPath(){
-        //     List<Pose2d> waypoints = new ArrayList<>();
-        //     waypoints.add(Constants.kRobotLeftStartingPose);
-        //     waypoints.add(Constants.kRobotLeftStartingPose.transformBy(Pose2d.fromTranslation(new Translation2d(72.0, 0.0))));
-
-        //     return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        // }
-        
-        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToEndPath(){
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(startingPose);
-            waypoints.add(midPose);
-            waypoints.add(mid2Pose);
-            waypoints.add(endingPose);
-
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        
         private class ThreePoints{
             double x;
             double y;
@@ -432,6 +254,7 @@ public class TrajectoryGenerator {
             double startAngleRads = Math.atan2(starty-centery,startx-centerx);
             double startAngleDegrees = convertToDegrees(startAngleRads);
             double arcLengthDegrees = endAngleDegrees-startAngleDegrees;
+            System.out.println("arcLengthDegrees " + arcLengthDegrees);
             double leftright = 90;
             int steps = Math.round(Math.abs((int)(arcLengthDegrees/arcLengthStep)));
             double stepSize = arcLengthDegrees/(double)steps;
@@ -460,815 +283,1322 @@ public class TrajectoryGenerator {
             return angleDegrees*conversion;
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getRedAPath() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(225)));
-            waypoints.add(new Pose2d(new Translation2d(-30.0, -30.0), Rotation2d.fromDegrees(225)));
-            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getRedBPath() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180)));
-            waypoints.add(new Pose2d(new Translation2d(-30.0, 0.0), Rotation2d.fromDegrees(180)));
-            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getBlueAPath() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(217)));
-            waypoints.add(new Pose2d(new Translation2d(-120.0, -90.0), Rotation2d.fromDegrees(217)));
-            return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
-
         private double convertToDegrees(double angleRads){
             final double conversion = 180.0/Math.PI;
             return angleRads*conversion;
         }
+
         private Trajectory<TimedState<Pose2dWithCurvature>> getBarrelPath() {
             List<Pose2d> waypoints = new ArrayList<>();
+            double startx = 46;
+            double starty = 90;
+
+            waypoints.add(new Pose2d(new Translation2d(startx-startx, starty-starty), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(165-startx, 90-starty), Rotation2d.fromDegrees(45)));
+            waypoints.add(new Pose2d(new Translation2d(150-startx, 150-starty), Rotation2d.fromDegrees(200)));
+            waypoints.add(new Pose2d(new Translation2d(120-startx, 70-starty), Rotation2d.fromDegrees(340)));
+            waypoints.add(new Pose2d(new Translation2d(255-startx, 70-starty), Rotation2d.fromDegrees(330)));
+            waypoints.add(new Pose2d(new Translation2d(240-startx, -5-starty), Rotation2d.fromDegrees(200)));
+            waypoints.add(new Pose2d(new Translation2d(215-startx, 90-starty), Rotation2d.fromDegrees(45)));
+
+            waypoints.add(new Pose2d(new Translation2d(270-startx, 120-starty), Rotation2d.fromDegrees(15)));
+
+            waypoints.add(new Pose2d(new Translation2d(300-startx, 120-starty), Rotation2d.fromDegrees(315)));
+
+            waypoints.add(new Pose2d(new Translation2d(300-startx, 75-starty), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(startx-60-startx, starty-30-starty), Rotation2d.fromDegrees(180)));
+
+            return generateTrajectory(   false, waypoints, Arrays.asList(),        120,        180,        180,           12, 120, 1);
+        }
+
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getBarrelPath() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+
+        //     if (false){
+        //         waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+        //         waypoints.add(new Pose2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)));
+        //     }
+        //     else {
+        //         double exitAngleRads;
+        //         double enterAngleRads;
+        //         double rc = 28/2;
+        //         double radius = 30;
+
+        //         double startx = 60-rc;
+        //         double starty = 120-radius; 
+
+        //         double d0x = 145; //150
+        //         double d0y = 120;
+
+        //         double d1x = 222; //240
+        //         double d1y = 45; //60
+
+        //         double d2x = 292; //300
+        //         double d2y = 110; //120
+
+        //         double endx = startx-30;
+        //         double endy = starty-30;
+
+        //         enterAngleRads = convertToRads(-90);
+        //         addStraightSegment(tpal, true, startx,                              starty, 
+        //                                     d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads));
+        //         exitAngleRads = convertToRads(265);
+        //         addArcSegment(tpal,     false, d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads),
+        //                                     d0x,                                 d0y,                 exitAngleRads);
+        //         enterAngleRads = convertToRads(75);
+        //         addStraightSegment(tpal,false, d0x+radius*Math.cos(exitAngleRads),  d0y+radius*Math.sin(exitAngleRads),
+        //                                     d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads));
+        //         exitAngleRads = convertToRads(-225);
+        //         addArcSegment(tpal,      false,d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads),
+        //                                     d1x,                                 d1y,                 exitAngleRads);
+        //         enterAngleRads = convertToRads(135);
+        //         addStraightSegment(tpal,false, d1x+radius*Math.cos(exitAngleRads),  d1y+radius*Math.sin(exitAngleRads),
+        //                                     d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads));
+        //         exitAngleRads = convertToRads(-90);
+        //         addArcSegment(tpal,      false,d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads),
+        //                                     d2x,                                 d2y,                 exitAngleRads);
+
+        //         addStraightSegment(tpal, false,d2x+radius*Math.cos(exitAngleRads),  d2y+radius*Math.sin(exitAngleRads),
+        //                                     endx,                              endy);
+
+        //         System.out.println("Barrel Path Coordinates - ");
+        //         for (ThreePoints tp : tpal){
+        //             System.out.println(tp.x+","+tp.y+","+tp.a);
+        //             waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //         }
+
+        //         // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //         // if(speed == -1){
+        //         //     SmartDashboard.putNumber("Autopath Speed", 20);
+        //         //     speed = 20;
+        //         // }
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        120,        40,        100,           9, 120, 1);
+        // }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
             ArrayList<ThreePoints> tpal = new ArrayList<>();
+            
+            double exitAngleRads;
+            double enterAngleRads;
+            double rc = 28/2;
+            
+            double startx = 60 - rc;
+            double starty = 150;
 
-                        //Temporary
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(new Pose2d(new Translation2d(startx-startx, starty-starty), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(85-startx, 120-starty), Rotation2d.fromDegrees(300)));
+            //waypoints.add(new Pose2d(new Translation2d(120-startx, 90-starty), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(250-startx, 90-starty), Rotation2d.fromDegrees(30)));
 
-            // double exitAngleRads;
-            // double enterAngleRads;
-            // double rc = 28/2;
-            // double radius = 30;
+            waypoints.add(new Pose2d(new Translation2d(300-startx, 150-starty), Rotation2d.fromDegrees(0)));
+            
+            waypoints.add(new Pose2d(new Translation2d(290-startx, 40-starty), Rotation2d.fromDegrees(205)));
+            waypoints.add(new Pose2d(new Translation2d(240-startx, 120-starty), Rotation2d.fromDegrees(120)));
+            waypoints.add(new Pose2d(new Translation2d(210-startx, 150-starty), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(105-startx, 135-starty), Rotation2d.fromDegrees(195)));
+            waypoints.add(new Pose2d(new Translation2d(60-startx, 90-starty), Rotation2d.fromDegrees(260)));
+            waypoints.add(new Pose2d(new Translation2d(30-startx, 65-starty), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(-15+rc-startx, 65-starty), Rotation2d.fromDegrees(180)));
 
-            // double startx = 60-rc;
-            // double starty = 120-radius; 
-
-            // double d0x = 147; //150
-            // double d0y = 120;
-
-            // double d1x = 235; //240
-            // double d1y = 63; 
-
-            // double d2x = 292; //300
-            // double d2y = 117; //120
-
-            // double endx = startx;
-            // double endy = starty;
-
-
-            // enterAngleRads = convertToRads(-90);
-            // addStraightSegment(tpal, true, startx,                              starty, 
-            //                                d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads));
-            // exitAngleRads = convertToRads(265);
-            // addArcSegment(tpal,     false, d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads),
-            //                                d0x,                                 d0y,                 exitAngleRads);
-            // enterAngleRads = convertToRads(75);
-            // addStraightSegment(tpal,false, d0x+radius*Math.cos(exitAngleRads),  d0y+radius*Math.sin(exitAngleRads),
-            //                                d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads));
-            // exitAngleRads = convertToRads(-225);
-            // addArcSegment(tpal,      false,d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads),
-            //                                d1x,                                 d1y,                 exitAngleRads);
-            // enterAngleRads = convertToRads(135);
-            // addStraightSegment(tpal,false, d1x+radius*Math.cos(exitAngleRads),  d1y+radius*Math.sin(exitAngleRads),
-            //                                d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads));
+            //1
+            // enterAngleRads = convertToRads(118);
+            // exitAngleRads = convertToRads(0);
+            // addArcSegment(tpal, true,      d0x-rc,                              dy+radius*Math.sin(enterAngleRads),
+            //                                 d0x,                                 dy,                 exitAngleRads);
+            // enterAngleRads = convertToRads(-179);
             // exitAngleRads = convertToRads(-90);
-            // addArcSegment(tpal,      false,d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads),
-            //                                d2x,                                 d2y,                 exitAngleRads);
+            // addArcSegment(tpal, false,      d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+            //                                 d1x,                                 dy,                 exitAngleRads);
 
-            // addStraightSegment(tpal, false,d2x+radius*Math.cos(exitAngleRads),  d2y+radius*Math.sin(exitAngleRads),
-            //                                startx,                              starty);
+                                            //Split
+            //2                            
+            // enterAngleRads = convertToRads(-90);
+            // addStraightSegment(tpal, false, d1x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
+            //                                 d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
 
-            // System.out.println("Barrel Path Coordinates - ");
-            // for (ThreePoints tp : tpal){
-            //     System.out.println(tp.x+","+tp.y+","+tp.a);
-            //     waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
-            // }
+                                            //Split
+            //3                                
+            // exitAngleRads = convertToRads(0);
+            // addArcSegment(tpal, false,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+            //                                 d2x,                                 dy,                 exitAngleRads);                             
+            // enterAngleRads = convertToRads(150);
+            // exitAngleRads = convertToRads(0);
+            // addArcSegment(tpal, true,       d3x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+            //                                 d3x,                                 dy,                 exitAngleRads);
+            // radius += 5;
+            // enterAngleRads = convertToRads(0);
+            // exitAngleRads = convertToRads(-179);
+            // addArcSegment(tpal, false,       d3x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+            //                                 d3x,                                 dy,                 exitAngleRads);
+            // //? radius -= 5;
+            // enterAngleRads = convertToRads(0);
+            // exitAngleRads = convertToRads(90);
+            // addArcSegment(tpal, false,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+            //                                 d2x,                                 dy,                 exitAngleRads);
+
+                                            //Split
+            //4                                
+            // enterAngleRads = convertToRads(90);
+            // addStraightSegment(tpal, false, d2x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
+            //                                 d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
+
+                                            //Split
+            //5                                
+            // exitAngleRads = convertToRads(179);
+            // dy -= 15;
+            // endy -=15;
+            // addArcSegment(tpal, false,      d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+            //                                 d1x,                                 dy,                 exitAngleRads);
+            // enterAngleRads = convertToRads(0);
+            // exitAngleRads = convertToRads(-90);
+            // addArcSegment(tpal, false,      d1x-radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+            //                                 d0x,                                 dy,                 exitAngleRads);
+            // addStraightSegment(tpal, false, d0x-radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
+            //                                 endx,                                endy);
 
             // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
             // if(speed == -1){
             //     SmartDashboard.putNumber("Autopath Speed", 20);
             //     speed = 20;
             // }
-            // return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+
+            System.out.println("Slalom Path Coordinates - ");
+            for (ThreePoints tp : tpal){
+                System.out.println(tp.x+","+tp.y+","+tp.a);
+                waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+            }
+            double speed = 140;
+            double accel = 180;
+             return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        accel,        accel,           12, speed, 1);
+            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPath() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            //Temporary
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
-
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathStraightF() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
         //     ArrayList<ThreePoints> tpal = new ArrayList<>();
             
         //     double exitAngleRads;
         //     double enterAngleRads;
         //     double rc = 28/2;
-        //     double radius = 28; //30
-            
+        //     double radius = 30; //30
+
         //     double startx = 60-rc;
-        //     double starty = 180-rc;
+        //     double starty = 120+30;
 
         //     double d0x = 60;
         //     double d1x = 120;
         //     double d2x = 235; //240
-        //     double d3x = 295; //300
 
         //     double dy = 120;
 
-        //     double endx = startx;
-        //     double endy = 60+rc;
-
-        //     enterAngleRads = convertToRads(-135);
-        //     addStraightSegment(tpal, true,  startx,                              starty,
-        //                                     d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
         //     exitAngleRads = convertToRads(-90);
-        //     addArcSegment(tpal, false,      d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-        //                                     d1x,                                 dy,                 exitAngleRads);
         //     enterAngleRads = convertToRads(-90);
-        //     addStraightSegment(tpal, false, d1x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
+        //     addStraightSegment(tpal, true, d1x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
         //                                     d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
-        //     exitAngleRads = convertToRads(0);
-        //     addArcSegment(tpal, false,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-        //                                     d2x,                                 dy,                 exitAngleRads);
-        //     enterAngleRads = convertToRads(150);
-        //     exitAngleRads = convertToRads(-179);
-        //     addArcSegment(tpal, true,       d3x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-        //                                     d3x,                                 dy,                 exitAngleRads);
-        //     enterAngleRads = convertToRads(0);
-        //     exitAngleRads = convertToRads(90);
-        //     addArcSegment(tpal, false,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-        //                                     d2x,                                 dy,                 exitAngleRads);
-        //     enterAngleRads = convertToRads(90);
-        //     addStraightSegment(tpal, false, d2x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
-        //                                     d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
-        //     exitAngleRads = convertToRads(135);
-        //     addArcSegment(tpal, false,      d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
-        //                                     d1x,                                 dy,                 exitAngleRads);
 
-        //     addStraightSegment(tpal, false, d1x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
-        //                                     endx,                                endy);
-
-        //     System.out.println("Slalom Path Coordinates - ");
+        //     //System.out.println("Slalom Path Coordinates - ");
         //     for (ThreePoints tp : tpal){
         //         System.out.println(tp.x+","+tp.y+","+tp.a);
         //         waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
         //     }
+        //     double speed = 40;
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+
+        // }
+
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathRound() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+            
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30; //30
+            
+        //     double startx = 60-rc;
+        //     double starty = 120+30;
+
+        //     double d2x = 235; //240
+        //     double d3x = 305; //300
+
+        //     double dy = 120;
+
+        //     enterAngleRads = convertToRads(-90);
+        //     exitAngleRads = convertToRads(0);
+        //     addArcSegment(tpal, true,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d2x,                                 dy,                 exitAngleRads);                             
+        //     enterAngleRads = convertToRads(150);
+        //     exitAngleRads = convertToRads(0);
+        //     addArcSegment(tpal, true,       d3x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d3x,                                 dy,                 exitAngleRads);
+        //     radius += 5;
+        //     enterAngleRads = convertToRads(0);
+        //     exitAngleRads = convertToRads(-179);
+        //     addArcSegment(tpal, false,       d3x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d3x,                                 dy,                 exitAngleRads);
+        //     //? radius -= 5;
+        //     enterAngleRads = convertToRads(0);
+        //     exitAngleRads = convertToRads(90);
+        //     addArcSegment(tpal, false,      d2x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d2x,                                 dy,                 exitAngleRads);
+
+        //     //System.out.println("Slalom Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //     }
+        //     double speed = 40;
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+
+        // }
+
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathStraightB() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+            
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30; //30
+
+        //     double startx = 60-rc;
+        //     double starty = 120+30;
+
+        //     double d0x = 60;
+        //     double d1x = 120;
+        //     double d2x = 235; //240
+
+        //     double dy = 120;
+
+        //     enterAngleRads = convertToRads(90);
+        //     exitAngleRads = convertToRads(90);
+        //     addStraightSegment(tpal, true, d2x+radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
+        //                                     d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads));
+
+        //     //System.out.println("Slalom Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //     }
+        //     double speed = 40;
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+
+        // }
+
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathEnd() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+            
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30; //30
+            
+        //     double startx = 60-rc;
+        //     double starty = 120+30;
+
+        //     double d0x = 60;
+        //     double d1x = 120;
+
+        //     double dy = 120;
+
+        //     double endx = startx-120;
+        //     double endy = 120-30;
+
+        //     enterAngleRads = convertToRads(90);
+        //     exitAngleRads = convertToRads(179);
+        //     dy -= 15;
+        //     endy -=15;
+        //     addArcSegment(tpal, true,      d1x+radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d1x,                                 dy,                 exitAngleRads);
+        //     enterAngleRads = convertToRads(0);
+        //     exitAngleRads = convertToRads(-90);
+        //     addArcSegment(tpal, false,      d1x-radius*Math.cos(enterAngleRads), dy+radius*Math.sin(enterAngleRads),
+        //                                     d0x,                                 dy,                 exitAngleRads);
+        //     addStraightSegment(tpal, false, d0x-radius*Math.cos(exitAngleRads),  dy+radius*Math.sin(exitAngleRads),
+        //                                     endx,                                endy);
+
+        //     //System.out.println("Slalom Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //     }
+        //     double speed = 40;
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(), speed,        40,        40,           12, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+
+        // }
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathA() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            double startx = 46;
+            double starty = 90;
+            waypoints.add(new Pose2d(new Translation2d(startx-startx, starty-starty), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(90-startx, 40-starty), Rotation2d.fromDegrees(-89)));
+            return generateTrajectory(
+                false, // reversed
+                waypoints, // waypoints
+                Arrays.asList(), // constraints
+                defSpeed, // max vel
+                defAccel, // max accel
+                defDecel, // max decel
+                12, // max voltage
+                defSpeed, // default vel
+                1 // slowdown chunks?
+            );
+        }
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathB() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            double startx = 46;
+            double starty = 90;
+            waypoints.add(new Pose2d(new Translation2d(90 - startx, 40-starty), Rotation2d.fromDegrees(89)));
+            waypoints.add(new Pose2d(new Translation2d(120-startx, 130-starty), Rotation2d.fromDegrees(60)));
+            waypoints.add(new Pose2d(new Translation2d(180-startx, 120-starty), Rotation2d.fromDegrees(-89)));
+            waypoints.add(new Pose2d(new Translation2d(180-startx, 33-starty), Rotation2d.fromDegrees(-89)));
+            return generateTrajectory(   false, waypoints, Arrays.asList(), defSpeed,        defAccel,        defDecel,           12, defSpeed, 1);
+        }
+        // had a theory that a single path may time out if it extends 15 seconds. Unverified.
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathC() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            double startx = 46;
+            double starty = 90;
+            waypoints.add(new Pose2d(new Translation2d(180 - startx, 33-starty), Rotation2d.fromDegrees(89)));
+            waypoints.add(new Pose2d(new Translation2d(180-startx, 105-starty), Rotation2d.fromDegrees(89)));
+            waypoints.add(new Pose2d(new Translation2d(270-startx, 105-starty), Rotation2d.fromDegrees(-91)));
+            waypoints.add(new Pose2d(new Translation2d(270-startx, 33-starty), Rotation2d.fromDegrees(-89)));
+            return generateTrajectory(   false, waypoints, Arrays.asList(), defSpeed,        defAccel,        defDecel,           12, defSpeed, 1);
+        }
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathD() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            double startx = 46;
+            double starty = 90;
+            waypoints.add(new Pose2d(new Translation2d(270 - startx, 33-starty), Rotation2d.fromDegrees(89)));
+            waypoints.add(new Pose2d(new Translation2d(300-startx, 90-starty), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(315-startx, 90-starty), Rotation2d.fromDegrees(0)));
+            return generateTrajectory(   false, waypoints, Arrays.asList(), defSpeed,        defAccel,        defDecel,           12, defSpeed, 1);
+        }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathA() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();         
+        //     if (skipThisOne){
+        //         waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+        //         waypoints.add(new Pose2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)));
+        //     }
+        //     else {
+        //         double exitAngleRads;
+        //         double enterAngleRads;
+        //         double rc = 28/2;
+        //         double radius = 28; //30
+
+        //         double d0x = 60; //B2
+        //         double d0y = 60; //B2
+
+        //         double startx = d0x+radius*Math.cos(118);
+        //         double starty = d0y+radius*Math.sin(118);
+
+        //         double a3x = 90;
+        //         double a3y = 30; 
+
+        //         double d1x = 150; //D5
+        //         double d1y = 120; //D5
+
+        //         double a6x = 180;
+        //         double a6y = 30;
+
+        //         double d2x = 210; //D7
+        //         double d2y = 120; //D7
+
+        //         double d3x = 240; //D8
+        //         double d3y = 120; //D8
+
+        //         double a9x = 270;
+        //         double a9y = 30; 
+
+        //         double d4x = 300; //B10
+        //         double d4y = 60;  //B10
+            
+        //         double endx = 330;
+        //         double endy = 90;
+
+        //         // start leg A
+        //         enterAngleRads = convertToRads(118);
+        //         exitAngleRads = convertToRads(0);
+        //         addArcSegment(tpal,      true,  d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads), d0x, d0y, exitAngleRads);
+        //         addStraightSegment(tpal, false, d0x+radius*Math.cos(exitAngleRads),  d0y+radius*Math.sin(exitAngleRads),  a3x, a3y+rc-2);
+
+        //         System.out.println("Bounce Path A Coordinates - ");
+        //         for (ThreePoints tp : tpal){
+        //             System.out.println(tp.x+","+tp.y+","+tp.a);
+        //             // waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //         }
+        //         double x = 46.85479624;
+        //         double y = 84.7225326;
+
+        //         // 46.8547962484.722532628
+        //         // 65.5024650787.45401388-11.33333333
+        //         // 81.657204677.74726709-50.66666667
+        //         // 8860-90
+        //         // 8951-83.65980825
+        //         // 9042-83.65980825
+
+        //         waypoints.add(new Pose2d(new Translation2d(46.85479624-x,84.7225326-y), Rotation2d.fromDegrees(28)));
+        //         waypoints.add(new Pose2d(new Translation2d(65.50246507-x,87.45401388-y), Rotation2d.fromDegrees(-11.33333333)));
+        //         waypoints.add(new Pose2d(new Translation2d(81.6572046-x,77.74726709-y), Rotation2d.fromDegrees(-50.66666667)));
+        //         waypoints.add(new Pose2d(new Translation2d(88-x,60-y), Rotation2d.fromDegrees(-90)));
+        //         waypoints.add(new Pose2d(new Translation2d(89-x,51-y), Rotation2d.fromDegrees(-83.65980825)));
+        //         waypoints.add(new Pose2d(new Translation2d(90-x,36-y), Rotation2d.fromDegrees(-83.65980825)));
+        //         // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //         // if(speed == -1){
+        //         //     SmartDashboard.putNumber("Autopath Speed", 20);
+        //         //     speed = 20;
+        //         // }
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        20,        80,        80,           9, 20, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathB() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();         
+        //     if (skipThisOne){
+        //         waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+        //         waypoints.add(new Pose2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)));
+        //     }
+        //     else {
+        //         double exitAngleRads;
+        //         double enterAngleRads;
+        //         double rc = 28/2;
+        //         double radius = 28; //30
+
+        //         double d0x = 60; //B2
+        //         double d0y = 60; //B2
+
+        //         double startx = d0x+radius*Math.cos(118);
+        //         double starty = d0y+radius*Math.sin(118);
+
+        //         double a3x = 90;
+        //         double a3y = 30; 
+
+        //         double d1x = 150; //D5
+        //         double d1y = 120; //D5
+
+        //         double a6x = 180;
+        //         double a6y = 30;
+
+        //         double d2x = 210; //D7
+        //         double d2y = 120; //D7
+
+        //         double d3x = 240; //D8
+        //         double d3y = 120; //D8
+
+        //         double a9x = 270;
+        //         double a9y = 30; 
+
+        //         double d4x = 300; //B10
+        //         double d4y = 60;  //B10
+            
+        //         double endx = 330;
+        //         double endy = 90;
+
+        //         // start leg B
+        //         enterAngleRads = convertToRads(180);
+        //         addStraightSegment(tpal, false, a3x, a3y-rc+2, d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads));
+        //         exitAngleRads = convertToRads(0);
+        //         addArcSegment(tpal,      false, d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads),d1x, d1y, exitAngleRads);
+        //         addStraightSegment(tpal, false, d1x+radius*Math.cos(exitAngleRads),  d1y+radius*Math.sin(exitAngleRads), a6x, a6y);
+
+        //         System.out.println("Bounce Path B Coordinates - ");
+        //         for (ThreePoints tp : tpal){
+        //             System.out.println(tp.x+","+tp.y+","+tp.a);
+        //             //waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //         }
+        //         double x = 93.55555;
+        //         double y = 29.33333;
+        //         waypoints.add(new  Pose2d(new  Translation2d(93.55555556-x,29.33333333-y),  Rotation2d.fromDegrees(72.58202921)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(97.11111111-x,40.66666667-y),  Rotation2d.fromDegrees(72.58202921)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(100.6666667-x,52-y),  Rotation2d.fromDegrees(72.58202921)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(104.2222222-x,63.33333333-y),  Rotation2d.fromDegrees(72.58202921)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(107.7777778-x,74.66666667-y),  Rotation2d.fromDegrees(72.58202921)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(111.3333333-x,86-y),  Rotation2d.fromDegrees(72.58202921)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(114.8888889-x,97.33333333-y),  Rotation2d.fromDegrees(72.58202921)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(118.4444444-x,108.6666667-y),  Rotation2d.fromDegrees(72.58202921)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(122-x,120-y),  Rotation2d.fromDegrees(72.58202921)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(125.7512887-x,134-y),  Rotation2d.fromDegrees(60)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(136-x,144.2487113-y),  Rotation2d.fromDegrees(30)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(150-x,148-y),  Rotation2d.fromDegrees(0)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(164-x,144.2487113-y),  Rotation2d.fromDegrees(-30)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(174.2487113-x,134-y),  Rotation2d.fromDegrees(-60)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(178-x,120-y),  Rotation2d.fromDegrees(-90)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(178.25-x,108.75-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(178.5-x,97.5-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(178.75-x,86.25-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(179-x,75-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(179.25-x,63.75-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(179.5-x,52.5-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(179.75-x,41.25-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(180-x,30-y),  Rotation2d.fromDegrees(-88.72696998)));
+
+
+        //         // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //         // if(speed == -1){
+        //         //     SmartDashboard.putNumber("Autopath Speed", 20);
+        //         //     speed = 20;
+        //         // }
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        20,        80,        80,           9, 20, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathC() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();         
+        //     if (skipThisOne){
+        //         waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+        //         waypoints.add(new Pose2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)));
+        //     }
+        //     else {
+        //         double exitAngleRads;
+        //         double enterAngleRads;
+        //         double rc = 28/2;
+        //         double radius = 28; //30
+
+        //         double d0x = 60; //B2
+        //         double d0y = 60; //B2
+
+        //         double startx = d0x+radius*Math.cos(118);
+        //         double starty = d0y+radius*Math.sin(118);
+
+        //         double a3x = 90;
+        //         double a3y = 30; 
+
+        //         double d1x = 150; //D5
+        //         double d1y = 120; //D5
+
+        //         double a6x = 180;
+        //         double a6y = 30;
+
+        //         double d2x = 210; //D7
+        //         double d2y = 120; //D7
+
+        //         double d3x = 240; //D8
+        //         double d3y = 120; //D8
+
+        //         double a9x = 270;
+        //         double a9y = 30; 
+
+        //         double d4x = 300; //B10
+        //         double d4y = 60;  //B10
+            
+        //         double endx = 330;
+        //         double endy = 90;
+
+        //         // start leg C
+        //         enterAngleRads = convertToRads(180);
+        //         addStraightSegment(tpal, false, a6x, a6y, d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads));
+        //         exitAngleRads = convertToRads(90);
+        //         addArcSegment(tpal, false, d2x+radius*Math.cos(enterAngleRads),  d2y+radius*Math.sin(enterAngleRads), d2x, d2y, exitAngleRads);
+        //         enterAngleRads = convertToRads(90);
+                
+        //         addStraightSegment(tpal, false, d2x+radius*Math.cos(exitAngleRads), d2y+radius*Math.sin(exitAngleRads), d3x+radius*Math.cos(enterAngleRads), d3y+radius*Math.sin(enterAngleRads));
+                
+        //         exitAngleRads = convertToRads(0);
+        //         addArcSegment(tpal, false,      d3x+radius*Math.cos(enterAngleRads), d3y+radius*Math.sin(enterAngleRads), d3x,d3y, exitAngleRads);
+        //         addStraightSegment(tpal, false, d3x+radius*Math.cos(exitAngleRads),  d3y+radius*Math.sin(exitAngleRads), a9x, a9y);
+
+        //         System.out.println("Bounce Path C Coordinates - ");
+        //         for (ThreePoints tp : tpal){
+        //             System.out.println(tp.x+","+tp.y+","+tp.a);
+        //             //waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //         }
+        //         double x = startx;
+        //         double y = starty;
+        //         waypoints.add(new  Pose2d(new  Translation2d(180.25-x,41.25-y),  Rotation2d.fromDegrees(88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(180.5-x,52.5-y),  Rotation2d.fromDegrees(88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(180.75-x,63.75-y),  Rotation2d.fromDegrees(88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(181-x,75-y),  Rotation2d.fromDegrees(88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(181.25-x,86.25-y),  Rotation2d.fromDegrees(88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(181.5-x,97.5-y),  Rotation2d.fromDegrees(88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(181.75-x,108.75-y),  Rotation2d.fromDegrees(88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(182-x,120-y),  Rotation2d.fromDegrees(88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(185.7512887-x,134-y),  Rotation2d.fromDegrees(60)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(196-x,144.2487113-y),  Rotation2d.fromDegrees(30)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(210-x,148-y),  Rotation2d.fromDegrees(0)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(220-x,148-y),  Rotation2d.fromDegrees(0)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(230-x,148-y),  Rotation2d.fromDegrees(0)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(240-x,148-y),  Rotation2d.fromDegrees(0)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(254-x,144.2487113-y),  Rotation2d.fromDegrees(-30)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(264.2487113-x,134-y),  Rotation2d.fromDegrees(-60)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(268-x,120-y),  Rotation2d.fromDegrees(-90)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(268.25-x,108.75-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(268.5-x,97.5-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(268.75-x,86.25-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(269-x,75-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(269.25-x,63.75-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(269.5-x,52.5-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(269.75-x,41.25-y),  Rotation2d.fromDegrees(-88.72696998)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(270-x,30-y),  Rotation2d.fromDegrees(-88.72696998)));
+
+        //         // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //         // if(speed == -1){
+        //         //     SmartDashboard.putNumber("Autopath Speed", 20);
+        //         //     speed = 20;
+        //         // }
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        20,        80,        80,           9, 20, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePathD() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();         
+        //     if (skipThisOne){
+        //         waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+        //         waypoints.add(new Pose2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)));
+        //     }
+        //     else {
+        //         double exitAngleRads;
+        //         double enterAngleRads;
+        //         double rc = 28/2;
+        //         double radius = 28; //30
+
+        //         double d0x = 60; //B2
+        //         double d0y = 60; //B2
+
+        //         double startx = d0x+radius*Math.cos(118);
+        //         double starty = d0y+radius*Math.sin(118);
+
+        //         double a3x = 90;
+        //         double a3y = 30; 
+
+        //         double d1x = 150; //D5
+        //         double d1y = 120; //D5
+
+        //         double a6x = 180;
+        //         double a6y = 30;
+
+        //         double d2x = 210; //D7
+        //         double d2y = 120; //D7
+
+        //         double d3x = 240; //D8
+        //         double d3y = 120; //D8
+
+        //         double a9x = 270;
+        //         double a9y = 30; 
+
+        //         double d4x = 300; //B10
+        //         double d4y = 60;  //B10
+            
+        //         double endx = 330;
+        //         double endy = 90;
+
+
+        //         // start leg D
+
+        //         enterAngleRads = convertToRads(180);
+        //         addStraightSegment(tpal, false, a9x, a9y,d4x+radius*Math.cos(enterAngleRads), d4y+radius*Math.sin(enterAngleRads));
+        //         exitAngleRads = convertToRads(90);
+        //         addArcSegment(tpal, false, d4x+radius*Math.cos(enterAngleRads), d4y+radius*Math.sin(enterAngleRads), d4x, d4y,exitAngleRads);
+
+        //         System.out.println("Bounce Path D Coordinates - ");
+        //         for (ThreePoints tp : tpal){
+        //             System.out.println(tp.x+","+tp.y+","+tp.a);
+        //             //waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
+        //         }
+        //         double x = startx;
+        //         double y = starty;
+        //         waypoints.add(new Pose2d(new Translation2d(270.6666667-x,40-y), Rotation2d.fromDegrees(86.18592517)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(271.3333333-x,50-y),  Rotation2d.fromDegrees(86.18592517)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(272-x,60-y),  Rotation2d.fromDegrees(86.18592517)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(275.7512887-x,74-y),  Rotation2d.fromDegrees(60)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(286-x,84.24871131-y),  Rotation2d.fromDegrees(30)));
+        //         waypoints.add(new  Pose2d(new  Translation2d(300-x,88-y),  Rotation2d.fromDegrees(0)));
+
+        //         // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //         // if(speed == -1){
+        //         //     SmartDashboard.putNumber("Autopath Speed", 20);
+        //         //     speed = 20;
+        //         // }
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        20,        80,        80,           9, 20, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+
+        double xscale = 1; 
+        double yscale = 1;
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchARedPath1() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
+
+            
+        //     //TEST
+        //     // double startx = 30+rc;
+        //     // double starty = 60; 
+
+        //     // double d0x = 120; 
+        //     // double d0y = 120;
+
+        //     // addStraightSegment(tpal, true, startx,                              starty, 
+        //     //                                d0x-rc,                              d0y);
+
+        //     double startx = 30+rc;
+        //     double starty = 60; 
+
+        //     double d0x = 90; 
+        //     double d0y = 90;
+
+        //     double d1x = 150;
+        //     double d1y = 120; 
+
+        //     double d2x = 180;
+        //     double d2y = 50;
+
+        //     double endx = 330;
+        //     double endy = 60;
+
+        //     addStraightSegment(tpal, true, startx,                              starty, 
+        //                                    d0x-rc,                              d0y);
+
+        //     System.out.println("Galactic Search A Red Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
+
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 10;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchARedPath2() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
+
+        //     double startx = 30+rc;
+        //     double starty = 60; 
+
+        //     double d0x = 90; 
+        //     double d0y = 90;
+
+        //     double d1x = 150;
+        //     double d1y = 120; 
+
+        //     double d2x = 180;
+        //     double d2y = 50;
+
+        //     double endx = 330;
+        //     double endy = 60;
+
+        //     addStraightSegment(tpal,false, d0x-rc,  d0y,
+        //                                    d1x-rc,  d1y);
+
+        //     System.out.println("Galactic Search A Red Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
+
         //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
         //     if(speed == -1){
         //         SmartDashboard.putNumber("Autopath Speed", 20);
         //         speed = 20;
         //     }
         //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getBouncePath() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();         
-            //Temporary
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
-
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchARedPath3() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
         //     double exitAngleRads;
         //     double enterAngleRads;
         //     double rc = 28/2;
-        //     double radius = 28; //30
-            
-        //     double startx = 60-rc;
-        //     double starty = 180-rc;
+        //     double radius = 30;
 
-            double d0x = 60; //B2
-            double d0y = 120; //B2
+        //     double startx = 30+rc;
+        //     double starty = 60; 
 
-            double d1x = 120; //B4
-            double d1y = 120; //B4
+        //     double d0x = 90; 
+        //     double d0y = 90;
 
-            double d2x = 90; //D3
-            double d2y = 60; //D3
+        //     double d1x = 150;
+        //     double d1y = 120; 
 
-            double d3x = 150; //D5
-            double d3y = 60; //D5
+        //     double d2x = 180;
+        //     double d2y = 50;
 
-            double d4x = 150; //B5
-            double d4y = 120; //B5
+        //     double endx = 330;
+        //     double endy = 60;
 
-            double d5x = 210; //B7
-            double d5y = 120; //B7
+        //     addStraightSegment(tpal,false, d1x-rc,  d1y,
+        //                                    d2x-rc,  d2y);
 
-            double d6x = 210; //D7
-            double d6y = 60; //D7
+        //     System.out.println("Galactic Search A Red Path - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double d7x = 240; //D8
-            double d7y = 60; //D8
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchARedPath4() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
 
-            double d8x = 240; //B8
-            double d8y = 60; //B8
+        //     double startx = 30+rc;
+        //     double starty = 60; 
 
-            double d9x = 300; //B10
-            double d9y = 120; //B10
-        
-            double endx = startx;
-            double endy = 60+rc;
+        //     double d0x = 90; 
+        //     double d0y = 90;
 
-            // placeholder
-            enterAngleRads = convertToRads(90);
-            exitAngleRads = convertToRads(0);
-            addArcSegment(tpal,     false, d0x+radius*Math.cos(enterAngleRads), d0y+radius*Math.sin(enterAngleRads),
-                                           d0x,                                 d0y,                 exitAngleRads);
-            exitAngleRads = convertToRads(0);
-            // addStraightSegment(tpal,     false, d1x+radius*Math.cos(enterAngleRads), d1y+radius*Math.sin(enterAngleRads),
-            //                                d1x,                                 d1y,                 exitAngleRads);
-            enterAngleRads = convertToRads(-90);
-            addArcSegment(tpal, false, d2x+radius*Math.cos(exitAngleRads),  d2y+radius*Math.sin(exitAngleRads),
-                                            d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads), exitAngleRads);
-            exitAngleRads = convertToRads(0);
-            addStraightSegment(tpal, false,      d2x+radius*Math.cos(enterAngleRads), d2y+radius*Math.sin(enterAngleRads),
-                                            d2x,                                 d2y);
-            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(new Translation2d(200, 0.0), Rotation2d.fromDegrees(0.0)));
+        //     double d1x = 150;
+        //     double d1y = 120; 
 
-            // System.out.println("Bounce Path Coordinates - ");
-            // for (ThreePoints tp : tpal){
-            //     System.out.println(tp.x+","+tp.y+","+tp.a);
-            //     waypoints.add(new Pose2d(new Translation2d(tp.x-startx, tp.y-starty), Rotation2d.fromDegrees(tp.a)));
-            // }
-            // double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            // if(speed == -1){
-            //     SmartDashboard.putNumber("Autopath Speed", 20);
-            //     speed = 20;
-            // }
-            // return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        double xscale = -1; 
-        double yscale = -1;
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchARedPath1() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
+        //     double d2x = 180;
+        //     double d2y = 50;
 
-            
-            //TEST
-            // double startx = 30+rc;
-            // double starty = 60; 
+        //     double endx = 330;
+        //     double endy = 60;
 
-            // double d0x = 120; 
-            // double d0y = 120;
+        //     addStraightSegment(tpal, false, d2x-rc,  d2y,
+        //                                     endx,    endy);
 
-            // addStraightSegment(tpal, true, startx,                              starty, 
-            //                                d0x-rc,                              d0y);
+        //     System.out.println("Galactic Search A Red PathCoordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double startx = 30+rc;
-            double starty = 60; 
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchABluePath1() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
 
-            double d0x = 90; 
-            double d0y = 90;
+        //     double startx = 30;
+        //     double starty = 120+radius; 
 
-            double d1x = 150;
-            double d1y = 120; 
+        //     double d0x = 180; 
+        //     double d0y = 30;
 
-            double d2x = 180;
-            double d2y = 50;
+        //     double d1x = 210;
+        //     double d1y = 120; 
 
-            double endx = 330;
-            double endy = 60;
+        //     double d2x = 270;
+        //     double d2y = 90;
 
-            addStraightSegment(tpal, true, startx,                              starty, 
-                                           d0x-rc,                              d0y);
+        //     double endx = 330;
+        //     double endy = 90;
 
-            System.out.println("Galactic Search A Red Path Coordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
+        //     addStraightSegment(tpal, true, startx, starty, 
+        //                                    d0x-rc, d0y);
 
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 10;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchARedPath2() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
+        //     System.out.println("Galactic Search A Blue Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double startx = 30+rc;
-            double starty = 60; 
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchABluePath2() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
 
-            double d0x = 90; 
-            double d0y = 90;
+        //     double startx = 30;
+        //     double starty = 120+radius; 
 
-            double d1x = 150;
-            double d1y = 120; 
+        //     double d0x = 180; 
+        //     double d0y = 30;
 
-            double d2x = 180;
-            double d2y = 50;
+        //     double d1x = 210;
+        //     double d1y = 120; 
 
-            double endx = 330;
-            double endy = 60;
+        //     double d2x = 270;
+        //     double d2y = 90;
 
-            addStraightSegment(tpal,false, d0x-rc,  d0y,
-                                           d1x-rc,  d1y);
+        //     double endx = 330;
+        //     double endy = 90;
 
-            System.out.println("Galactic Search A Red Path Coordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
-
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchARedPath3() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
-
-            double startx = 30+rc;
-            double starty = 60; 
-
-            double d0x = 90; 
-            double d0y = 90;
-
-            double d1x = 150;
-            double d1y = 120; 
-
-            double d2x = 180;
-            double d2y = 50;
-
-            double endx = 330;
-            double endy = 60;
-
-            addStraightSegment(tpal,false, d1x-rc,  d1y,
-                                           d2x-rc,  d2y);
-
-            System.out.println("Galactic Search A Red Path - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
-
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchARedPath4() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
-
-            double startx = 30+rc;
-            double starty = 60; 
-
-            double d0x = 90; 
-            double d0y = 90;
-
-            double d1x = 150;
-            double d1y = 120; 
-
-            double d2x = 180;
-            double d2y = 50;
-
-            double endx = 330;
-            double endy = 60;
-
-            addStraightSegment(tpal, false, d2x-rc,  d2y,
-                                            endx,    endy);
-
-            System.out.println("Galactic Search A Red PathCoordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
-
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchABluePath1() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
-
-            double startx = 30;
-            double starty = 120+radius; 
-
-            double d0x = 180; 
-            double d0y = 30;
-
-            double d1x = 210;
-            double d1y = 120; 
-
-            double d2x = 270;
-            double d2y = 90;
-
-            double endx = 330;
-            double endy = 90;
-
-            addStraightSegment(tpal, true, startx, starty, 
-                                           d0x-rc, d0y);
-
-            System.out.println("Galactic Search A Blue Path Coordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
-
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchABluePath2() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
-
-            double startx = 30;
-            double starty = 120+radius; 
-
-            double d0x = 180; 
-            double d0y = 30;
-
-            double d1x = 210;
-            double d1y = 120; 
-
-            double d2x = 270;
-            double d2y = 90;
-
-            double endx = 330;
-            double endy = 90;
-
-            addStraightSegment(tpal, true, d0x-rc, d0y,
-                                           d1x-rc, d1y);
+        //     addStraightSegment(tpal, true, d0x-rc, d0y,
+        //                                    d1x-rc, d1y);
     
-            System.out.println("Galactic Search A Blue Path Coordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
+        //     System.out.println("Galactic Search A Blue Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchABluePath3() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchABluePath3() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
 
-            double startx = 30;
-            double starty = 120+radius; 
+        //     double startx = 30;
+        //     double starty = 120+radius; 
 
-            double d0x = 180; 
-            double d0y = 30;
+        //     double d0x = 180; 
+        //     double d0y = 30;
 
-            double d1x = 210;
-            double d1y = 120; 
+        //     double d1x = 210;
+        //     double d1y = 120; 
 
-            double d2x = 270;
-            double d2y = 90;
+        //     double d2x = 270;
+        //     double d2y = 90;
 
-            double endx = 330;
-            double endy = 90;
+        //     double endx = 330;
+        //     double endy = 90;
 
-            addStraightSegment(tpal, false, d1x-rc,  d1y,
-                                     d2x-rc,  d2y);                               
-            System.out.println("Galactic Search A Blue Path Coordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
+        //     addStraightSegment(tpal, false, d1x-rc,  d1y,
+        //                              d2x-rc,  d2y);                               
+        //     System.out.println("Galactic Search A Blue Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchABluePath4() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchABluePath4() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
 
-            double startx = 30;
-            double starty = 120+radius; 
+        //     double startx = 30;
+        //     double starty = 120+radius; 
 
-            double d0x = 180; 
-            double d0y = 30;
+        //     double d0x = 180; 
+        //     double d0y = 30;
 
-            double d1x = 210;
-            double d1y = 120; 
+        //     double d1x = 210;
+        //     double d1y = 120; 
 
-            double d2x = 270;
-            double d2y = 90;
+        //     double d2x = 270;
+        //     double d2y = 90;
 
-            double endx = 330;
-            double endy = 90;
+        //     double endx = 330;
+        //     double endy = 90;
 
-            addStraightSegment(tpal, false, d2x-rc,  d2y,
-                                            endx,  endy);                               
-            System.out.println("Galactic Search A Blue Path Coordinates - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
+        //     addStraightSegment(tpal, false, d2x-rc,  d2y,
+        //                                     endx,  endy);                               
+        //     System.out.println("Galactic Search A Blue Path Coordinates - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBRedPath1() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBRedPath1() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
 
-            double startx = 30;
-            double starty = 120+radius; 
+        //     double startx = 30;
+        //     double starty = 120+radius; 
 
-            double d0x = 90; 
-            double d0y = 120;
+        //     double d0x = 90; 
+        //     double d0y = 120;
 
-            double d1x = 150;
-            double d1y = 60; 
+        //     double d1x = 150;
+        //     double d1y = 60; 
 
-            double d2x = 210;
-            double d2y = 120;
+        //     double d2x = 210;
+        //     double d2y = 120;
 
-            double endx = 330;
-            double endy = 90;
+        //     double endx = 330;
+        //     double endy = 90;
 
-            addStraightSegment(tpal,false, d0x-rc,  d0y,
-                                           d1x-rc,  d1y);
+        //     addStraightSegment(tpal,false, d0x-rc,  d0y,
+        //                                    d1x-rc,  d1y);
 
-            System.out.println("Galactic Search A Red Path - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
+        //     System.out.println("Galactic Search A Red Path - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBRedPath2() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBRedPath2() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
 
-            double startx = 30;
-            double starty = 120+radius; 
+        //     double startx = 30;
+        //     double starty = 120+radius; 
 
-            double d0x = 90; 
-            double d0y = 120;
+        //     double d0x = 90; 
+        //     double d0y = 120;
 
-            double d1x = 150;
-            double d1y = 60; 
+        //     double d1x = 150;
+        //     double d1y = 60; 
 
-            double d2x = 210;
-            double d2y = 120;
+        //     double d2x = 210;
+        //     double d2y = 120;
 
-            double endx = 330;
-            double endy = 90;
+        //     double endx = 330;
+        //     double endy = 90;
 
-            addStraightSegment(tpal,false, d1x-rc,  d1y,
-                                           d2x-rc,  d2y);
+        //     addStraightSegment(tpal,false, d1x-rc,  d1y,
+        //                                    d2x-rc,  d2y);
 
-            System.out.println("Galactic Search A Red Path - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
+        //     System.out.println("Galactic Search A Red Path - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBRedPath3() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBRedPath3() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
 
-            double startx = 30;
-            double starty = 120+radius; 
+        //     double startx = 30;
+        //     double starty = 120+radius; 
 
-            double d0x = 90; 
-            double d0y = 120;
+        //     double d0x = 90; 
+        //     double d0y = 120;
 
-            double d1x = 150;
-            double d1y = 60; 
+        //     double d1x = 150;
+        //     double d1y = 60; 
 
-            double d2x = 210;
-            double d2y = 120;
+        //     double d2x = 210;
+        //     double d2y = 120;
 
-            double endx = 330;
-            double endy = 90;
+        //     double endx = 330;
+        //     double endy = 90;
 
-            addStraightSegment(tpal,false, d2x-rc,  d2y,
-                                           endx,    endy);
+        //     addStraightSegment(tpal,false, d2x-rc,  d2y,
+        //                                    endx,    endy);
 
-            System.out.println("Galactic Search A Red Path - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
+        //     System.out.println("Galactic Search A Red Path - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBBluePath1() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBBluePath1() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
 
-            double startx = 30;
-            double starty = 120+radius; 
+        //     double startx = 30;
+        //     double starty = 120+radius; 
 
-            double d0x = 180; 
-            double d0y = 60;
+        //     double d0x = 180; 
+        //     double d0y = 60;
 
-            double d1x = 240;
-            double d1y = 120; 
+        //     double d1x = 240;
+        //     double d1y = 120; 
 
-            double d2x = 300;
-            double d2y = 60;
+        //     double d2x = 300;
+        //     double d2y = 60;
 
-            double endx = 330;
-            double endy = 90;
+        //     double endx = 330;
+        //     double endy = 90;
 
-            addStraightSegment(tpal,false, startx,  starty,
-                                           d1x-rc,    d1y);
+        //     addStraightSegment(tpal,false, startx,  starty,
+        //                                    d1x-rc,    d1y);
 
-            System.out.println("Galactic Search A Red Path - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
+        //     System.out.println("Galactic Search A Red Path - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBBluePath2() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBBluePath2() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
 
-            double startx = 30;
-            double starty = 120+radius; 
+        //     double startx = 30;
+        //     double starty = 120+radius; 
 
-            double d0x = 180; 
-            double d0y = 60;
+        //     double d0x = 180; 
+        //     double d0y = 60;
 
-            double d1x = 240;
-            double d1y = 120; 
+        //     double d1x = 240;
+        //     double d1y = 120; 
 
-            double d2x = 300;
-            double d2y = 60;
+        //     double d2x = 300;
+        //     double d2y = 60;
 
-            double endx = 330;
-            double endy = 90;
+        //     double endx = 330;
+        //     double endy = 90;
 
-            addStraightSegment(tpal,false, d1x-rc,  d1y,
-                                           d2x-rc,     d2y);
+        //     addStraightSegment(tpal,false, d1x-rc,  d1y,
+        //                                    d2x-rc,     d2y);
 
-            System.out.println("Galactic Search A Red Path - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
+        //     System.out.println("Galactic Search A Red Path - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
-        private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBBluePath3() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            ArrayList<ThreePoints> tpal = new ArrayList<>();
-            double exitAngleRads;
-            double enterAngleRads;
-            double rc = 28/2;
-            double radius = 30;
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
+        // private Trajectory<TimedState<Pose2dWithCurvature>> getGalacticSearchBBluePath3() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     ArrayList<ThreePoints> tpal = new ArrayList<>();
+        //     double exitAngleRads;
+        //     double enterAngleRads;
+        //     double rc = 28/2;
+        //     double radius = 30;
 
-            double startx = 30;
-            double starty = 120+radius; 
+        //     double startx = 30;
+        //     double starty = 120+radius; 
 
-            double d0x = 180; 
-            double d0y = 60;
+        //     double d0x = 180; 
+        //     double d0y = 60;
 
-            double d1x = 240;
-            double d1y = 120; 
+        //     double d1x = 240;
+        //     double d1y = 120; 
 
-            double d2x = 300;
-            double d2y = 60;
+        //     double d2x = 300;
+        //     double d2y = 60;
 
-            double endx = 330;
-            double endy = 90;
+        //     double endx = 330;
+        //     double endy = 90;
 
-            addStraightSegment(tpal,false, d2x-rc,  d2y,
-                                           endx,     endy);
+        //     addStraightSegment(tpal,false, d2x-rc,  d2y,
+        //                                    endx,     endy);
 
-            System.out.println("Galactic Search A Red Path - ");
-            for (ThreePoints tp : tpal){
-                System.out.println(tp.x+","+tp.y+","+tp.a);
-                waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
-            }
+        //     System.out.println("Galactic Search A Red Path - ");
+        //     for (ThreePoints tp : tpal){
+        //         System.out.println(tp.x+","+tp.y+","+tp.a);
+        //         waypoints.add(new Pose2d(new Translation2d((tp.x-startx)*xscale, (tp.y-starty)*yscale), Rotation2d.fromDegrees(tp.a)));
+        //     }
 
-            double speed = SmartDashboard.getNumber("Autopath Speed", -1);
-            if(speed == -1){
-                SmartDashboard.putNumber("Autopath Speed", 20);
-                speed = 20;
-            }
-            return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
-            // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
-        }
+        //     double speed = SmartDashboard.getNumber("Autopath Speed", -1);
+        //     if(speed == -1){
+        //         SmartDashboard.putNumber("Autopath Speed", 20);
+        //         speed = 20;
+        //     }
+        //     return generateTrajectory(   false, waypoints, Arrays.asList(),        speed,        80,        80,           9, speed, 1);
+        //     // return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        // }
         // private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath() {
         //     List<Pose2d> waypoints = new ArrayList<>();
         //     double rc = 28/2;
@@ -1313,6 +1643,22 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(new Translation2d(-120.0, -60.0), Rotation2d.fromDegrees(210)));
             return generateTrajectory(false, waypoints, Arrays.asList(), 12.0, 12.0, 12.0, kMaxVoltage, 12.0, 1);
         }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getPowerPortForwardPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(new Translation2d(-100.0, 0.0), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 50.0, 120.0, 120.0, kMaxVoltage, 50.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getPowerPortBackwardPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(-100.0, 0.0), Rotation2d.fromDegrees(180)));
+            return generateTrajectory(false, waypoints, Arrays.asList(), 50.0, 120.0, 120.0, kMaxVoltage, 50.0, 1);
+        }
+        
+
     }
     
 }

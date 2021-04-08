@@ -117,7 +117,7 @@ public class Collector extends Subsystem {
                 mSystemState   = SystemState.HOLDING;
                 mWantedState   = WantedState.HOLD;
                 mStateChanged  = true;
-                System.out.println(sClassName + " state " + mSystemState);
+                System.out.println(sClassName + " onStart state " + mSystemState);
                // this subsystem is "on demand" so goto sleep
                mPeriodicIO.schedDeltaDesired = 0;
                stop(); // start in known state
@@ -168,12 +168,12 @@ public class Collector extends Subsystem {
 
     private SystemState handleCollecting() {
         if (mStateChanged) {
-            double speed = SmartDashboard.getNumber("collector speed",-1);
-            if (speed == -1){
-                SmartDashboard.putNumber("collector speed",kCollectSpeed);
-                speed = kCollectSpeed;
-            }
-            mPeriodicIO.SRXFrontRollerDemand = speed; //kCollectSpeed;
+            // double speed = SmartDashboard.getNumber("collector speed",-1);
+            // if (speed == -1){
+            //     SmartDashboard.putNumber("collector speed",kCollectSpeed);
+            //     speed = kCollectSpeed;
+            // }
+            mPeriodicIO.SRXFrontRollerDemand = kCollectSpeed; //kCollectSpeed;
             // mPeriodicIO.SRXSerializerDemand = kSerializeSpeed;
             // mPeriodicIO.solenoidDemand = SolenoidState.EXTEND;
         }
@@ -203,10 +203,10 @@ public class Collector extends Subsystem {
         }
     }
 
-    public synchronized void setWantedState(WantedState state) {
+    public synchronized void setWantedState(WantedState state, String caller) {
         if (state != mWantedState) {
             mSubsystemManager.scheduleMe(mListIndex, 1, false);
-            //System.out.println("waking " + sClassName);
+            System.out.println(sClassName+" setWantedState " + state + " ("+caller+")");
         }
 
         mWantedState = state;

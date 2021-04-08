@@ -1,8 +1,9 @@
 package frc.robot.auto.actions;
 
 import com.team254.lib.autos.actions.Action;
-
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Indexer;
+import edu.wpi.first.wpilibj.Timer;
 
 public class CollectAction implements Action {
 	
@@ -18,15 +19,20 @@ public class CollectAction implements Action {
 	
 	@Override
 	public boolean isFinished() {
-		return true;
+		// if (turnOn) {
+		// 	return getNumberOfBalls() == 3;
+		// }else{
+			return true;
+		//}
 	}
 	
 	@Override
 	public void start() {
+		System.out.println("***** Collecting - " + mTurnOn + " ***** " + Timer.getFPGATimestamp());
 		if (mTurnOn) {
-			mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT);
+			mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT, sClassName);
 		} else {
-			mSuperstructure.setWantedState(Superstructure.WantedState.HOLD);
+			mSuperstructure.setWantedState(Superstructure.WantedState.HOLD, sClassName);
 		}
 	}
 	
@@ -37,7 +43,6 @@ public class CollectAction implements Action {
 	
 	@Override
 	public void done() {
-
+        System.out.println(sClassName+" ***** done  ***** ("+Timer.getFPGATimestamp()+")");
 	}
-	
 }

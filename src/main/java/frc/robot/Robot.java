@@ -57,8 +57,8 @@ public class Robot extends TimedRobot {
 	// private Donger mDonger;
 	private RobotStateEstimator mRobotStateEstimator;
 	@SuppressWarnings("unused")
-	// private CollectwardsLimelight mCollectwardsLimelight;
-	// private ShootwardsLimelight mShootwardsLimelight;
+	private CollectwardsLimelight mCollectwardsLimelight;
+	private ShootwardsLimelight mShootwardsLimelight;
 	private JSticks mJStick;
 	private final double mLoopPeriod = .005;
 	private Looper mSubsystemLooper = new Looper(mLoopPeriod,Thread.NORM_PRIORITY+1);
@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
 		// mDonger = Donger.getInstance(mClassName);
 		mShooter = Shooter.getInstance(mClassName);
 		mShootwardsLimelight = ShootwardsLimelight.getInstance(mClassName);
-		mCollectwardsLimelight = CollectwardsLimelight.getInstance(mClassName);
+		// mCollectwardsLimelight = CollectwardsLimelight.getInstance(mClassName);
 		mRobotStateEstimator = RobotStateEstimator.getInstance(mClassName);
 		mJStick = JSticks.getInstance(mClassName);
 		// mPanelManipulator = PanelManipulator.getInstance(mClassName);
@@ -107,8 +107,8 @@ public class Robot extends TimedRobot {
 						// mDonger,
 						mShooter,
 						mShootwardsLimelight,
-						mRobotStateEstimator,
-						mCollectwardsLimelight
+						mRobotStateEstimator
+						// mCollectwardsLimelight
 						)
 				);
 

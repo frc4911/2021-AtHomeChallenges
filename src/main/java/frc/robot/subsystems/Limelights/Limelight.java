@@ -159,7 +159,7 @@ public abstract class Limelight extends Subsystem {
             case TARGET:
                 return SystemState.TARGETING;
             case TARGETLED:
-                return SystemState.TARGETLED;
+                return SystemState.TARGETINGLED;
             case HOLD:
             default:
                 return SystemState.HOLDING;

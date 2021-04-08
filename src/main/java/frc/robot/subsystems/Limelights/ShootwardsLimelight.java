@@ -52,7 +52,7 @@ public class ShootwardsLimelight extends Limelight {
         }
 
         add(targets, TargetType.MAIN_CONTOUR);
-        add(targets, getTopCorners());
+        // add(targets, getTopCorners()); // Brian remove to get rid of corners
 
         // if corners where added manage zoom
         // if(super.mTargets.size() == 3 && mUsingZoom) {
