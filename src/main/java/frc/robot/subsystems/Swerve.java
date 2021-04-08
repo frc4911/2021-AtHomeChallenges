@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import frc.robot.Constants;
 import frc.robot.Ports;
 import frc.robot.RobotState;
+import frc.robot.auto.SmartDashboardInteractions;
 import frc.robot.paths.TrajectoryGenerator;
 import frc.robot.planners.DriveMotionPlanner;
 import java.util.ArrayList;
@@ -132,7 +133,7 @@ public class Swerve extends Subsystem {
 	public final double rotationDivision = 1.0;
 
 	// Aiming PID
-	SynchronousPIDF aimingPIDF = new SynchronousPIDF(0.5, 0.0, 8.0);//0.75, 0, 5 deadeye
+	SynchronousPIDF aimingPIDF = new SynchronousPIDF(0.0, 0.0, 0.0);// .4,0,10 //0.75, 0, 5 deadeye brian
 	private int aimingParametersCount;
 	private int totalAimingCount;
 
@@ -439,18 +440,29 @@ public class Swerve extends Subsystem {
 		case DISABLED:	
 			break;
 		case VISION_AIM:
-			aimingParameters = robotState.getOuterGoalParameters();
-			totalAimingCount++;
-			mIsOnTarget = false;
-			if (aimingParameters.isPresent()) {
-				//error = -1 * aimingParameters.get().getRobotToGoal().getTranslation().y();
-				//radians
-				error = Math.atan2(-aimingParameters.get().getRobotToGoal().getTranslation().y(), aimingParameters.get().getRobotToGoal().getTranslation().x());
-				mIsOnTarget = Math.abs(error) <= Math.toRadians(2.0); //0.5
-				aimingParametersCount++;
-			}
-			SmartDashboard.putNumber("LL error", error);
-			setRotateOutput(aimingPIDF.calculate(error, timestamp));
+		// aimingParameters = robotState.getOuterGoalParameters();
+		// totalAimingCount++;
+		// mIsOnTarget = false;
+		// if (aimingParameters.isPresent()) {
+		// 	//error = -1 * aimingParameters.get().getRobotToGoal().getTranslation().y();
+		// 	//radians
+		// 	error = Math.atan2(-aimingParameters.get().getRobotToGoal().getTranslation().y(), aimingParameters.get().getRobotToGoal().getTranslation().x());
+		// 	if (Math.abs(error) <= Math.toRadians(2.0)){
+		// 		if (++count>3){
+		// 			mIsOnTarget = true; //0.5
+		// 		}
+		// 	}
+		// 	else{
+		// 		count = 0;
+		// 	}
+		// 	System.out.println(count+" "+Math.toDegrees(error));
+		// 	aimingParametersCount++;
+		// }
+		// else{
+		// 	System.out.println("error not present******************************************");
+		// }
+		// SmartDashboard.putNumber("LL error", Math.toDegrees(error));
+		setRotateOutput(Math.toDegrees(error));//aimingPIDF.calculate(error, timestamp)); brian
 			// lastAimTimestamp = timestamp;
 			break;
 		//raynli
@@ -610,6 +622,7 @@ public class Swerve extends Subsystem {
 	 * @param lowPower scaled down output
 	 */
 	public void sendInput(double x, double y, double rotate, boolean robotCentric, boolean lowPower){
+		rotate*=.3; // brian
 		Translation2d translationalInput = new Translation2d(x, y);
 		double inputMagnitude = translationalInput.norm();
 		/* Snap the translational input to its nearest pole, if it is within a certain threshold 
@@ -634,7 +647,8 @@ public class Swerve extends Subsystem {
 				direction.sin() * scaledMagnitude);
 		
 		rotate = (Math.abs(rotate) < deadband) ? 0 : rotate;
-		rotate = Math.pow(Math.abs(rotate), 1.75)*Math.signum(rotate);
+		// rotate = Math.pow(Math.abs(rotate), 1.75)*Math.signum(rotate);
+		rotate = Math.pow(Math.abs(rotate), 1.0)*Math.signum(rotate); // brian
 		
 		translationalInput = translationalInput.scale(maxSpeedFactor);
 		rotate *= maxSpeedFactor;
@@ -705,7 +719,18 @@ public class Swerve extends Subsystem {
 	// Ramiro did this
 	public void limeLightAim() {
 		setState(ControlState.VISION_AIM);
-		aimingPIDF.reset();
+		// double p = SmartDashboard.getNumber("aim pid P", -1);
+		// if (p == -1){
+		// 	SmartDashboard.putNumber("aim pid P",0.5);
+		// 	p = 0.5;
+		// }
+		// double d = SmartDashboard.getNumber("aim pid D", -1);
+		// if (d == -1){
+		// 	SmartDashboard.putNumber("aim pid D",8.0);
+		// 	d = 8.0;
+		// }
+		// aimingPIDF = new SynchronousPIDF(p,0,d);
+		// aimingPIDF.reset();
 		// lastAimTimestamp = Timer.getFPGATimestamp();
 	}
 
@@ -765,22 +790,33 @@ public class Swerve extends Subsystem {
     	}
 	}
 
+	int count = 0;
+
 	// Ramiro was here
 	public void setRotateOutput(double rotationOutput) {
-		if (Math.abs(rotationOutput) < 0.01) {
-			List<Translation2d> driveVectors = inverseKinematics.updateDriveVectors(new Translation2d(), 1,  pose, false);
-			for(int i=0; i<modules.size(); i++){
-				if(Utils.shouldReverse(driveVectors.get(i).direction().getDegrees(), modules.get(i).getModuleAngle().getDegrees())){
-					modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees() + 180.0);
-					modules.get(i).setDriveOpenLoop(0);
-				}else{
-					modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees());
-					modules.get(i).setDriveOpenLoop(0);
-				}
-			}
+		// System.out.println(sClassName+".setRotateOutput("+rotationOutput+")");
+		if (mIsOnTarget){
+			setState(ControlState.NEUTRAL);
+		// if (Math.abs(rotationOutput) < 0.5) { //.01 brian
+		// 	List<Translation2d> driveVectors = inverseKinematics.updateDriveVectors(new Translation2d(), 1,  pose, false);
+		// 	for(int i=0; i<modules.size(); i++){
+		// 		if(Utils.shouldReverse(driveVectors.get(i).direction().getDegrees(), modules.get(i).getModuleAngle().getDegrees())){
+		// 			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees() + 180.0);
+		// 			modules.get(i).setDriveOpenLoop(0);
+		// 		}else{
+		// 			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees());
+		// 			modules.get(i).setDriveOpenLoop(0);
+		// 		}
+		// 	}
+
 		} else {
+			// add this line (brian)
+			rotationOutput = Math.abs(error)*.5;
+			rotationOutput = Math.min(rotationOutput,.17)*Math.signum(error)*-1;
+			// rotationOutput = error>0 ? -.06:.06;
 			setDriveOutput(inverseKinematics.updateDriveVectors(new Translation2d(), rotationOutput, pose, false));
 		}
+		// SmartDashboard.putNumber("LL rotate output",rotationOutput);
 	}
 
 	public void setStrafeOutput(double strafeOutput) {
@@ -1026,6 +1062,27 @@ public class Swerve extends Subsystem {
 		double now                   = Timer.getFPGATimestamp();
         mPeriodicIO.schedDeltaActual = now - mPeriodicIO.lastSchedStart;
         mPeriodicIO.lastSchedStart   = now;
+//brian
+		aimingParameters = robotState.getOuterGoalParameters();
+		mIsOnTarget = false;
+		if (aimingParameters.isPresent()) {
+			//error = -1 * aimingParameters.get().getRobotToGoal().getTranslation().y();
+			//radians
+			error = Math.atan2(-aimingParameters.get().getRobotToGoal().getTranslation().y(), aimingParameters.get().getRobotToGoal().getTranslation().x());
+			if (Math.abs(error) <= Math.toRadians(2.0)){
+				if (++count>3){
+					mIsOnTarget = true; //0.5
+				}
+			}
+			else{
+				count = 0;
+			}
+			// System.out.println(count+" "+Math.toDegrees(error));
+		}
+		// else{
+		// 	System.out.println("error not present******************************************");
+		// }
+		SmartDashboard.putNumber("LL error", Math.toDegrees(error));
 
 		modules.forEach((m) -> m.readPeriodicInputs());
 	}
@@ -1044,6 +1101,7 @@ public class Swerve extends Subsystem {
 	public void outputTelemetry() {
 		modules.forEach((m) -> m.outputTelemetry());
 		SmartDashboard.putString("Swerve State", currentState.toString());
+		SmartDashboard.putBoolean("isOnTarget", isOnTarget());
 		if(Constants.kDebuggingOutput){
 			SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
 			SmartDashboard.putString("Swerve State", currentState.toString());

@@ -130,6 +130,7 @@ public class JSticks extends Subsystem {
         return defaultStateTransfer();
     }
 
+    boolean alreadyCollecting = false;
     int collectorState = 0;
     double flywheelSpeed = 0;
     public void teleopRoutines() {
@@ -145,23 +146,20 @@ public class JSticks extends Subsystem {
         // double swerveRotationInput = mPeriodicIO.testLeftStickX_Rotate;
         
 		if (!mPeriodicIO.drRightToggleDown_SHOOT) {
-			mSwerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, mPeriodicIO.drLeftToggleDown_RobotOrient, false);
+			mSwerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, /*mPeriodicIO.drLeftToggleDown_RobotOrient*/false, false);
         }
 
-        if (mPeriodicIO.opRightTrigger_COLLECT && collectorState == 0){
-            mCollector.setWantedState(Collector.WantedState.COLLECT, sClassName);
-            collectorState = 1;
-        }
+        // if (mPeriodicIO.opRightTrigger_COLLECT){
+        //     mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT, sClassName);
+        // }
 
-        if (mPeriodicIO.opLeftTrigger_CLEARBALLS && collectorState == 0){
-            mCollector.setWantedState(Collector.WantedState.BACK, sClassName);
-            collectorState = 1;
-        }
+        // if (mPeriodicIO.opLeftTrigger_CLEARBALLS){
+        //     mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS, sClassName);
+        // }
 
-        if (!mPeriodicIO.opRightTrigger_COLLECT && !mPeriodicIO.opLeftTrigger_CLEARBALLS && collectorState == 1){
-            mCollector.setWantedState(Collector.WantedState.HOLD, sClassName);
-            collectorState = 0;
-        }
+        // if (!mPeriodicIO.opRightTrigger_COLLECT && !mPeriodicIO.opLeftTrigger_CLEARBALLS){
+        //     mSuperstructure.setWantedState(Superstructure.WantedState.HOLD, sClassName);
+        // }
 
 		if (mPeriodicIO.drMidButton_ResetIMU) {
 			mSwerve.temporarilyDisableHeadingController();
@@ -176,9 +174,12 @@ public class JSticks extends Subsystem {
         currentState = activeBtnIsReleased(currentState);
 		if (currentState == Superstructure.WantedState.HOLD) {
 			if (mPeriodicIO.drRightToggleDown_SHOOT) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT, sClassName);
-			} else if (mPeriodicIO.opRightTrigger_COLLECT) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT, sClassName);
+                // mSuperstructure.setWantedState(Superstructure.WantedState.SHOOT, sClassName);
+				mSuperstructure.setManualShootRPM(4500);
+			} else if (/*mPeriodicIO.opRightTrigger_COLLECT*/mPeriodicIO.drLeftToggleDown_RobotOrient) {
+                // if (mSuperstructure.getWantedState() != Superstructure.WantedState.COLLECT){
+                    mSuperstructure.setWantedState(Superstructure.WantedState.COLLECT, sClassName);
+                // }
 			} else if (mPeriodicIO.opPOV0_MANUAL10) {
                 double speed = SmartDashboard.getNumber("shoot RPM",-1);
                 if (speed == -1){
@@ -195,7 +196,9 @@ public class JSticks extends Subsystem {
 			} else if (mPeriodicIO.opLeftTrigger_CLEARBALLS) {
 				mSuperstructure.setWantedState(Superstructure.WantedState.CLEAR_BALLS, sClassName);
 			} else if (previousState != currentState) {
-				mSuperstructure.setWantedState(Superstructure.WantedState.HOLD, sClassName);
+                // if (mSuperstructure.getWantedState() != Superstructure.WantedState.HOLD){
+                    mSuperstructure.setWantedState(Superstructure.WantedState.HOLD, sClassName);
+                // }
 			}
 		}
 	}
@@ -205,7 +208,7 @@ public class JSticks extends Subsystem {
 			case SHOOT:
 				return !mPeriodicIO.drRightToggleDown_SHOOT ? Superstructure.WantedState.HOLD : currentState;
 			case COLLECT:
-				return !mPeriodicIO.opRightTrigger_COLLECT ? Superstructure.WantedState.HOLD : currentState;
+			    return (!mPeriodicIO.opRightTrigger_COLLECT && !mPeriodicIO.drLeftToggleDown_RobotOrient) ? Superstructure.WantedState.HOLD : currentState;
 			case MANUAL_SHOOT:
 				if (!mPeriodicIO.opPOV0_MANUAL10 && !mPeriodicIO.opPOV90_MANUAL15 && !mPeriodicIO.opPOV180_MANUAL20 && !mPeriodicIO.opPOV270_MANUAL25) {
 					return Superstructure.WantedState.HOLD;

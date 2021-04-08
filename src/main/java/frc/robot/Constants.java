@@ -91,7 +91,7 @@ public class Constants {
         kShootwardsLimelightConstants.kName = "ShootwardsLimelight";
         kShootwardsLimelightConstants.kTableName = "limelight-shooter";
         kShootwardsLimelightConstants.kHeight = 23 /*22.25*/;// cetus: 11  // robot1: 22.25// pinkeye: 23// inches 
-        kShootwardsLimelightConstants.kSubsystemToLens = new Pose2d(new Translation2d(0, 0.0), Rotation2d.fromDegrees(0.0)); // right is positive // -1.5
+        kShootwardsLimelightConstants.kSubsystemToLens = new Pose2d(new Translation2d(0, 0.0), Rotation2d.fromDegrees(0.0)); // 0.0 brian // right is positive // -1.5
 		kShootwardsLimelightConstants.kHorizontalPlaneToLens = Rotation2d.fromDegrees(20.5); //38 // degrees
 		kShootwardsLimelightConstants.kExpectedTargetCount = new double[] {1, 3}; // expect 2 targets (2 top corners)
 		kShootwardsLimelightConstants.kPipelineZoom = new int[] {1, 2};
@@ -229,8 +229,8 @@ public class Constants {
 	public static final int kRearRightCancoderStartingPosDegreesCetus = -130;
 
 	public static final int kFrontRightCancoderStartingPosDegreesR1 = 34; //35; //34
-	public static final int kFrontLeftCancoderStartingPosDegreesR1 = -76; //-74; //-76
-	public static final int kRearLeftCancoderStartingPosDegreesR1 = -78; //-77; //-78
+	public static final int kFrontLeftCancoderStartingPosDegreesR1 = -48; //-76; //-74; //-76
+	public static final int kRearLeftCancoderStartingPosDegreesR1 = -81;//-78; //-77; //-78
 	public static final int kRearRightCancoderStartingPosDegreesR1 = -152; 		//79
 	
 	public static final int kFrontRightCancoderStartingPosDegreesR2 = 0;

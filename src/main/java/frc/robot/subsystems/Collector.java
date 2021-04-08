@@ -168,12 +168,12 @@ public class Collector extends Subsystem {
 
     private SystemState handleCollecting() {
         if (mStateChanged) {
-            double speed = SmartDashboard.getNumber("collector speed",-1);
-            if (speed == -1){
-                SmartDashboard.putNumber("collector speed",kCollectSpeed);
-                speed = kCollectSpeed;
-            }
-            mPeriodicIO.SRXFrontRollerDemand = speed; //kCollectSpeed;
+            // double speed = SmartDashboard.getNumber("collector speed",-1);
+            // if (speed == -1){
+            //     SmartDashboard.putNumber("collector speed",kCollectSpeed);
+            //     speed = kCollectSpeed;
+            // }
+            mPeriodicIO.SRXFrontRollerDemand = kCollectSpeed; //kCollectSpeed;
             // mPeriodicIO.SRXSerializerDemand = kSerializeSpeed;
             // mPeriodicIO.solenoidDemand = SolenoidState.EXTEND;
         }

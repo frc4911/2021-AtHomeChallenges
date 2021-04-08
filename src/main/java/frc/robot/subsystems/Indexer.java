@@ -29,8 +29,8 @@ public class Indexer extends Subsystem {
     private double mFXLeftPIDPos;
     private double mFXRightPIDPos;
 
-    private double indexSpeed = 0.1; //.7
-    private final double kLoadSpeed = 0.2; // .5 brian
+    private double indexSpeed = 0.25; //.7
+    private final double kLoadSpeed = 0.25; // .5 brian
     private final double kBackSpeed = -0.25;
     private final int beamBreakThreshold = 3;
     
@@ -40,7 +40,7 @@ public class Indexer extends Subsystem {
     private double cobraStartTime = 0;
     private final double cobraMaxDuration = .5;
     private final double kBallOffset0and1 = 3562;
-    private final double kBallOffset2 = 750;
+    private final double kBallOffset2 = 0;
     private final double kBallOffsetTolerance = 100;
 
     public enum SystemState {
@@ -168,6 +168,7 @@ public class Indexer extends Subsystem {
                 mStateChanged = true;
                 System.out.println(sClassName + "onStart state " + mSystemState);
                 mPeriodicIO.schedDeltaDesired = 0; // goto sleep
+                numberOfBalls=0;
                 stop();
             }
         }
@@ -224,31 +225,41 @@ public class Indexer extends Subsystem {
 
     private SystemState handleLoading() {
         if (mStateChanged) {
-            double speed = SmartDashboard.getNumber("indexer speed",-1);
-            if (speed == -1){
-                SmartDashboard.putNumber("indexer speed",kLoadSpeed);
-                speed = kLoadSpeed;
-            }
-            mPeriodicIO.indexerDemand = speed + getLoadSpeed(); //kLoadSpeed;
+            // mPeriodicIO.indexerDemand = kLoadSpeed + getLoadSpeed(); //kLoadSpeed;
             mPeriodicIO.schedDeltaDesired = 20; // stay awake to monitor beam break to jump to correcting
-        }else if (!isBallEnteringSimple()){
+        }
+        if (numberOfBalls >=2){
+            setWantedState(WantedState.HOLD, sClassName);
+            mPeriodicIO.indexerDemand = 0;
+        }
+        else if (isFullyLoaded(true)){
+            setWantedState(WantedState.HOLD, sClassName);
+        }
+        else if (!isBallEnteringSimple() && numberOfBalls<2){
             setWantedState(WantedState.CORRECT, sClassName);
             startBallPos = mPeriodicIO.FXLeftEncPos;
         }
+
 
         return defaultStateTransfer();
     }
 
     // position ball based on passing through beam break
     private SystemState handleCorrecting() {
+        if(numberOfBalls == 2){
+            System.out.println("3rd ball exit now!!!!");
+            setWantedState(WantedState.HOLD, sClassName);
+            return defaultStateTransfer();
+        }
         if (mStateChanged) {            
-            deltaFromEntrance = SmartDashboard.getNumber("delta from start",-1);
-            if (deltaFromEntrance == -1){
-                SmartDashboard.putNumber("delta from start", kBallOffset0and1);
+            // deltaFromEntrance = SmartDashboard.getNumber("delta from start",-1);
+            // if (deltaFromEntrance == -1){
+            //     SmartDashboard.putNumber("delta from start", kBallOffset0and1);
                 deltaFromEntrance = kBallOffset0and1;
-            }
+            // }
             if(numberOfBalls == 2){
-                deltaFromEntrance -= kBallOffset2;
+                deltaFromEntrance = kBallOffset2;
+                System.out.println("3rd balls");
             }
             mPeriodicIO.indexerPosDemand = startBallPos + deltaFromEntrance;
             mPeriodicIO.indexerDemand = 0;
@@ -292,18 +303,18 @@ public class Indexer extends Subsystem {
     }
 
     double encoderCount = 0;
-    double kTicksToUnload = 40000; // needs tuning
+    double kTicksToUnload = 30000; // needs tuning
     private SystemState handleIndexing() {
         if (mStateChanged) {
             mPeriodicIO.indexerDemand = indexSpeed;
             mPeriodicIO.schedDeltaDesired = 20; // stay awake to track encoder ticks
             encoderCount = mPeriodicIO.FXLeftEncPos;
+            numberOfBalls = 0;
         }
 
-        if (mPeriodicIO.FXLeftEncPos > encoderCount+kTicksToUnload){
-            numberOfBalls = 0;
-            System.out.println(sClassName+" number of balls is 0");
-        }
+        // if (mPeriodicIO.FXLeftEncPos > encoderCount+kTicksToUnload){
+        //     numberOfBalls = 0;
+        // }
         return defaultStateTransfer();
     }
 
@@ -317,9 +328,11 @@ public class Indexer extends Subsystem {
         if(isBallEnteringSimple()){
             // this unorthodox code is trying to turn on the indexer asap when a ball is detected
             // getLoadSpeed changes the speed to overcome the drag of already loaded balls
-            mPeriodicIO.indexerDemand = kLoadSpeed + getLoadSpeed();
-            mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
-            mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
+            if (numberOfBalls<2){
+                mPeriodicIO.indexerDemand = kLoadSpeed + getLoadSpeed();
+                mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
+                mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
+            }
             return true;
         }
         return false;
@@ -336,7 +349,7 @@ public class Indexer extends Subsystem {
                 mPeriodicIO.indexerDemand = 0;
                 mFXLeft.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
                 mFXRight.set(ControlMode.PercentOutput, mPeriodicIO.indexerDemand);
-                numberOfBalls = 3;
+                // numberOfBalls = 3;
                 System.out.println(sClassName+" Fully Loaded, emergency stop, number of balls set to 3");
             }
             return true;

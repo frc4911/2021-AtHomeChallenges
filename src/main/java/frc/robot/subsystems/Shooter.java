@@ -128,6 +128,7 @@ public class Shooter extends Subsystem {
                 System.out.println(sClassName + " onStart state " + mSystemState);
                 // this subsystem is "on demand" so goto sleep
                 mPeriodicIO.schedDeltaDesired = 0; //Matthew - was 0
+                mHoldRPM = mShootRPM = 0; // 4500
                 stop();
             }
         }
@@ -198,6 +199,7 @@ public class Shooter extends Subsystem {
         }
         setWantedState(WantedState.SHOOT, sClassName);
         mShootRPM = newRPM;
+        mHoldRPM = mShootRPM;
         mPeriodicIO.velocityPIDDemand = rpmToTicksPer100Ms(mShootRPM);
     }
 
