@@ -62,9 +62,9 @@ public class DriveMotionPlanner implements CSVWritable {
     double mDt = 0.0;
 
     public double getMaxRotationSpeed(){
-        final double kStartPoint = 0.2;
+        final double kStartPoint = 0.01; //0.2
         final double kPivotPoint = 0.5;
-        final double kEndPoint = 0.8;
+        final double kEndPoint = 0.99; //0.8
         final double kMaxSpeed = 1.0;
         double normalizedProgress = mCurrentTrajectory.getProgress() / currentTrajectoryLength;
         double scalar = 0.0;

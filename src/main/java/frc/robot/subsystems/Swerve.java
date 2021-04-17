@@ -390,7 +390,7 @@ public class Swerve extends Subsystem {
 				if(modulesReady){
 					if(!hasStartedFollowing){
 						if(moduleConfigRequested){
-							// zeroSensors(startingPose); // brian
+							//zeroSensors(startingPose); // brian
 							System.out.println("Position reset for auto***************************************************************");
 						}
 						hasStartedFollowing = true;
