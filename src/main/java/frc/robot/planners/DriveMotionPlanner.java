@@ -11,6 +11,7 @@ import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.DistanceView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
+import com.team254.lib.trajectory.TrajectoryPoint;
 import com.team254.lib.trajectory.TrajectorySamplePoint;
 import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.TimedState;
@@ -130,6 +131,7 @@ public class DriveMotionPlanner implements CSVWritable {
             double max_voltage,
             double default_vel,
             int slowdown_chunks) {
+        // System.out.println("//DriveMotionPlanner.generateTrajectory(maxV:"+max_vel+",maxA:"+max_accel+",maxD:"+max_decel+",maxVolt:"+max_voltage+",defV:"+default_vel+",chunks:"+slowdown_chunks+")");
         List<Pose2d> waypoints_maybe_flipped = waypoints;
         final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
         // TODO re-architect the spline generator to support reverse.
@@ -143,6 +145,8 @@ public class DriveMotionPlanner implements CSVWritable {
         // Create a trajectory from splines.
         Trajectory<Pose2dWithCurvature> trajectory = TrajectoryUtil.trajectoryFromSplineWaypoints(
                 waypoints_maybe_flipped, kMaxDx, kMaxDy, kMaxDTheta);
+
+        // System.out.println(trajectory.toString());
 
         if (reversed) {
             List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
@@ -166,8 +170,29 @@ public class DriveMotionPlanner implements CSVWritable {
                         DistanceView<>(trajectory), kMaxDx, all_constraints, start_vel, end_vel, max_vel, max_accel, 
                         max_decel, slowdown_chunks);
         timed_trajectory.setDefaultVelocity(default_vel / Constants.kSwerveMaxSpeedInchesPerSecond);
+        // dumpTimedTraj(timed_trajectory);
         return timed_trajectory;
     }
+
+    private void dumpTimedTraj(Trajectory<TimedState<Pose2dWithCurvature>> traj){
+        System.out.println();
+        for (int i=0; i<traj.length(); i++){
+            TrajectoryPoint<TimedState<Pose2dWithCurvature>> point = traj.getPoint(i);
+            Translation2d trans = point.state().state().getPose().getPose().getTranslation();
+            double angle = point.state().state().getRotation().getRotation().getRotation().getDegrees();
+            double curvature = point.state().state().getCurvature();
+            double curvature_ds = point.state().state().getDCurvatureDs();
+            double time = point.state().t();
+            double vel = point.state().velocity();
+            double acc = point.state().acceleration();
+
+            String part2 = String.format("%.5f,%.5f,new Rotation2d(%.5f)),%.5f,%.5f),%.5f,%.5f,%.5f));",trans.x(),trans.y(),angle,curvature,curvature_ds,time,vel,acc);
+            System.out.println("list.add(new TimedState<Pose2dWithCurvature>(new Pose2dWithCurvature(new Pose2d("+part2);
+
+        }
+    }
+
+    // list.add(new TimedState<Pose2dWithCurvature>(new Pose2dWithCurvature(new Pose2d(0.0,0.0,new Rotation2d(0)),0,0), 0,0,0));
 
     /**
      * @param followingCenter the followingCenter to set (relative to the robot's center)

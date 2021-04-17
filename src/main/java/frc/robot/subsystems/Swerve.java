@@ -390,8 +390,8 @@ public class Swerve extends Subsystem {
 				if(modulesReady){
 					if(!hasStartedFollowing){
 						if(moduleConfigRequested){
-							zeroSensors(startingPose);
-							System.out.println("Position reset for auto");
+							// zeroSensors(startingPose); // brian
+							System.out.println("Position reset for auto***************************************************************");
 						}
 						hasStartedFollowing = true;
 					}
@@ -988,6 +988,7 @@ public class Swerve extends Subsystem {
 		modules.forEach((m) -> m.zeroSensors(startingPose));
 		pose = startingPose;
 		distanceTraveled = 0;
+		System.out.println("starting pose:"+pose.toString());
 	}
 	
 	public synchronized void resetPosition(Pose2d newPose){
