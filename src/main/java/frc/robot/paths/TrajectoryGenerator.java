@@ -331,7 +331,7 @@ public class TrajectoryGenerator {
 
             // end of long line on left
             waypoints.add(new Pose2d(new Translation2d(240-slalomStartx, 90-slalomStarty), Rotation2d.fromDegrees(30)));
-            waypoints.add(new Pose2d(new Translation2d(285-slalomStartx, 160-slalomStarty), Rotation2d.fromDegrees(15)));
+            waypoints.add(new Pose2d(new Translation2d(285-slalomStartx, 165-slalomStarty), Rotation2d.fromDegrees(15)));
             // circle end cone
             waypoints.add(new Pose2d(new Translation2d(300-slalomStartx, 85-slalomStarty), Rotation2d.fromDegrees(195)));
             waypoints.add(new Pose2d(new Translation2d(260-slalomStartx, 120-slalomStarty), Rotation2d.fromDegrees(120)));
