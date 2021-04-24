@@ -275,8 +275,8 @@ public class TrajectoryGenerator {
         double rc = 28/2;
         double slalomStartx = 60 - rc;
         double slalomStarty = 150;
-        double slalomSlowV = 140;
-        double slalomFastV = 160;
+        double slalomSlowV = 100;
+        double slalomFastV = 120;
         double slalomMaxA = 180;
         double slalomMaxD = 180;
         double slalomDefaultV = slalomSlowV;
@@ -285,27 +285,27 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathA() {
             List<Pose2d> waypoints = new ArrayList<>();
 
-            waypoints.add(new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(90)));
-            waypoints.add(new Pose2d(new Translation2d(30, 30), Rotation2d.fromDegrees(0)));
-            waypoints.add(new Pose2d(new Translation2d(60, 0), Rotation2d.fromDegrees(270)));
-            waypoints.add(new Pose2d(new Translation2d(15, -40), Rotation2d.fromDegrees(180)));
-            waypoints.add(new Pose2d(new Translation2d(-25, -10), Rotation2d.fromDegrees(90)));
+            // waypoints.add(new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(90)));
+            // waypoints.add(new Pose2d(new Translation2d(30, 30), Rotation2d.fromDegrees(0)));
+            // waypoints.add(new Pose2d(new Translation2d(60, 0), Rotation2d.fromDegrees(270)));
+            // waypoints.add(new Pose2d(new Translation2d(15, -40), Rotation2d.fromDegrees(180)));
+            // waypoints.add(new Pose2d(new Translation2d(-25, -10), Rotation2d.fromDegrees(90)));
 
-            return generateTrajectory(   false, waypoints, Arrays.asList(), 0, 0, 120, 80, 80, 12, 120, 1);
+            // return generateTrajectory(   false, waypoints, Arrays.asList(), 0, 0, 120, 80, 80, 12, 120, 1);
 
-            // // start in box
-            // waypoints.add(new Pose2d(new Translation2d(slalomStartx-slalomStartx, slalomStarty-slalomStarty), Rotation2d.fromDegrees(0)));
-            // // leave box and go to left side
-            // waypoints.add(new Pose2d(new Translation2d(90-slalomStartx, 120-slalomStarty), Rotation2d.fromDegrees(300)));
+            // start in box
+            waypoints.add(new Pose2d(new Translation2d(slalomStartx-slalomStartx, slalomStarty-slalomStarty), Rotation2d.fromDegrees(0)));
+            // leave box and go to left side
+            waypoints.add(new Pose2d(new Translation2d(90-slalomStartx, 120-slalomStarty), Rotation2d.fromDegrees(300)));
 
-            // double startVel = 0;
-            // double endVel = slalomSlowV;
-            // double maxVel = slalomSlowV;
-            // double maxAcc = 80;
-            // double maxDec = 80;
-            // double maxVoltage = slalomMaxVoltage;
-            // double defaultVel = slalomSlowV;
-            // return generateTrajectory(   false, waypoints, Arrays.asList(), startVel, endVel, maxVel, maxAcc, maxDec, maxVoltage, defaultVel, 1);
+            double startVel = 0;
+            double endVel = slalomSlowV;
+            double maxVel = slalomSlowV;
+            double maxAcc = 80;
+            double maxDec = 80;
+            double maxVoltage = slalomMaxVoltage;
+            double defaultVel = slalomSlowV;
+            return generateTrajectory(   false, waypoints, Arrays.asList(), startVel, endVel, maxVel, maxAcc, maxDec, maxVoltage, defaultVel, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSlalomPathB() {
@@ -314,7 +314,7 @@ public class TrajectoryGenerator {
             // start of long line on left
             waypoints.add(new Pose2d(new Translation2d(90-slalomStartx, 120-slalomStarty), Rotation2d.fromDegrees(300)));
             // long straight line on left
-            waypoints.add(new Pose2d(new Translation2d(230-slalomStartx, 90-slalomStarty), Rotation2d.fromDegrees(45)));
+            waypoints.add(new Pose2d(new Translation2d(240-slalomStartx, 90-slalomStarty), Rotation2d.fromDegrees(45)));
 
             double startVel = slalomSlowV;
             double endVel = slalomSlowV;
@@ -330,12 +330,12 @@ public class TrajectoryGenerator {
             List<Pose2d> waypoints = new ArrayList<>();
 
             // end of long line on left
-            waypoints.add(new Pose2d(new Translation2d(240-slalomStartx, 90-slalomStarty), Rotation2d.fromDegrees(45)));
-            waypoints.add(new Pose2d(new Translation2d(300-slalomStartx, 165-slalomStarty), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(240-slalomStartx, 90-slalomStarty), Rotation2d.fromDegrees(30)));
+            waypoints.add(new Pose2d(new Translation2d(285-slalomStartx, 160-slalomStarty), Rotation2d.fromDegrees(15)));
             // circle end cone
-            waypoints.add(new Pose2d(new Translation2d(300-slalomStartx, 80-slalomStarty), Rotation2d.fromDegrees(205)));
-            // waypoints.add(new Pose2d(new Translation2d(240-slalomStartx, 120-slalomStarty), Rotation2d.fromDegrees(120)));
-            waypoints.add(new Pose2d(new Translation2d(240-slalomStartx, 150-slalomStarty), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(300-slalomStartx, 85-slalomStarty), Rotation2d.fromDegrees(195)));
+            waypoints.add(new Pose2d(new Translation2d(260-slalomStartx, 120-slalomStarty), Rotation2d.fromDegrees(120)));
+            
 
             double startVel = slalomSlowV;
             double endVel = slalomSlowV;
@@ -351,9 +351,11 @@ public class TrajectoryGenerator {
             List<Pose2d> waypoints = new ArrayList<>();
             
             // start of long line on right
-            waypoints.add(new Pose2d(new Translation2d(210-slalomStartx, 150-slalomStarty), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(270-slalomStartx, 120-slalomStarty), Rotation2d.fromDegrees(120)));
+            waypoints.add(new Pose2d(new Translation2d(240-slalomStartx, 150-slalomStarty), Rotation2d.fromDegrees(150)));
+            waypoints.add(new Pose2d(new Translation2d(210-slalomStartx, 150-slalomStarty), Rotation2d.fromDegrees(150)));
             // end of long line on left
-            waypoints.add(new Pose2d(new Translation2d(105-slalomStartx, 135-slalomStarty), Rotation2d.fromDegrees(195)));
+            waypoints.add(new Pose2d(new Translation2d(105-slalomStartx, 150-slalomStarty), Rotation2d.fromDegrees(195)));
 
             double startVel = slalomSlowV;
             double endVel = slalomSlowV;
@@ -369,9 +371,9 @@ public class TrajectoryGenerator {
             List<Pose2d> waypoints = new ArrayList<>();
 
             // end of long line on left
-            waypoints.add(new Pose2d(new Translation2d(105-slalomStartx, 135-slalomStarty), Rotation2d.fromDegrees(195)));
-            waypoints.add(new Pose2d(new Translation2d(60-slalomStartx, 90-slalomStarty), Rotation2d.fromDegrees(260)));
-            waypoints.add(new Pose2d(new Translation2d(30-slalomStartx, 65-slalomStarty), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(105-slalomStartx, 150-slalomStarty), Rotation2d.fromDegrees(195)));
+            waypoints.add(new Pose2d(new Translation2d(90-slalomStartx, 110-slalomStarty), Rotation2d.fromDegrees(260)));
+            waypoints.add(new Pose2d(new Translation2d((10+rc)-slalomStartx, 80-slalomStarty), Rotation2d.fromDegrees(180)));
             // waypoints.add(new Pose2d(new Translation2d(-15+rc-slalomStartx, 65-slalomStarty), Rotation2d.fromDegrees(180)));
             
             double startVel = slalomSlowV;
