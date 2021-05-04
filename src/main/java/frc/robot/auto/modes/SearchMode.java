@@ -14,7 +14,7 @@ public class SearchMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         System.out.println("Search Auto Mode Running!!!");
-        BallSearchAction ballSearchAction = new BallSearchAction();
+        // BallSearchAction ballSearchAction = new BallSearchAction();
         // runAction(ballSearchAction);
         // if (ballSearchAction.getPathSelection() == PathSelection.RED_A) {
         //     System.out.println("Galactic Search A Red Mode Running!!!");

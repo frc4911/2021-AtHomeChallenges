@@ -252,6 +252,9 @@ public class TimingUtil {
             double max_abs_acceleration,
             double max_deceleration,
             int slowdown_chunks) {
+
+        // System.out.println("//TimingUtil.timeParameterizeTrajectory(startV:"+start_velocity+",endV:"+end_velocity+
+        //                       ",maxV:"+max_velocity+",maxA:"+max_abs_acceleration+",maxD:"+max_deceleration+",chunks:"+slowdown_chunks+")");
         List<ConstrainedState<S>> constraint_states = new ArrayList<>(states.size());
         final double kEpsilon = 1e-6;
 

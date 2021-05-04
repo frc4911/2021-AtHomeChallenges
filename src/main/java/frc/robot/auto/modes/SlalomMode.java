@@ -11,8 +11,8 @@ public class SlalomMode extends AutoModeBase {
     protected void routine() throws AutoModeEndedException {
         System.out.println("Slalom Auto Mode Running!!!");
         //1
-        runAction(new SetTrajectoryAction(trajectories.slalomPath.get(true), 0.0, 1.0));
-        runAction(new WaitToFinishPathAction());
+        // runAction(new SetTrajectoryAction(trajectories.slalomPath.get(true), 0.0, 1.0));
+        // runAction(new WaitToFinishPathAction());
         // //2
         // runAction(new SetTrajectoryAction(trajectories.slalomPathStraightF.get(true), 0.0, 1.0));
         // runAction(new WaitToFinishPathAction());

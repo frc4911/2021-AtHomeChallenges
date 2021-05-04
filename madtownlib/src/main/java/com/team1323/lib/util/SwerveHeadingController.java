@@ -2,6 +2,7 @@ package com.team1323.lib.util;
 
 import edu.wpi.first.wpilibj.Timer;
 import com.team254.lib.util.SynchronousPIDF;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveHeadingController {
 	private double targetHeading;
@@ -70,7 +71,7 @@ public class SwerveHeadingController {
 		double correction = 0;
 		double error = heading - targetHeading;
 		double dt = timestamp - lastUpdateTimestamp;
-		
+		SmartDashboard.putString("Swerve heading control state", currentState.toString());
 		switch(currentState){
 		case Off:
 			
